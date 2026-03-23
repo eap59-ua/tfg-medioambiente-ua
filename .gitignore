@@ -1,74 +1,70 @@
-# === DEPENDENCIAS ===
-node_modules/
-vendor/
-.gradle/
-target/
+# ==============================================================================
+# TFG Medio Ambiente UA — .gitignore
+# ==============================================================================
 
-# === ENTORNO ===
+# ─── Dependencias ─────────────────────────────────────────────────────────────
+node_modules/
+package-lock.json
+yarn.lock
+
+# ─── Variables de entorno (NUNCA subir a Git) ─────────────────────────────────
 .env
 .env.local
-.env.*.local
-*.env
+.env.development.local
+.env.test.local
+.env.production.local
 
-# === BUILDS ===
+# ─── Build y distribución ─────────────────────────────────────────────────────
 dist/
 build/
 out/
 .next/
-.nuxt/
+coverage/
 
-# === IDEs ===
+# ─── Docker ───────────────────────────────────────────────────────────────────
+# No ignorar docker-compose*.yml ni Dockerfiles (son parte del proyecto)
+# Pero sí los volúmenes locales de datos
+docker-data/
+pgdata/
+
+# ─── IDE y editores ──────────────────────────────────────────────────────────
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# === SISTEMA OPERATIVO ===
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# === LOGS ===
+# ─── Logs ─────────────────────────────────────────────────────────────────────
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# === JAVA / SPRING ===
-*.class
-*.jar
-*.war
-*.ear
-*.iml
-
-# === PYTHON ===
-__pycache__/
-*.py[cod]
-*.pyo
-.venv/
-venv/
-
-# === DOCKER ===
-.docker/
-
-# === CREDENCIALES Y SECRETOS ===
-*.pem
-*.key
-*.p12
-google-services.json
-GoogleService-Info.plist
-firebase-config.js
-firebase-config.ts
-
-# === COBERTURA DE TESTS ===
+# ─── Testing ──────────────────────────────────────────────────────────────────
 coverage/
 .nyc_output/
+cypress/videos/
+cypress/screenshots/
 
-# === TEMPORALES ===
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ─── Documentación temporal ───────────────────────────────────────────────────
+docs/entrega/*.zip
+docs/memoria/**/*.pdf
+!docs/memoria/plantillas/*.pdf
 *.tmp
-*.temp
-*.bak
+~$*.docx
+~$*.doc

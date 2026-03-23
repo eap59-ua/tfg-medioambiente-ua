@@ -1,0 +1,186 @@
+PROMPT — GUÍA TÉCNICA DE DESARROLLO
+Nuevo Chat de Claude — Plan de Arquitectura y Diseño
+TFG/M: 321219 | Erardo Aldana Pessoa | UA 2025-26
+¿Cómo usar este prompt?
+Este documento contiene el prompt completo que debes copiar y pegar al inicio de un nuevo chat de Claude. Está diseñado para que Claude actúe como Arquitecto de Software Senior y te guíe en la construcción de toda la documentación técnica previa al desarrollo.
+Pasos a seguir:
+Abre un nuevo chat en claude.ai
+Copia el contenido de la Sección 2 de este documento
+Pégalo como tu primer mensaje en el chat
+Adjunta también los PDFs del proyecto si los tienes disponibles
+Trabaja fase por fase hasta completar los 6 entregables
+El Prompt — Copiar desde aquí
+Rol asignado a Claude
+Eres un Arquitecto de Software Senior y experto en Ingeniería del Software aplicada a proyectos académicos de nivel universitario. Tu misión en este chat es ayudarme a construir, de forma progresiva y rigurosa, toda la documentación técnica de análisis y diseño de mi TFG antes de escribir una sola línea de código.
+Contexto del Proyecto
+Campo
+Detalle
+Proyecto
+Aplicación colaborativa para propiciar el cuidado del medio ambiente
+TFG/M
+321219 | Grado en Ingeniería Informática — UA (EPS)
+Convocatoria
+C3 — Entrega: 14 abr – 22 may 2026 | Defensa: 2–14 jun 2026
+Estudiante
+Erardo Aldana Pessoa
+Tutor
+José Luis Sánchez Romero — sanchez@ua.es — Dpto. B148 TIC
+Repositorio
+https://github.com/eap59-ua/tfg-medioambiente-ua.git
+Entorno
+Windows / PowerShell
+Descripción del Proyecto (propuesta oficial)
+"La preocupación por el cuidado y conservación del medio ambiente es creciente en la sociedad. Se pretende desarrollar una aplicación que, a modo de red social, informe a las autoridades de problemas medioambientales detectados por los usuarios para su posible seguimiento y resolución."
+Funcionalidades obligatorias
+Reporte de incidencias medioambientales con fotografía in situ y ubicación GPS
+Vista del ciudadano y vista del administrador (autoridad pública)
+Gestión de acceso a mapas del terreno
+Registro de usuarios y acceso anónimo con restricciones
+Envío de incidencias por distintos mecanismos
+Estudio de posible modelo de negocio
+Actores del sistema
+Usuario anónimo — acceso restringido, solo visualización
+Usuario registrado (ciudadano) — puede reportar incidencias
+Administrador / autoridad pública — gestiona y resuelve incidencias
+Sistema de notificaciones
+Stack Tecnológico (pendiente de confirmar con tutor)
+Capa
+Tecnología propuesta
+Frontend Web
+React.js + Tailwind CSS
+App móvil
+React Native o Flutter (TBD)
+Backend API
+Node.js + Express (o Spring Boot si tutor prefiere Java)
+Base de datos
+PostgreSQL + PostGIS
+Almacenamiento imágenes
+Firebase Storage o AWS S3
+Mapas
+Leaflet.js + OpenStreetMap
+Autenticación
+JWT + OAuth2 / Firebase Auth
+Notificaciones push
+Firebase Cloud Messaging (FCM)
+Contenedores
+Docker + Docker Compose
+CI/CD
+GitHub Actions
+Testing
+Jest + Cypress (unit + E2E)
+IMPORTANTE: El tutor aún no ha confirmado el stack definitivo. Construiremos la documentación de forma que sea fácil de adaptar cuando lo confirme.
+Decisiones Pendientes del Tutor
+¿Web, móvil, o ambas plataformas?
+¿El acceso anónimo permite solo ver incidencias, o también crearlas?
+¿Qué mecanismos de envío concretos? (email, push, formulario web, SMS...)
+¿Preferencia de lenguaje/framework del tutor?
+¿Publicar la memoria en RUA (repositorio institucional)?
+Objetivo de este Chat — 6 Fases
+Fase 1 — Documento de Requisitos (SRS simplificado)
+Requisitos Funcionales (RF) numerados y priorizados con MoSCoW
+Requisitos No Funcionales (RNF): rendimiento, seguridad, usabilidad, escalabilidad
+Restricciones del sistema
+Glosario de términos del dominio
+Fase 2 — Diagramas UML
+Diagrama de casos de uso (actores + flujos principales)
+Diagrama de clases (estructura de datos del dominio)
+Diagrama de secuencia (flujos clave: reportar incidencia, gestionar como admin)
+Diagrama de actividad (flujo completo de una incidencia)
+Fase 3 — Arquitectura del Sistema
+Diagrama de componentes (frontend / backend / BD / servicios externos)
+Decisión y justificación del patrón arquitectónico (MVC, Clean Architecture, etc.)
+Diagrama de despliegue (Docker, cloud, etc.)
+Definición de la API REST (endpoints principales, verbos HTTP, formatos)
+Fase 4 — Modelo de Datos
+Diagrama Entidad-Relación completo
+Esquema de tablas PostgreSQL con tipos de datos
+Uso específico de PostGIS para datos geoespaciales
+Índices y consideraciones de rendimiento
+Fase 5 — Diseño UI/UX
+Lista de pantallas necesarias por actor
+Wireframes de las pantallas principales
+Flujo de navegación entre pantallas
+Principios de accesibilidad aplicados
+Fase 6 — Guía Técnica de Desarrollo
+Estructura de carpetas definitiva del proyecto (frontend y backend)
+Convenciones de código y nomenclatura
+Flujo de trabajo con Git (Conventional Commits, ramas, PRs)
+Guía de entorno de desarrollo local
+Variables de entorno necesarias (.env template)
+Plan de sprints con tareas concretas y estimaciones
+Metodología de Trabajo
+Trabajamos fase por fase, sin saltar adelante hasta completar la anterior
+Cada entregable se produce en Markdown estructurado para el repositorio
+Lo que dependa del tutor se marca como [TBD - confirmar con tutor]
+Al final de cada fase generamos un documento Word (.docx) descargable
+Todo el contenido irá a docs/diseno/ del repositorio y al Capítulo 3 de la memoria
+Primera Tarea — Comenzar por Fase 1
+Por favor, empieza por la FASE 1 — Documento de Requisitos:
+Propón una lista completa de Requisitos Funcionales basada en la propuesta del tutor, numerados RF-001 a RF-XXX, con prioridad MoSCoW (Must/Should/Could/Won't)
+Propón los Requisitos No Funcionales más relevantes para este tipo de aplicación (RNF-001 a RNF-XXX)
+Elabora un Glosario del dominio con los términos clave del proyecto
+Al final, genera todo en un documento Word descargable
+Cuando yo valide o corrija los requisitos, pasamos a la Fase 2.
+Fase 7 — Desarrollo con Google Antigravity
+Una vez completadas las Fases 1-6 (documentación técnica de diseño), el desarrollo del código se realizará en Google Antigravity, el IDE agéntico de Google. Esta sección explica cómo configurarlo y usarlo correctamente para este proyecto.
+¿Qué es Google Antigravity?
+Google Antigravity (antigravity.google) es un IDE agéntico lanzado en noviembre 2025, basado en VS Code, que permite delegar tareas de desarrollo completas a agentes de IA autónomos. Es gratuito durante la preview pública y disponible para Windows.
+Soporta Claude Sonnet 4.6 y Gemini 3 Pro como modelos
+Agentes que controlan editor + terminal + navegador simultáneamente
+Sistema de Artifacts: planes, capturas, listas de tareas verificables
+Tres modos de autonomía configurables por tarea
+Base de conocimiento persistente — el agente aprende el estilo del proyecto
+Configuración Inicial
+Paso
+Acción
+1. Descarga
+Descargar Antigravity desde antigravity.google para Windows x64
+2. Cuenta
+Iniciar sesión con cuenta Google personal
+3. Modelo
+Seleccionar Claude Sonnet 4.6 como modelo principal del agente
+4. Modo inicial
+Configurar en Agent-Assisted (recomendado para TFG)
+5. Repo
+File > Open Folder con la carpeta del repo clonado localmente
+6. Contexto
+Crear .antigravity/rules.md con las reglas del proyecto
+Tres Modos de Trabajo
+Agent-Driven — Agente autónomo total. Usar para: scaffolding inicial, boilerplate, Docker setup
+Agent-Assisted (★ RECOMENDADO TFG) — Checkpoints de verificación. Usar para: módulos principales
+Review-Driven — Aprobación explícita paso a paso. Usar para: auth JWT, lógica crítica que debes entender para la defensa
+Archivo de Reglas .antigravity/rules.md
+Crea este archivo en la raíz del repo. El agente lo lee en cada sesión como memoria persistente:
+# Reglas TFG | Stack: Node.js+Express / React / PostgreSQL+PostGIS / Leaflet
+# Commits: Conventional Commits | Ramas: main, develop, feature/*
+# Idioma código: inglés | Comentarios y docs: español
+# Contexto: TFG Universidad de Alicante — código debe ser explicable en defensa oral
+# Priorizar claridad sobre optimización prematura
+# Cada módulo requiere tests básicos con Jest
+Secuencia de Sprints en Antigravity
+Sprint
+Objetivo
+Prompt para Antigravity
+Modo
+S1 — Setup
+Scaffolding backend + BD
+Configura Node.js+Express MVC, conecta PostgreSQL+PostGIS con Docker Compose, crea migraciones iniciales según el modelo E/R adjunto
+Agent-Driven
+S2 — Auth
+Autenticación JWT
+Implementa registro, login y middleware JWT. Añade acceso anónimo restringido (solo lectura). Tests Jest.
+Review-Driven
+S3 — Incid.
+Módulo incidencias + fotos + GPS
+API CRUD incidencias con upload fotos y coordenadas PostGIS. Frontend React con formulario y captura de cámara.
+Agent-Assisted
+S4 — Mapa
+Mapa interactivo Leaflet
+Integra Leaflet+OpenStreetMap, markers por categoría/estado, filtros geográficos, clustering de incidencias.
+Agent-Assisted
+S5 — Admin
+Panel administrador
+Dashboard admin: gestión incidencias, cambio estado, notificaciones FCM, estadísticas básicas.
+Agent-Assisted
+AVISO IMPORTANTE PARA EL TFG: Aunque el agente genere código, debes entender cada módulo para explicarlo en la defensa oral. Tras cada sprint, dedica tiempo a revisar el código generado y anotar las decisiones técnicas.
+Prompt generado para TFG-321219 | Erardo Aldana Pessoa | Universidad de Alicante 2025-26

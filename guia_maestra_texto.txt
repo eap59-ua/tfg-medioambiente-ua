@@ -1,0 +1,1760 @@
+GUIA MAESTRA DEL TFG
+v3.0 — Actualizada: SDD (
+SpecKit
+), 
+MCPs
+ y 
+Playwright
+Aplicacion
+ colaborativa para propiciar el cuidado del medio ambiente
+Estudiante
+Aldana Pessoa, Erardo
+Propuesta TFG
+TFG/M: 
+321219  |
+  Convocatoria C3
+Tutor
+Jose
+ Luis 
+Sanchez
+ Romero
+sanchez@ua.es
+Departamento
+B148 TIC — EPS — Universidad de Alicante
+Entrega del trabajo (C3)
+14 abril — 22 mayo 2026
+Tiempo disponible
+~13 semanas desde hoy (23 feb)
+Defensa oral
+2 — 14 junio 2026
+Guia generada
+23 de febrero de 2026
+DOCUMENTO 
+VIVO  Actualiza
+ esta 
+guia
+ tras cada 
+reunion
+ con el tutor. Las secciones marcadas con * son obligatorias por la normativa UA/EPS.
+Indice
+ de contenidos
+1.  Primeros pasos — Contacto con el tutor
+   ........................  
+pag.
+ 3
+2.  
+Descripcion
+ del proyecto asignado
+   ........................  
+pag.
+ 4
+3.  Requisitos formales y 
+documentacion
+ obligatoria (Normativa 
+UA)
+   
+........................  
+pag.
+ 5
+4.  Formato y estilo de la memoria (Libro de Estilo 
+EPS)
+   
+........................  
+pag.
+ 6
+5.  Proceso de entrega — Convocatoria C3 (paso a 
+paso)
+   
+........................  
+pag.
+ 8
+6.  Tipos de defensa — Modalidad A vs Modalidad B
+   ........................  
+pag.
+ 9
+7.  Stack 
+tecnologico
+ recomendado
+   ........................  
+pag.
+ 10
+8.  Cronograma semana a semana (23 feb — jun 2026)
+   ........................  
+pag.
+ 11
+9.  Estructura detallada de la memoria 
+academica
+   ........................  
+pag.
+ 13
+10.  
+Preparacion
+ de la defensa oral
+   ........................  
+pag.
+ 15
+11.  Mis notas de 
+tutorias
+ (espacio 
+personal)
+   
+........................  
+pag.
+ 17
+1. Primeros pasos — Contacto con el tutor
+Asignacion
+ provisional: 23 feb 2026. Definitiva: 27 feb 2026 (confirmar en 
+UAproject
+). Primer paso: establecer contacto con el tutor inmediatamente.
+1.1 Datos de contacto
+Tutor
+Jose
+ Luis 
+Sanchez
+ Romero
+Email directo
+sanchez@ua.es
+Departamento
+B148 – 
+Tecnologia
+ 
+Informatica
+ y 
+Computacion
+ (TIC), EPS – UA
+Coordinacion
+ TFG
+tfg.informatica@eps.ua.es  (
+solo consultas administrativas)
+Plataforma
+UAproject
+ — Campus Virtual 
+UACloud
+ CV
+Web EPS
+eps.ua.es/es/
+ingenieria-informatica
+/trabajo-fin-de-grado.html
+1.2 Plantilla de correo — Primer contacto (enviar el 27 feb)
+Asunto: Primer contacto TFG – Aldana Pessoa, Erardo (TFG/M: 321219)
+Estimado profesor 
+Sanchez
+ Romero,
+Me pongo en contacto tras recibir la 
+asignacion
+ definitiva de mi TFG
+«
+Aplicacion
+ colaborativa para propiciar el cuidado del medio ambiente» (TFG/M: 321219).
+Me 
+gustaria
+ acordar una primera 
+reunion
+ para:
+  · Conocer sus expectativas y directrices.
+  · Establecer periodicidad de 
+tutorias
+ y canal preferido.
+  · Confirmar 
+stack
+ 
+tecnologico
+ y 
+metodologia
+.
+  · Aclarar si elegimos Modalidad A (10 min) o Modalidad B (5 min, nota 
+max
+ 8) de defensa.
+  · Definir primeros hitos internos.
+Quedo a su 
+disposicion
+.
+Un cordial saludo,
+Erardo Aldana 
+Pessoa  |
+  Grado en 
+Ingenieria
+ 
+Informatica
+  |
+  Universidad de Alicante
+1.3 
+Checklist
+ semana 1 — Acciones inmediatas
+Confirmar 
+asignacion
+ definitiva en 
+UAproject
+ el 27 feb
+Enviar correo de 
+presentacion
+ al tutor (27-28 feb)
+Acordar primera 
+reunion
+ presencial o 
+Teams
+PREGUNTAR: Modalidad A (10 min, nota 
+max
+ 10) o Modalidad B (5 min, nota 
+max
+ 8)
+Crear repositorio Git: github.com/[usuario]/
+tfg
+-medioambiente-
+ua
+Descargar plantilla oficial de portada (PDF/DOCX en web EPS)
+Descargar formulario de 
+Declaracion
+ de Responsabilidad
+Revisar todas las fechas clave de la Convocatoria C3 en 
+UAproject
+Fork 
+SpecKit
+ (SDD): github.com/
+github
+/
+spec
+-kit — necesario para asignatura SDD y desarrollo con 
+Antigravity
+Instalar 
+MCPs
+ en 
+Antigravity
+: GitHub MCP, Context7 MCP y 
+Playwright
+ MCP (
+Figma
+ MCP al inicio de fase UI)
+2. 
+Descripcion
+ del proyecto asignado
+Propuesta oficial — TFG/M: 321219
+Titulo
+: 
+Aplicacion
+ colaborativa para propiciar el cuidado del medio ambiente
+Resumen: «La 
+preocupacion
+ por el cuidado y 
+conservacion
+ del medio ambiente es creciente en la
+sociedad. Se pretende desarrollar una 
+aplicacion
+ que, a modo de red social, informe a las
+autoridades de problemas medioambientales detectados por los usuarios para su posible
+seguimiento y 
+resolucion
+.»
+Tutor: 
+Jose
+ Luis 
+Sanchez
+ 
+Romero  |
+  Dpto. B148 
+TIC  |
+  sanchez@ua.es
+Comite
+ de 
+Etica
+: NO requerido
+2.1 Objetivos concretos de la propuesta
+Aplicacion
+ para reportar problemas medioambientales a las autoridades.
+Envio
+ de 
+fotografias
+ del problema detectado in situ y 
+ubicacion
+ GPS.
+Vista del usuario ciudadano y vista del administrador (autoridad 
+publica
+).
+Gestion
+ de acceso a mapas del terreno.
+Registro de usuarios y acceso 
+anonimo
+ con restricciones.
+Envio
+ de incidencias por distintos mecanismos.
+Estudio de posible modelo de negocio.
+2.2 Preferencias del estudiante — 
+Asignacion
+Op
+.
+Titulo
+1
+Aplicacion
+ colaborativa para propiciar el cuidado del medio 
+ambiente  -
+> ASIGNADO
+OK
+2
+App 
+identificacion
+ visual de establecimientos con pictogramas ARASAAC (
+inclusion
+ TEA)
+3
+Aplicacion
+ 
+movil
+ para 
+promocion
+ del running
+4
+Asistente Inteligente para Entrevistas en Tiempo Real
+5
+Aplicacion
+ de accesibilidad en dispositivos 
+moviles
+ para personas con problemas visuales
+3. Requisitos formales y 
+documentacion
+ obligatoria
+3.1 Requisitos 
+academicos
+Requisito
+Especificacion
+Creditos
+ ECTS
+12 ECTS obligatorios
+Creditos
+ previos 
+minimos
+210 
+creditos
+ superados para matricularse
+Duracion
+ oficial
+6 meses (un semestre 
+academico
+)
+Modalidades
+Proyecto 
+tecnico
+ / 
+Investigacion
+ aplicada / 
+Innovacion
+ empresarial
+Informe 
+Comite
+ de 
+Etica
+NO requerido para este TFG (confirmado en la propuesta oficial)
+Evaluacion
+Memoria escrita + Defensa oral + 
+Codigo
+/prototipo funcional
+3.2 
+Documentacion
+ obligatoria — Contenido del ZIP de entrega
+Todos los documentos se suben en un 
+unico
+ fichero ZIP a 
+traves
+ de 
+UAproject
+:
+Documento
+Descripcion
+Formato
+Req
+.
+1
+Declaracion
+ de Responsabilidad
+Declaracion
+ de 
+autoria
+ y originalidad. Firmada con nombre, DNI, 
+titulacion
+ y periodo.
+PDF o DOCX
+SI
+2
+Resumen del TFG
+Maximo
+ 500 palabras. 
+Descripcion
+ breve del trabajo, objetivos y resultados principales.
+TXT o PDF
+SI
+3A
+Memoria — si 
+publicas
+ en RUA
+Nombre OBLIGATORIO: rua.pdf (todo 
+minusculas
+). Es lo que se publicara en el Repositorio Institucional UA. Colocar en la RAIZ del ZIP.
+rua.pdf
+SI
+3B
+Memoria — si NO 
+publicas
+ en RUA
+Nombre OBLIGATORIO: memoria.pdf (todo 
+minusculas
+). Colocar en la RAIZ del ZIP.
+memoria.pdf
+SI
+4
+Poster (opcional)
+Poster vertical 70 cm x 100 cm. Plantilla en PPTX disponible en la web EPS.
+PPTX/PDF
+NO
+CRITICO — Nombre del 
+fichero  El
+ PDF de la memoria DEBE llamarse exactamente 'rua.pdf' o 'memoria.pdf' (en 
+minusculas
+) y estar en el directorio RAIZ del ZIP. Si no, el sistema no lo procesa correctamente.
+Sobre la 
+Declaracion
+ de 
+Responsabilidad  Incluye
+: nombre y apellidos, DNI, 
+denominacion
+ completa del TFG, periodo de 
+realizacion
+. Se puede descargar de la web EPS. Es obligatoria firmarla.
+4. Formato y estilo de la memoria (Libro de Estilo EPS)
+La memoria DEBE ajustarse al Libro de Estilo TFG/TFM de la Escuela 
+Politecnica
+ Superior. Resumen de todos los requisitos:
+4.1 
+Configuracion
+ de 
+pagina
+, 
+tipografia
+ e interlineado
+Elemento
+Especificacion
+Formato papel
+UNE A4 (210 x 297 mm)
+Impresion
+A DOS CARAS — paginas pares e impares diferenciadas en cabecera y pie
+Interlineado
+1,5 
+lineas
+Margen INTERIOR
+3,0 cm — IMPORTANTE: el margen 
+encuadernacion
+ es 
+mas
+ grande
+Margen EXTERIOR
+2,5 cm
+Margenes
+ superior e inferior
+2,5 cm cada uno
+Cabecera y pie
+Se incluyen DENTRO del margen indicado
+Familia 1 — 
+Titulos
+Arial, 
+Helvetica
+, Tahoma (anchura variable) — para secciones y 
+titulos
+Familia 2 — Texto normal
+Times New 
+Roman
+, Palatino 
+Linotype
+ (anchura variable) — para 
+parrafos
+Familia 3 — 
+Codigo
+Courier New, Miriam Fixed (anchura fija) — para fragmentos de 
+codigo
+ fuente
+Formulas simples
+Palatino 
+Linotype
+ 
+italica
+. Formulas complejas: editor de ecuaciones
+Fuentes PROHIBIDAS
+Bauhaus 93, Broadway, Brush Script MT, Lucida Calligraphy y similares decorativas
+COLOR PORTADA 
+Informatica
+RGB (0, 128, 255) — Azul corporativo. Texto en blanco o negro para contraste.
+4.2 Contenido de la portada oficial
+La portada debe seguir la plantilla disponible en la web EPS (formatos PDF y DOCX). Elementos obligatorios:
+Centro: Escuela 
+Politecnica
+ Superior / Logo EPS
+Titulacion
+: Grado en 
+Ingenieria
+ 
+Informatica
+ / Logo UA
+Titulo
+ completo del Trabajo Fin de Grado
+Etiqueta: «Trabajo Fin de Grado»
+Nombre completo del autor
+Nombre del tutor o tutores
+Mes y ano de 
+presentacion
+Tipografia
+ portada (
+segun
+ libro 
+estilo)  Titulo
+: 
+Helvetica
+ LT 
+Std
+ Cond 55 pts. 
+Titulacion
+: 
+Helvetica
+ 20 pts. Logo EPS: 
+Helvetica
+ 14 pts. Datos inferiores: 
+Helvetica
+ 12-20 pts.
+4.3 Estructura de la memoria — Partes obligatorias y opcionales
+Seccion
+Contenido
+Norma
+Req
+.
+Justificacion
+ y Objetivos
+Motivacion
+ del TFG y 
+descripcion
+ de objetivos generales.
+UNE 50136
+SI
+Agradecimientos
+Opcional. Hojas de agradecimiento.
+—
+NO
+Dedicatoria
+Opcional. Una hoja, 
+alineacion
+ derecha.
+—
+NO
+Indice
+ de contenidos
+OBLIGATORIO. 
+Numeracion
+ 
+arabiga
+ y referencias a 
+paginas
+.
+UNE 50111
+SI
+Indice
+ de figuras
+Recomendado si hay figuras. 
+Numeracion
+ correlativa.
+UNE 50111
+REC
+Indice
+ de tablas
+Recomendado si hay tablas.
+UNE 50111
+REC
+Introduccion
+Importancia, actualidad, problema planteado, 
+proposito
+ de la 
+investigacion
+.
+—
+SI
+Marco 
+teorico
+ / Estado del arte
+Conceptos base, estudios previos, trabajos relacionados.
+—
+SI
+Objetivos
+Objetivo general y 
+especificos
+ del trabajo.
+—
+SI
+Metodologia
+Tipo de 
+investigacion
+, 
+tecnicas
+, procedimientos, 
+poblacion
+, recogida de datos.
+—
+SI
+Cuerpo del trabajo
+Resultados de la 
+investigacion
+/desarrollo. 
+Analisis
+ y 
+discusion
+.
+—
+SI
+Conclusiones
+OBLIGATORIO. Resumen de objetivos conseguidos y resultados.
+—
+SI
+Bibliografia
+ y referencias
+OBLIGATORIO. Min. 20 fuentes. Sistema APA, Harvard o ISO 690.
+ISO 690
+SI
+Anexos
+Opcional. Manuales, 
+codigo
+, glosario, modelo de negocio, etc.
+—
+NO
+4.4 Figuras, tablas y citas
+Figuras: numeradas con identificador 'Figura' o 'Fig.' + 
+numero
+ 
+arabigo
+. Llevan nota al pie indicando la fuente.
+Tablas: identificadas con 'Tabla' + 
+numero
+ 
+arabigo
+ + titulo. 
+Tambien
+ con nota al pie y fuente.
+Citas: Sistema APA (recomendado) — Apellido + ano entre 
+parentesis
+. Alternativa: sistema 
+numerico
+ IEEE.
+Herramienta recomendada para bibliografía: Zotero (gratuito, exporta en APA 
+automaticamente
+).
+5. Proceso de entrega — Convocatoria C3
+Todos los tramites se realizan EXCLUSIVAMENTE en 
+UAproject
+ (
+UACloud
+ CV). El orden de pasos es estricto y obligatorio:
+PASO 1
+ESTUDIANTE
+Solicitas la defensa en 
+UAproject
+.
+7 – 21 abr 2026
+PASO 2
+TUTOR
+Sanchez
+ Romero confirma en 
+UAproject
+. SIN ESTO no puedes entregar.
+7 – 23 abr 2026
+PASO 3
+ESTUDIANTE
+Subes el ZIP: 
+declaracion
+ + resumen 500 palabras + memoria (rua.pdf / memoria.pdf). Puedes marcar como definitivo para que el tutor revise antes del plazo.
+14 abr – 22 
+may
+ 2026
+PASO 4
+SECRETARIA
+Publicacion
+ del calendario: tribunal, lugar, 
+dia
+ y hora de la defensa.
+Desde 26 
+may
+ 2026
+PASO 5
+ESTUDIANTE
+Defensa oral ante el tribunal. Ver 
+Seccion
+ 6 para Modalidad A/B.
+2 – 14 jun 2026
+ATENCION  NO
+ 
+podras
+ entregar el ZIP (Paso 3) hasta que el tutor haya confirmado (Paso 2). Avisa a 
+Sanchez
+ Romero con al menos 2 
+dias
+ de 
+antelacion
+ antes del 23 de abril.
+RECOMENDACION 
+CRITICA  Entrega
+ el ZIP antes del 15 de mayo (1 semana de margen). El sistema 
+UAproject
+ puede saturarse los 
+ultimos
+ 
+dias
+. La secretaria lo avisa 
+explicitamente
+.
+5.1 Calendario completo de tramites — Convocatoria C3
+Tramite
+Inicio
+Fin
+Hecho
+Asignacion
+ definitiva
+27 feb 2026
+27 feb 2026
+⬜
+Solicitud defensa — ESTUDIANTE
+7 abr 2026
+21 abr 2026 — 23:59
+⬜
+Confirmacion
+ defensa — TUTOR
+7 abr 2026
+23 abr 2026 — 23:59
+⬜
+ENTREGA DEL TRABAJO (C3)
+14 abr 2026
+22 
+may
+ 2026 — 23:59
+⬜
+Alegaciones entrega
+22 
+may
+ 2026
+24 
+may
+ 2026 — 23:59
+⬜
+Resolucion
+ alegaciones
+22 
+may
+ 2026
+26 
+may
+ 2026 — 23:59
+⬜
+Elaboracion
+ calendario 
+evaluacion
+5 
+may
+ 2026
+9 
+may
+ 2026 — 23:59
+⬜
+Configuracion
+ tribunales
+5 
+may
+ 2026
+16 
+may
+ 2026 — 23:59
+⬜
+Asignacion
+ fecha/tribunal al estudiante
+16 
+may
+ 2026
+21 
+may
+ 2026 — 23:59
+⬜
+Publicacion
+ listado provisional + alegaciones
+21 
+may
+ 2026
+23 
+may
+ 2026 — 23:59
+⬜
+Publicacion
+ calendario defensas definitivo
+26 
+may
+ 2026
+—
+⬜
+Evaluacion
+ por el tutor
+14 abr 2026
+31 
+may
+ 2026 — 23:59
+⬜
+EVALUACION POR TRIBUNAL
+2 jun 2026
+14 jun 2026 — 23:59
+⬜
+Resolucion
+ Matriculas de Honor
+19 jun 2026
+23 jun 2026 — 23:59
+⬜
+6. Tipos de defensa — Modalidad A vs Modalidad B
+La EPS ofrece dos modalidades de defensa. Esta 
+decision
+ DEBE tomarse con el tutor desde el inicio ya que condiciona la nota 
+maxima
+ posible y la 
+preparacion
+ necesaria.
+MODALIDAD A
+Exposicion
+ oral completa
+MODALIDAD B
+Exposicion
+ reducida
+Duracion
+ 
+maxima
+: 10 minutos
+Nota 
+maxima
+: 10,0 / 10
+Factor: x1,0 (sin 
+penalizacion
+)
+Unica
+ 
+opcion
+ para optar a 
+Matricula
+ de Honor o sobresaliente alto.
+Duracion
+ 
+maxima
+: 5 minutos
+Nota 
+maxima
+: 8,0 / 10
+Factor: x0,8 — nota real multiplicada por 0,8
+Ejemplo: Si tu trabajo vale un 10, 
+obtendras
+ un 8 en el expediente.
+RECOMENDACION 
+IMPORTANTE  Si
+ tu objetivo es una nota alta, 
+Matricula
+ de Honor o maximizar tu expediente 
+academico
+, elige siempre Modalidad A. La Modalidad B pone un techo de 8 independientemente de la calidad del trabajo.
+6.1 Acciones respecto a la modalidad
+Preguntar al tutor en la primera 
+reunion
+ que modalidad recomienda.
+Registrar la 
+decision
+ en las actas de 
+tutoria
+ (ver 
+Seccion
+ 11).
+Indicar la modalidad elegida en la solicitud de defensa (Paso 1 en 
+UAproject
+, plazo 7-21 abr).
+7. Stack 
+tecnologico
+ recomendado
+Propuesta inicial basada en los requisitos de la propuesta oficial. Confirmar con el tutor en la primera 
+reunion
+.
+Capa
+Tecnologia
+Justificacion
+Frontend
+ Web
+React.js + 
+Tailwind
+ CSS
+SPA moderna
+, gran comunidad, 
+integracion
+ nativa con mapas 
+Leaflet
+App 
+movil
+React
+ Native o 
+Flutter
+Codigo
+ compartido iOS/Android, acceso nativo a 
+camara
+ y GPS
+Backend
+ API
+Node.js + Express o Spring Boot
+REST API robusta y escalable, 
+documentacion
+ amplia
+Base de datos
+PostgreSQL + 
+PostGIS
+Soporte nativo para datos 
+geospaciales
+ (mapas, coordenadas)
+Almacenamiento 
+imagenes
+Firebase
+ Storage / AWS S3
+Alta disponibilidad para fotos in situ de incidencias
+Mapas y 
+geolocalizacion
+Leaflet.js + 
+OpenStreetMap
+Open 
+source
+, gratuito, funciona en 
+Espana
+Autenticacion
+JWT + OAuth2 / 
+Firebase
+ Auth
+Seguro, compatible con registro y acceso 
+anonimo
+ restringido
+Notificaciones 
+push
+Firebase
+ Cloud 
+Messaging
+ (FCM)
+Push para 
+movil
+ y web sin coste adicional
+CI/CD
+GitHub 
+Actions
+Automatizacion
+ de 
+tests
+ y despliegue en cada 
+commit
+Contenedores
+Docker + Docker 
+Compose
+Entorno reproducible, facilita 
+correccion
+ del tribunal
+Testing
+Jest + 
+Playwright
+ MCP / 
+JUnit
+Cobertura 
+unit
+ + E2E en flujos principales
+Control versiones
+Git + GitHub o 
+GitLab
+Obligatorio. 
+Commits
+ con 
+Conventional
+ 
+Commits
+Gestion
+ 
+bibliografica
+Zotero
+Exporta en APA 
+automaticamente
+, muy usado en UA
+Disenyo
+ UI/UX
+Figma
+Prototipado y 
+wireframes
+, 
+exportacion
+ de 
+assets
+Metodologia
+ SDD
+SpecKit
+ (
+github
+/
+spec
+-kit)
+Spec-Driven
+ 
+Development
+. Flujo: 
+Constitution
+ → 
+Specify
+ → Plan → 
+Tasks
+ → Implement. Fork del repo: github.com/
+github
+/
+spec
+-kit. Inicializar en el repo del TFG con 
+Antigravity
+. Asignatura SDD cuatrimestre actual.
+MCPs
+ (
+Antigravity
+)
+GitHub MCP + Context7 + 
+Playwright
+ MCP + 
+Figma
+ MCP
+Instalar en 
+Antigravity
+ antes de empezar el desarrollo. GitHub MCP: 
+gestion
+ del repo desde el agente. Context7 MCP: 
+documentacion
+ actualizada de 
+librerias
+ en tiempo real. 
+Playwright
+ MCP: 
+tests
+ E2E automatizados (sustituye Cypress). 
+Figma
+ MCP: 
+generacion
+ de 
+frontend
+ desde 
+wireframes
+.
+8. Cronograma semana a semana (23 feb — jun 2026)
+Planificacion
+ de las 17 semanas disponibles. Documento vivo: actualiza con el tutor en cada 
+reunion
+.
+Sem
+.
+Fechas
+Fase
+Tareas principales
+Entregable / Hito
+S1
+23 feb–1 mar
+ARRANQUE
+Confirmar 
+asignacion
+ (27 feb). Enviar correo al tutor. Crear repo Git. Descargar plantillas (portada, 
+declaracion
+ responsabilidad). Revisar fechas 
+UAproject
+.
+Correo + repo creado
+S2
+2–8 mar
+ARRANQUE
+Primera 
+reunion
+ tutor: 
+stack
+, 
+metodologia
+, 
+tutorias
+, Modalidad A/B, publicar en RUA si/no. Configurar entorno 
+dev
+. Estructura de carpetas del proyecto.
+Acta 1a 
+reunion
+ + entorno OK
+S3
+9–15 mar
+DEFINICION
+Estado del arte: 5+ 
+apps
+ similares (
+FixMyStreet
+, 
+Litterati
+, 
+iNaturalist
+...). 10 
+papers
+ relevantes. Iniciar Zotero (APA). Borrador 
+capitulo
+ 2.
+Borrador estado del arte
+S4
+16–22 mar
+DEFINICION
+Requisitos funcionales y no funcionales. Diagramas casos de uso UML. Actores: usuario, 
+anonimo
+, administrador, sistema 
+notificacion
+.
+Documento de requisitos v1
+S5
+23–29 mar
+DEFINICION
+Arquitectura del sistema (diagrama de componentes, capas). Modelo de datos (E/R con 
+PostGIS
+). 
+Wireframes
+ 
+basicos
+ en 
+Figma
+.
+Arquitectura + modelo E/R
+S6
+30 mar–5 abr
+DEFINICION
+Disenyo
+ UI/UX detallado en 
+Figma
+ (pantallas clave). Prototipo 
+clickable
+. Redactar 
+capitulos
+ 1 y 3 de la memoria. 
+Revision
+ con tutor.
+Prototipo 
+Figma
+ + caps. 1-3
+S7*
+7–13 abr
+ADMIN URGENTE
+SOLICITAR DEFENSA en 
+UAproject
+ (7-21 abr). AVISAR al tutor para 
+confirmacion
+ (7-23 abr). Inicio periodo de entrega (14 abr). 
+Reunion
+ de seguimiento.
+Solicitud defensa enviada
+S7
+7–13 abr
+DESARROLLO
+Sprint 1: 
+Setup
+ 
+backend
+ + BD PostgreSQL/
+PostGIS
+. 
+Autenticacion
+ JWT (registro, 
+login
+). Acceso 
+anonimo
+ con restricciones. 
+Tests
+ de 
+autenticacion
+.
+Auth funcional + API 
+basica
+S8
+14–20 abr
+DESARROLLO
+Sprint 2: Modulo incidencias. Formulario reporte con foto (
+camara
+ nativa) y GPS. 
+Upload
+ 
+imagenes
+ a 
+Firebase
+/S3. CRUD completo incidencias.
+Reporte incidencia completo
+S9
+21–27 abr
+DESARROLLO
+Sprint 3: 
+Integracion
+ 
+Leaflet
+ + 
+OpenStreetMap
+. Mapa interactivo con incidencias. Filtros por 
+categoria
+, estado, zona 
+geografica
+.
+Mapa interactivo funcional
+S10
+28 abr–4 
+may
+DESARROLLO
+Sprint 4: Panel administrador. 
+Gestion
+ incidencias (aceptar/rechazar/resolver). Notificaciones 
+push
+ (FCM). 
+Dashboard
+ 
+estadistico
+.
+Panel 
+admin
+ completo
+S11
+5–11 
+may
+DESARROLLO
+Sprint 5: 
+Testing
+ completo. 
+Unit
+ 
+tests
+ (Jest/
+JUnit
+). E2E con 
+Playwright
+ MCP. 
+Analisis
+ cobertura. 
+Correccion
+ bugs. Informe de pruebas.
+Suite 
+tests
+ + informe
+S12
+12–18 
+may
+FINALIZACION
+Refinamiento UI. 
+Documentacion
+ 
+tecnica
+ (README, Swagger, Docker). Redactar 
+capitulos
+ 4 y 5 memoria. Modelo de negocio. Resumen 500 palabras.
+Memoria 80% completa
+S13
+19–22 
+may
+ENTREGA FINAL
+Revision
+ final memoria con tutor. Generar PDF (rua.pdf o memoria.pdf). Firmar 
+declaracion
+ responsabilidad. Armar ZIP completo. ENTREGAR antes del 22 
+may
+ 23:59.
+ZIP ENTREGADO en 
+UAproject
+S14-15
+26 
+may
+–1 jun
+DEFENSA
+Publicacion
+ calendario (26 
+may
+). Preparar 15 diapositivas. Ensayar x3 cronometrado. Preparar demo en local Y en la nube.
+Presentacion
+ preparada
+S16-17
+2–14 jun
+DEFENSA
+PERIODO DE DEFENSAS. 
+Exposicion
+ oral ante tribunal: Mod. A (10 min) o Mod. B (5 min) + preguntas. 
+Evaluacion
+ tutor y tribunal.
+DEFENSA TFG
+S7 DOBLE 
+ENTRADA  La
+ semana 7 aparece dos veces: una para el 
+tramite
+ 
+admin
+ (solicitar defensa) y otra para el desarrollo 
+tecnico
+. Ambas tareas son simultaneas esa semana.
+9. Estructura detallada de la memoria 
+academica
+Redacta de forma progresiva desde la semana 3. Estructura completa adaptada a la normativa UNE y Libro de Estilo EPS:
+Parte / Capitulo
+Contenido
+Extension
+Cuando
+Req
+.
+PORTADA
+Formato oficial EPS. Color 
+RGB(
+0,128,255). Fuente 
+Helvetica
+. 
+Titulo
+, autor, tutor, mes/ano.
+1 
+pag.
+Sem.12
+SI
+RESUMEN APARTE (500 palabras)
+Fichero INDEPENDIENTE (TXT o PDF). Subir en 
+UAproject
+ junto al ZIP.
+500 pal.
+Sem.12
+SI
+DECLARACION RESPONSABILIDAD
+Formulario oficial firmado. Nombre, DNI, periodo, titulo TFG.
+1 
+pag.
+Sem.13
+SI
+Agradecimientos
+Opcional. Gracias al tutor, entidades, personas.
+~1 
+pag.
+Sem.13
+NO
+INDICE DE CONTENIDOS
+Todas las secciones con 
+numeracion
+ 
+arabiga
+ y 
+paginas
+.
+~2 
+pag.
+Sem.13
+SI
+Indices
+ de figuras y tablas
+Recomendado si el documento tiene figuras/tablas.
+~1 
+pag.
+Sem.13
+REC
+Cap. 1 — 
+Introduccion
+1.1 
+Motivacion
+ y contexto. 1.2 Objetivos. 1.3 Estructura de la memoria.
+~5 
+pag.
+Sem.6
+SI
+Cap. 2 — Estado del Arte
+2.1 
+Problematica
+ medioambiental y 
+apps
+ 
+civicas
+. 2.2 Apps existentes (
+FixMyStreet
+...). 2.3 
+Tecnologias
+ evaluadas. 2.4 Conclusiones.
+~15 
+pag.
+Sem.3-4
+SI
+Cap. 3 — 
+Analisis
+ y 
+Disenyo
+3.1 Requisitos funcionales y no funcionales. 3.2 Casos de uso (UML). 3.3 Arquitectura. 3.4 Modelo E/R. 3.5 UI/UX (
+Figma
+).
+~20 
+pag.
+Sem.4-6
+SI
+Cap. 4 — 
+Implementacion
+4.1 Entorno y herramientas. 4.2-4.6 
+Modulos
+: 
+auth
+, incidencias, mapas, 
+admin
+, notificaciones. 4.7 Decisiones 
+tecnicas
+. 4.8 Git 
+workflow
+.
+~25 
+pag.
+Sem.7-11
+SI
+Cap. 5 — 
+Evaluacion
+5.1 Plan de pruebas. 5.2 
+Tests
+ unitarios (cobertura). 5.3 
+Tests
+ E2E. 5.4 
+Validacion
+ requisitos. 5.5 
+Analisis
+ usabilidad.
+~10 
+pag.
+Sem.11-12
+SI
+Cap. 6 — CONCLUSIONES
+6.1 Logros alcanzados. 6.2 Limitaciones. 6.3 Trabajo futuro. 6.4 
+Reflexion
+ personal.
+~5 
+pag.
+Sem.13
+SI
+BIBLIOGRAFIA
+Min. 20 referencias. Sistema APA/Harvard o 
+numerico
+. Gestionado con Zotero.
+~3 
+pag.
+Continuo
+SI
+Anexo A — Manual 
+instalacion
+Instrucciones completas para instalar y ejecutar el sistema en local.
+Variable
+Sem.12
+NO
+Anexo B — Manual de usuario
+Guia ciudadano y administrador con capturas de pantalla.
+Variable
+Sem.12
+NO
+Anexo C — Modelo de negocio
+Business Model 
+Canvas
+ o 
+analisis
+ de viabilidad (requerido en propuesta).
+~3 
+pag.
+Sem.12
+REC
+10. 
+Preparacion
+ de la defensa oral
+10.1 Estructura de la 
+presentacion
+ — Modalidad A (10 minutos)
+Diap
+.
+Titulo
+Contenido clave
+Tiempo
+1
+Portada
+Titulo
+ TFG, nombre, tutor, fecha. Logo UA/EPS.
+30 
+seg
+2
+Indice
+4-5 puntos que 
+guian
+ la 
+presentacion
+.
+30 
+seg
+3-4
+Motivacion
+Problema medioambiental real. Datos. 
+Por que
+ una app social?
+ 
+Por que
+ ahora?
+1.5 min
+5
+Objetivos y alcance
+Lista de objetivos. Que SI hace la 
+app
+ y que NO (honestidad ante el tribunal).
+1 min
+6-7
+Estado del arte
+Tabla comparativa de 
+apps
+ similares. 
+Que aporta la tuya de diferente?
+1.5 min
+8-10
+Arquitectura + Demo en vivo
+Diagrama de componentes. Demo: ciudadano reporta → aparece en mapa → 
+admin
+ gestiona → 
+resolucion
+.
+3 min
+11-12
+Evaluacion
+ y resultados
+Tests
+ realizados, cobertura, 
+metricas
+. Resultado del modelo de negocio.
+1 min
+13-14
+Conclusiones
+Logros, limitaciones honestas, trabajo futuro.
+1 min
+15
+Cierre
+Agradecimientos. QR del repositorio GitHub.
+30 
+seg
+Modalidad B (5 
+min)  Si
+ 
+eligio
+ Modalidad B, comprime a: 1) Portada (15s) 2) Problema + Objetivos (45s) 3) Demo 
+rapida
+ (2min) 4) Conclusiones (1min) 5) Cierre (15s). RECUERDA: nota 
+max
+ = 8.
+10.2 Preguntas frecuentes del tribunal
+Por que
+ 
+React
+ y no Vue/Angular? 
+Por que
+ PostgreSQL y no MongoDB o 
+Firebase
+?
+Como garantizas la privacidad de quienes reportan incidencias?
+ 
+Que
+ pasa con el acceso 
+anonimo
+?
+Que
+ pasa si las autoridades no responden?
+ 
+Hay 
+algun
+ mecanismo de escalado?
+Como has validado la usabilidad?
+ 
+Has hecho pruebas con usuarios reales?
+Cual
+ es el modelo de negocio y es realmente viable comercialmente?
+Como escalaria la app si tuviera 10.000 usuarios 
+simultaneos
+?
+Que diferencia a tu app de 
+FixMyStreet
+ que ya existe en 
+Espana
+?
+Que cambiarías si tuvieras 6 meses 
+mas
+ de desarrollo?
+Justifica el uso de 
+PostGIS
+ frente a otras soluciones de 
+geolocalizacion
+.
+10.3 Consejos clave para el 
+dia
+Ensaya 
+minimo
+ 3 veces 
+cronometrandote
+ con alguien delante.
+Ten la demo funcionando en LOCAL Y en la nube (
+backup
+ si falla el 
+Wi
+-Fi).
+Domina cada diagrama: arquitectura y modelo de datos son los favoritos del tribunal.
+Si no sabes algo: 'No tuve tiempo de implementarlo, pero la 
+solucion
+ seria...'
+Viste profesionalmente. Llega 15 minutos antes. Lleva pendrive de 
+backup
+.
+11. Mis notas de 
+tutorias
+ (espacio personal)
+Usa este espacio para registrar lo acordado con el tutor en cada 
+reunion
+. Actualiza la 
+guia
+ 
+segun
+ cambien los planes.
+Decisiones que registrar 
+obligatoriamente  Modalidad
+ defensa (A/B) · Stack 
+tecnologico
+ confirmado · Funcionalidades obligatorias vs opcionales · Sistema de citas elegido (APA/IEEE) · Publicar en RUA si/no · Periodicidad de 
+tutorias
+ · Criterios de 
+evaluacion
+ del tutor
+TUTORIA 1
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+Reuniones cada 2 semanas, Google 
+meet
+, 
+discord
+Recibir trabajos TFG
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 2
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 3
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 4
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 5
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 6
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 7
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+TUTORIA 8
+Fecha: ___/___/2026
+Semana: ______
+Mod. defensa: 
+A  /
+  B
+Temas tratados / Decisiones:
+ 
+ 
+ 
+ 
+Proximos
+ pasos:
+ 
+ 
+ 
+ 
+Guia Maestra TFG 
+v3.0  |
+  Erardo Aldana 
+Pessoa  |
+  Universidad de 
+Alicante  |
+  
+Act
+. 12 mar 2026
