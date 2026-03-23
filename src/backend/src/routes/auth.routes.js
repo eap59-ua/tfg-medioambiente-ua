@@ -1,24 +1,29 @@
 /**
- * Rutas de autenticación
+ * Rutas de autenticación — EcoAlerta
  * POST /api/v1/auth/register — Registro de usuario
  * POST /api/v1/auth/login    — Inicio de sesión
  * POST /api/v1/auth/refresh  — Refrescar token
  * GET  /api/v1/auth/me       — Perfil del usuario autenticado
+ * PUT  /api/v1/auth/me       — Actualizar perfil
  */
 
 const router = require('express').Router();
-// const authController = require('../controllers/auth.controller');
-// const { authenticate } = require('../middlewares/auth.middleware');
+const authController = require('../controllers/auth.controller');
+const { authenticate } = require('../middlewares/auth.middleware');
+const {
+  validateRegister,
+  validateLogin,
+  validateRefresh,
+  validateUpdateProfile,
+} = require('../validators/auth.validator');
 
-// TODO: Implementar en Sprint 1 (Semana 7)
-// router.post('/register', authController.register);
-// router.post('/login', authController.login);
-// router.post('/refresh', authController.refreshToken);
-// router.get('/me', authenticate, authController.getProfile);
+// Rutas públicas (no requieren autenticación)
+router.post('/register', validateRegister, authController.register);
+router.post('/login', validateLogin, authController.login);
+router.post('/refresh', validateRefresh, authController.refresh);
 
-// Placeholder temporal
-router.get('/', (_req, res) => {
-  res.json({ message: 'Auth routes — pendiente de implementación (Sprint 1)' });
-});
+// Rutas protegidas (requieren token JWT válido)
+router.get('/me', authenticate, authController.getProfile);
+router.put('/me', authenticate, validateUpdateProfile, authController.updateProfile);
 
 module.exports = router;

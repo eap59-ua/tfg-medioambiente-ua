@@ -1,12 +1,31 @@
 -- ==============================================================================
--- EcoAlerta — Esquema inicial de base de datos
+-- EcoAlerta — Esquema de base de datos v2
 -- PostgreSQL 16 + PostGIS 3.4
 -- TFG: Aplicación colaborativa para el cuidado del medio ambiente
+-- Autor: Erardo Aldana Pessoa | Tutor: José Luis Sánchez Romero
 -- ==============================================================================
 
--- Habilitar extensión PostGIS para datos geoespaciales
+-- Extensiones necesarias
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ==============================================================================
+-- TABLA: responsible_entities — Organismos responsables de incidencias
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS responsible_entities (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name            VARCHAR(200) NOT NULL,
+    type            VARCHAR(30) NOT NULL
+                    CHECK (type IN (
+                        'municipality', 'police', 'fire_department',
+                        'seprona', 'environmental_agency', 'ngo', 'other'
+                    )),
+    contact_email   VARCHAR(255),
+    contact_phone   VARCHAR(20),
+    jurisdiction    GEOMETRY(Polygon, 4326),   -- Zona geográfica de competencia
+    is_active       BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
 
 -- ==============================================================================
 -- TABLA: users — Usuarios de la plataforma
@@ -16,9 +35,11 @@ CREATE TABLE IF NOT EXISTS users (
     email           VARCHAR(255) UNIQUE NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
     display_name    VARCHAR(100) NOT NULL,
-    role            VARCHAR(20) NOT NULL DEFAULT 'citizen'
-                    CHECK (role IN ('citizen', 'admin', 'moderator')),
+    bio             TEXT,
     avatar_url      TEXT,
+    role            VARCHAR(20) NOT NULL DEFAULT 'citizen'
+                    CHECK (role IN ('citizen', 'admin', 'entity', 'moderator')),
+    entity_id       UUID REFERENCES responsible_entities(id) ON DELETE SET NULL,
     is_active       BOOLEAN DEFAULT TRUE,
     is_verified     BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
@@ -32,8 +53,11 @@ CREATE TABLE IF NOT EXISTS categories (
     id              SERIAL PRIMARY KEY,
     name            VARCHAR(100) NOT NULL UNIQUE,
     description     TEXT,
-    icon            VARCHAR(50),       -- Nombre del icono para el frontend
-    color           VARCHAR(7),        -- Color hex (#FF5733)
+    default_severity VARCHAR(10) DEFAULT 'moderate'
+                    CHECK (default_severity IN ('low', 'moderate', 'high', 'critical')),
+    default_entity_id UUID REFERENCES responsible_entities(id) ON DELETE SET NULL,
+    icon            VARCHAR(50),
+    color           VARCHAR(7),
     is_active       BOOLEAN DEFAULT TRUE,
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
@@ -47,27 +71,31 @@ CREATE TABLE IF NOT EXISTS incidents (
     description     TEXT NOT NULL,
     category_id     INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     reporter_id     UUID REFERENCES users(id) ON DELETE SET NULL,
+    assigned_entity_id UUID REFERENCES responsible_entities(id) ON DELETE SET NULL,
     -- Datos geoespaciales (PostGIS)
     location        GEOMETRY(Point, 4326) NOT NULL,  -- SRID 4326 = WGS84 (GPS)
     address         TEXT,                             -- Dirección legible
-    -- Estado de la incidencia
+    -- Estado y severidad
     status          VARCHAR(30) NOT NULL DEFAULT 'pending'
                     CHECK (status IN (
                         'pending',       -- Pendiente de revisión
                         'validated',     -- Validada por un admin
+                        'assigned',      -- Asignada a una entidad
                         'in_progress',   -- En proceso de resolución
                         'resolved',      -- Resuelta
                         'rejected',      -- Rechazada
                         'duplicate'      -- Duplicada
                     )),
-    priority        VARCHAR(10) DEFAULT 'medium'
-                    CHECK (priority IN ('low', 'medium', 'high', 'critical')),
-    -- Metadatos
-    is_anonymous    BOOLEAN DEFAULT FALSE,
-    view_count      INTEGER DEFAULT 0,
+    severity        VARCHAR(10) NOT NULL DEFAULT 'moderate'
+                    CHECK (severity IN ('low', 'moderate', 'high', 'critical')),
+    priority_score  INTEGER DEFAULT 0,
+    -- Resolución
     resolved_at     TIMESTAMPTZ,
     resolved_by     UUID REFERENCES users(id),
     resolution_note TEXT,
+    -- Metadatos
+    is_anonymous    BOOLEAN DEFAULT FALSE,
+    view_count      INTEGER DEFAULT 0,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
@@ -79,6 +107,8 @@ CREATE INDEX IF NOT EXISTS idx_incidents_location
 -- Índices para filtros frecuentes
 CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents (status);
 CREATE INDEX IF NOT EXISTS idx_incidents_category ON incidents (category_id);
+CREATE INDEX IF NOT EXISTS idx_incidents_severity ON incidents (severity);
+CREATE INDEX IF NOT EXISTS idx_incidents_entity ON incidents (assigned_entity_id);
 CREATE INDEX IF NOT EXISTS idx_incidents_reporter ON incidents (reporter_id);
 CREATE INDEX IF NOT EXISTS idx_incidents_created ON incidents (created_at DESC);
 
@@ -92,6 +122,7 @@ CREATE TABLE IF NOT EXISTS incident_photos (
     thumbnail_url   TEXT,
     caption         VARCHAR(255),
     sort_order      INTEGER DEFAULT 0,
+    file_size_bytes INTEGER,
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -105,7 +136,8 @@ CREATE TABLE IF NOT EXISTS incident_comments (
     incident_id     UUID NOT NULL REFERENCES incidents(id) ON DELETE CASCADE,
     user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content         TEXT NOT NULL,
-    is_official     BOOLEAN DEFAULT FALSE,  -- Respuesta oficial de autoridad
+    is_official     BOOLEAN DEFAULT FALSE,
+    parent_id       UUID REFERENCES incident_comments(id) ON DELETE CASCADE,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
@@ -123,6 +155,32 @@ CREATE TABLE IF NOT EXISTS incident_votes (
 );
 
 -- ==============================================================================
+-- TABLA: incident_follows — Seguimiento de incidencias
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS incident_follows (
+    incident_id     UUID NOT NULL REFERENCES incidents(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (incident_id, user_id)
+);
+
+-- ==============================================================================
+-- TABLA: incident_status_history — Historial de cambios de estado
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS incident_status_history (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    incident_id     UUID NOT NULL REFERENCES incidents(id) ON DELETE CASCADE,
+    old_status      VARCHAR(30),
+    new_status      VARCHAR(30) NOT NULL,
+    changed_by      UUID REFERENCES users(id) ON DELETE SET NULL,
+    note            TEXT,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_status_history_incident
+    ON incident_status_history (incident_id);
+
+-- ==============================================================================
 -- TABLA: notifications — Notificaciones a usuarios
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS notifications (
@@ -131,26 +189,71 @@ CREATE TABLE IF NOT EXISTS notifications (
     type            VARCHAR(50) NOT NULL,
     title           VARCHAR(200) NOT NULL,
     message         TEXT,
-    reference_id    UUID,              -- ID de incidencia u otro recurso
+    reference_type  VARCHAR(30),
+    reference_id    UUID,
     is_read         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications (user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_user
+    ON notifications (user_id, is_read);
 
 -- ==============================================================================
--- DATOS INICIALES — Categorías de incidencias
+-- DATOS INICIALES — Entidades responsables
 -- ==============================================================================
-INSERT INTO categories (name, description, icon, color) VALUES
-    ('Vertido ilegal',        'Vertidos de residuos sólidos o líquidos en zonas no autorizadas',     'trash',       '#E74C3C'),
-    ('Contaminación agua',    'Contaminación de ríos, arroyos, acequias o aguas subterráneas',       'droplet',     '#3498DB'),
-    ('Contaminación aire',    'Emisiones, humos, olores o partículas contaminantes',                 'wind',        '#95A5A6'),
-    ('Daño forestal',         'Talas ilegales, incendios provocados o daños a masa forestal',        'tree-pine',   '#27AE60'),
-    ('Residuos peligrosos',   'Presencia de amianto, productos químicos o residuos industriales',    'alert-triangle','#F39C12'),
-    ('Ruido excesivo',        'Contaminación acústica por encima de niveles permitidos',             'volume-2',    '#9B59B6'),
-    ('Fauna en peligro',      'Animales heridos, trampas ilegales o destrucción de hábitats',        'bird',        '#1ABC9C'),
-    ('Infraestructura dañada','Contenedores rotos, alcantarillas obstruidas, mobiliario dañado',     'construction','#E67E22'),
-    ('Otro',                  'Otros problemas medioambientales no categorizados',                   'help-circle', '#34495E')
+INSERT INTO responsible_entities (id, name, type, contact_email, contact_phone) VALUES
+    ('a0000000-0000-0000-0000-000000000001', 'Ayuntamiento de Alicante',
+     'municipality', 'medioambiente@alicante.es', '965 14 91 00'),
+    ('a0000000-0000-0000-0000-000000000002', 'SEPRONA - Guardia Civil',
+     'seprona', 'seprona@guardiacivil.es', '062'),
+    ('a0000000-0000-0000-0000-000000000003', 'Bomberos Consorcio Provincial Alicante',
+     'fire_department', 'bomberos@dfrfrfr.es', '112'),
+    ('a0000000-0000-0000-0000-000000000004', 'Policía Local de Alicante',
+     'police', 'policialocal@alicante.es', '092'),
+    ('a0000000-0000-0000-0000-000000000005', 'Consellería de Medio Ambiente GVA',
+     'environmental_agency', 'medioambiente@gva.es', '012')
+ON CONFLICT DO NOTHING;
+
+-- ==============================================================================
+-- DATOS INICIALES — Categorías de incidencias (12 categorías)
+-- ==============================================================================
+INSERT INTO categories (name, description, default_severity, default_entity_id, icon, color) VALUES
+    ('Vertido ilegal',
+     'Vertidos de residuos sólidos o líquidos en zonas no autorizadas',
+     'high', 'a0000000-0000-0000-0000-000000000001', 'trash', '#E74C3C'),
+    ('Contaminación de agua',
+     'Contaminación de ríos, arroyos, acequias o aguas subterráneas',
+     'high', 'a0000000-0000-0000-0000-000000000005', 'droplet', '#3498DB'),
+    ('Contaminación del aire',
+     'Emisiones, humos, olores o partículas contaminantes',
+     'moderate', 'a0000000-0000-0000-0000-000000000005', 'wind', '#95A5A6'),
+    ('Incendio forestal / quema',
+     'Incendios forestales, quemas ilegales o provocadas',
+     'critical', 'a0000000-0000-0000-0000-000000000003', 'flame', '#FF6B35'),
+    ('Daño forestal (tala ilegal)',
+     'Talas ilegales, destrucción de masa forestal',
+     'high', 'a0000000-0000-0000-0000-000000000002', 'tree-pine', '#27AE60'),
+    ('Residuos abandonados',
+     'Residuos domésticos o industriales abandonados en vía pública o zonas naturales',
+     'moderate', 'a0000000-0000-0000-0000-000000000001', 'package', '#F39C12'),
+    ('Animales abandonados/maltratados',
+     'Animales domésticos abandonados o con signos de maltrato',
+     'high', 'a0000000-0000-0000-0000-000000000002', 'paw-print', '#E67E22'),
+    ('Ruido excesivo',
+     'Contaminación acústica por encima de niveles permitidos',
+     'low', 'a0000000-0000-0000-0000-000000000004', 'volume-2', '#9B59B6'),
+    ('Infraestructura dañada',
+     'Contenedores rotos, alcantarillas obstruidas, mobiliario urbano dañado',
+     'moderate', 'a0000000-0000-0000-0000-000000000001', 'construction', '#E67E22'),
+    ('Residuos peligrosos',
+     'Presencia de amianto, productos químicos o residuos industriales peligrosos',
+     'critical', 'a0000000-0000-0000-0000-000000000003', 'alert-triangle', '#C0392B'),
+    ('Fauna en peligro (hábitat)',
+     'Destrucción de hábitats, trampas ilegales, especies protegidas amenazadas',
+     'high', 'a0000000-0000-0000-0000-000000000002', 'bird', '#1ABC9C'),
+    ('Otro',
+     'Otros problemas medioambientales no categorizados',
+     'moderate', 'a0000000-0000-0000-0000-000000000001', 'help-circle', '#34495E')
 ON CONFLICT (name) DO NOTHING;
 
 -- ==============================================================================

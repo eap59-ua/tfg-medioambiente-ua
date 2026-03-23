@@ -1,12 +1,16 @@
 /**
- * Middleware de autenticación JWT
+ * Middleware de autenticación JWT — EcoAlerta
+ * Funciones para verificar tokens y controlar acceso por roles.
+ *
+ * @module middlewares/auth.middleware
  */
 
 const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
 
 /**
- * Verificar token JWT obligatorio
+ * Verificar token JWT obligatorio.
+ * Extrae el payload y lo adjunta a req.user.
  */
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -34,7 +38,8 @@ const authenticate = (req, res, next) => {
 };
 
 /**
- * Permitir acceso anónimo (req.user será null si no hay token)
+ * Permitir acceso anónimo (req.user será null si no hay token).
+ * Útil para endpoints que permiten lectura pública.
  */
 const optionalAuth = (req, _res, next) => {
   const authHeader = req.headers.authorization;
@@ -53,16 +58,42 @@ const optionalAuth = (req, _res, next) => {
 };
 
 /**
- * Requerir rol de administrador
+ * Middleware genérico para requerir uno o más roles.
+ * Uso: requireRole(['admin', 'entity'])
+ * @param {string[]} roles - Array de roles permitidos
  */
-const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      error: 'Acceso restringido a administradores',
-    });
-  }
-  next();
+const requireRole = (roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: `Acceso restringido. Roles permitidos: ${roles.join(', ')}`,
+      });
+    }
+    next();
+  };
 };
 
-module.exports = { authenticate, optionalAuth, requireAdmin };
+/**
+ * Requerir rol de administrador.
+ */
+const requireAdmin = requireRole(['admin']);
+
+/**
+ * Requerir rol de entidad responsable.
+ */
+const requireEntity = requireRole(['entity']);
+
+/**
+ * Requerir rol de administrador o entidad.
+ */
+const requireAdminOrEntity = requireRole(['admin', 'entity']);
+
+module.exports = {
+  authenticate,
+  optionalAuth,
+  requireRole,
+  requireAdmin,
+  requireEntity,
+  requireAdminOrEntity,
+};
