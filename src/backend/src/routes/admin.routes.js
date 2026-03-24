@@ -1,18 +1,31 @@
-/**
- * Rutas de administración
- * GET    /api/v1/admin/dashboard    — Estadísticas generales
- * GET    /api/v1/admin/incidents    — Gestión de incidencias (filtros avanzados)
- * PUT    /api/v1/admin/incidents/:id/status — Cambiar estado de incidencia
- * GET    /api/v1/admin/users        — Listar usuarios
- */
+const express = require('express');
+const router = express.Router();
+const adminController = require('../controllers/admin.controller');
+const { authenticate, requireRole } = require('../middlewares/auth.middleware');
+const validators = require('../validators/admin.validator');
+const { validateRequest } = require('../middlewares/validation.middleware');
 
-const router = require('express').Router();
-// const { authenticate, requireAdmin } = require('../middlewares/auth.middleware');
+// Todo el panel de admin requiere estar autenticado y ser admin
+// Excepción: las entidades podrían tener acceso a ciertas partes, pero aquí definimos rutas 100% admin
+router.use(authenticate, requireRole(['admin']));
 
-// TODO: Implementar en Sprint 4 (Semana 10)
+// Dashboard
+router.get('/dashboard', adminController.getDashboardStats);
 
-router.get('/', (_req, res) => {
-  res.json({ message: 'Admin routes — pendiente de implementación (Sprint 4)' });
-});
+// Incidents
+router.get('/incidents', validators.validateAdminIncidentQuery, validateRequest, adminController.getAdminIncidents);
+router.put('/incidents/:id/assign', validators.validateAssignIncident, validateRequest, adminController.assignIncident);
+router.put('/incidents/:id/status', validators.validateStatusUpdate, validateRequest, adminController.updateIncidentStatus);
+
+// Users
+router.get('/users', adminController.getUsers);
+router.put('/users/:id/role', validators.validateRoleUpdate, validateRequest, adminController.updateUserRole);
+router.put('/users/:id/toggle-active', adminController.toggleUserActive);
+
+// Entities
+router.get('/entities', adminController.getEntities);
+router.post('/entities', validators.validateEntityCreate, validateRequest, adminController.createEntity);
+router.put('/entities/:id', validators.validateEntityUpdate, validateRequest, adminController.updateEntity);
+router.delete('/entities/:id', adminController.deleteEntity);
 
 module.exports = router;

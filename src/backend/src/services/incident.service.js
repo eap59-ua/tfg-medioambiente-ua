@@ -7,6 +7,8 @@
 
 const { query } = require('../config/database');
 const logger = require('../config/logger');
+const notificationService = require('./notification.service');
+const emailService = require('./email.service');
 
 // Mapeo de severidad a valor numérico para priority_score
 const SEVERITY_VALUES = { low: 1, moderate: 2, high: 3, critical: 4 };
@@ -322,7 +324,24 @@ const voteIncident = async (incidentId, userId) => {
     'SELECT COUNT(*) AS count FROM incident_votes WHERE incident_id = $1',
     [incidentId]
   );
-  return { voteCount: parseInt(countResult.rows[0].count, 10) };
+  const vCount = parseInt(countResult.rows[0].count, 10);
+
+  // Notificar por hitos de votos (10, 50, 100)
+  if ([10, 50, 100].includes(vCount)) {
+    const incRes = await query('SELECT title, reporter_id FROM incidents WHERE id = $1', [incidentId]);
+    if (incRes.rows.length > 0) {
+      await notificationService.createNotification({
+        userId: incRes.rows[0].reporter_id,
+        type: 'vote_milestone',
+        title: '¡Hito de votos!',
+        message: `Tu incidencia "${incRes.rows[0].title}" ha alcanzado los ${vCount} votos.`,
+        referenceType: 'incident',
+        referenceId: incidentId
+      });
+    }
+  }
+
+  return { voteCount: vCount };
 };
 
 /**
@@ -440,6 +459,22 @@ const addComment = async (incidentId, userId, content, isOfficial = false, paren
     [userId]
   );
 
+  // Notificar a reporter y followers (excepto al autor del comentario)
+  const incRes = await query('SELECT title FROM incidents WHERE id = $1', [incidentId]);
+  const title = incRes.rows[0]?.title || 'Incidencia';
+  const subs = await _getIncidentSubscribers(incidentId, userId);
+  
+  for (const subId of subs) {
+    await notificationService.createNotification({
+      userId: subId,
+      type: 'new_comment',
+      title: 'Nuevo comentario',
+      message: `Hay un nuevo comentario en "${title}"`,
+      referenceType: 'incident',
+      referenceId: incidentId
+    });
+  }
+
   return {
     ...result.rows[0],
     user_display_name: userResult.rows[0]?.display_name,
@@ -527,6 +562,32 @@ const updateIncidentStatus = async (incidentId, newStatus, changedBy, note = nul
   );
 
   logger.info(`Estado cambiado: ${incidentId} ${oldStatus} → ${newStatus}`);
+
+  // Notificar a reporter y followers
+  const titleRes = await query('SELECT title, reporter_id FROM incidents WHERE id = $1', [incidentId]);
+  if (titleRes.rows.length > 0) {
+    const { title, reporter_id } = titleRes.rows[0];
+    const subs = await _getIncidentSubscribers(incidentId);
+    
+    // Notificación In-App
+    for (const subId of subs) {
+      await notificationService.createNotification({
+        userId: subId,
+        type: newStatus === 'resolved' ? 'resolution' : 'status_change',
+        title: newStatus === 'resolved' ? 'Incidencia Resuelta' : 'Cambio de Estado',
+        message: `El estado de "${title}" ha cambiado a ${newStatus}`,
+        referenceType: 'incident',
+        referenceId: incidentId
+      });
+    }
+
+    // Correo al reporter
+    const reporterRes = await query('SELECT email FROM users WHERE id = $1', [reporter_id]);
+    if (reporterRes.rows.length > 0) {
+      await emailService.sendStatusChangeEmail(reporterRes.rows[0].email, title, oldStatus, newStatus);
+    }
+  }
+
   return result.rows[0];
 };
 
@@ -569,6 +630,23 @@ const _updatePriorityScore = async (incidentId) => {
     const score = (parseInt(vote_count, 10) * 10) + (severityVal * 10);
     await query('UPDATE incidents SET priority_score = $1 WHERE id = $2', [score, incidentId]);
   }
+};
+
+/**
+ * Obtiene los IDs de los usuarios suscritos a una incidencia (reporter + followers).
+ * Excluye un ID proporcionado opcionalmente (ej. para no autornotificarse).
+ */
+const _getIncidentSubscribers = async (incidentId, excludeUserId = null) => {
+  const result = await query(`
+    SELECT DISTINCT u.id 
+    FROM users u
+    LEFT JOIN incident_follows f ON u.id = f.user_id AND f.incident_id = $1
+    LEFT JOIN incidents i ON u.id = i.reporter_id AND i.id = $1
+    WHERE (f.user_id IS NOT NULL OR i.reporter_id = u.id)
+      AND ($2::uuid IS NULL OR u.id != $2::uuid)
+  `, [incidentId, excludeUserId]);
+  
+  return result.rows.map(r => r.id);
 };
 
 module.exports = {

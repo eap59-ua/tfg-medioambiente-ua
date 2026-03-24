@@ -15,6 +15,12 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MyIncidentsPage from './pages/MyIncidentsPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminIncidentsPage from './pages/AdminIncidentsPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminEntitiesPage from './pages/AdminEntitiesPage';
+import NotificationsPage from './pages/NotificationsPage';
+import EntityDashboardPage from './pages/EntityDashboardPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -26,6 +32,29 @@ function PublicOnlyRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) return null;
   return !isAuthenticated ? children : <Navigate to="/" />;
+}
+
+function AdminOnlyRoute({ children }) {
+  const { isAuthenticated, user, isLoading } = useAuth();
+  if (isLoading) return null;
+  const isAdmin = user?.role === 'admin' || user?.role === 'moderator';
+  return (isAuthenticated && isAdmin) ? children : <Navigate to="/" />;
+}
+
+function AdminDashboardRo() {
+  const { isAuthenticated, user, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (user?.role === 'entity') return <Navigate to="/admin/entity" />;
+  if (user?.role === 'admin' || user?.role === 'moderator') return <AdminDashboardPage />;
+  return <Navigate to="/" />;
+}
+
+function EntityOrAdminRoute({ children }) {
+  const { isAuthenticated, user, isLoading } = useAuth();
+  if (isLoading) return null;
+  const isAllowed = user?.role === 'entity' || user?.role === 'admin' || user?.role === 'moderator';
+  return (isAuthenticated && isAllowed) ? children : <Navigate to="/" />;
 }
 
 function AppContent() {
@@ -41,6 +70,15 @@ function AppContent() {
           <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
           <Route path="/my-incidents" element={<ProtectedRoute><MyIncidentsPage /></ProtectedRoute>} />
           <Route path="/profile/:id" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminDashboardRo />} />
+          <Route path="/admin/incidents" element={<AdminOnlyRoute><AdminIncidentsPage /></AdminOnlyRoute>} />
+          <Route path="/admin/users" element={<AdminOnlyRoute><AdminUsersPage /></AdminOnlyRoute>} />
+          <Route path="/admin/entities" element={<AdminOnlyRoute><AdminEntitiesPage /></AdminOnlyRoute>} />
+          <Route path="/admin/entity" element={<EntityOrAdminRoute><EntityDashboardPage /></EntityOrAdminRoute>} />
+          
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

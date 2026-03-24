@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Leaf, Menu, X, Plus, Bell, Map, User, Shield, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,6 +43,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
               <>
+                <NotificationBell />
                 <Link to="/profile/me" className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors">
                   <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold">
                     {user?.display_name?.[0]?.toUpperCase() || 'U'}
@@ -93,9 +95,12 @@ export default function Navbar() {
             )}
             <div className="border-t border-white/10 pt-2 mt-2">
               {isAuthenticated ? (
-                <button onClick={() => { logout(); setMenuOpen(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-white/80 hover:bg-white/10 rounded-lg text-sm">
-                  <LogOut className="w-4 h-4" /> Cerrar sesión
-                </button>
+                <>
+                  <NotificationBell isMobile={true} />
+                  <button onClick={() => { logout(); setMenuOpen(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-white hover:bg-white/10 rounded-lg text-sm mt-1">
+                    <LogOut className="w-4 h-4" /> Cerrar sesión
+                  </button>
+                </>
               ) : (
                 <Link to="/login" className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/10 rounded-lg text-sm" onClick={() => setMenuOpen(false)}>
                   <LogIn className="w-4 h-4" /> Iniciar sesión

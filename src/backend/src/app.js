@@ -23,6 +23,7 @@ const authRoutes = require('./routes/auth.routes');
 const incidentRoutes = require('./routes/incident.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
+const notificationRoutes = require('./routes/notification.routes');
 const healthRoutes = require('./routes/health.routes');
 
 // Importar middleware de errores
@@ -64,6 +65,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/incidents', incidentRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // ─── Manejo de errores ──────────────────────────────────────────────────────
 app.use(notFoundHandler);

@@ -167,14 +167,14 @@ describe('Incident Service', () => {
 
   describe('updateIncidentStatus', () => {
     it('debería cambiar estado y generar registro en historial', async () => {
-      // Mock: SELECT existing
-      query.mockResolvedValueOnce({ rows: [{ id: 'inc-1', status: 'pending' }] });
-      // Mock: UPDATE estado
-      query.mockResolvedValueOnce({
-        rows: [{ id: 'inc-1', status: 'validated', longitude: -0.46, latitude: 38.35 }],
+      query.mockImplementation((queryStr) => {
+        if (queryStr.includes('SELECT id, status')) return Promise.resolve({ rows: [{ id: 'inc-1', status: 'pending' }] });
+        if (queryStr.includes('UPDATE incidents')) return Promise.resolve({ rows: [{ id: 'inc-1', status: 'validated', longitude: -0.46, latitude: 38.35 }] });
+        if (queryStr.includes('SELECT title, reporter_id')) return Promise.resolve({ rows: [{ title: 'Test', reporter_id: 'user-uuid-1' }] });
+        if (queryStr.includes('SELECT DISTINCT u.id')) return Promise.resolve({ rows: [{ id: 'sub-1' }] });
+        if (queryStr.includes('SELECT email')) return Promise.resolve({ rows: [{ email: 'test@test.com' }] });
+        return Promise.resolve({ rows: [] });
       });
-      // Mock: INSERT historial
-      query.mockResolvedValueOnce({ rows: [] });
 
       const result = await incidentService.updateIncidentStatus(
         'inc-1', 'validated', 'admin-uuid', 'Incidencia verificada'
