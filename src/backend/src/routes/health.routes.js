@@ -6,8 +6,18 @@ const router = require('express').Router();
 const { query } = require('../config/database');
 
 /**
- * GET /api/v1/health
- * Estado general de la API
+ * @swagger
+ * tags:
+ *   name: Health
+ *   description: Estado del sistema
+ * 
+ * /health:
+ *   get:
+ *     summary: Health check básico
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: El servidor está operativo
  */
 router.get('/', async (_req, res) => {
   try {

@@ -16,12 +16,12 @@ export default function Navbar() {
     }`;
 
   return (
-    <nav className="bg-gradient-to-r from-primary-600 to-primary-500 shadow-lg sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-primary-600 to-primary-500 shadow-lg sticky top-0 z-50" aria-label="Navegación principal">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-white font-bold text-xl">
-            <Leaf className="w-7 h-7" />
+          <Link to="/" className="flex items-center gap-2 text-white font-bold text-xl" aria-label="Inicio de EcoAlerta">
+            <Leaf className="w-7 h-7" aria-hidden="true" />
             <span className="hidden sm:inline">EcoAlerta</span>
           </Link>
 
@@ -50,8 +50,8 @@ export default function Navbar() {
                   </div>
                   <span className="text-sm">{user?.display_name?.split(' ')[0]}</span>
                 </Link>
-                <button onClick={logout} className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Cerrar sesión">
-                  <LogOut className="w-4 h-4" />
+                <button onClick={logout} className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Cerrar sesión" aria-label="Cerrar sesión">
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
                 </button>
               </>
             ) : (
@@ -62,8 +62,8 @@ export default function Navbar() {
           </div>
 
           {/* Mobile hamburger */}
-          <button className="md:hidden p-2 text-white" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <button className="md:hidden p-2 text-white" aria-expanded={menuOpen} aria-label="Menú principal móvil" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
         </div>
       </div>

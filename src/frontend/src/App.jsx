@@ -1,26 +1,28 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
+import { Toaster } from 'react-hot-toast';
 
 // Layout
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import MobileBottomNav from './components/layout/MobileBottomNav';
 
-// Pages
-import HomePage from './pages/HomePage';
-import IncidentDetailPage from './pages/IncidentDetailPage';
-import CreateIncidentPage from './pages/CreateIncidentPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import MyIncidentsPage from './pages/MyIncidentsPage';
-import ProfilePage from './pages/ProfilePage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
-import AdminIncidentsPage from './pages/AdminIncidentsPage';
-import AdminUsersPage from './pages/AdminUsersPage';
-import AdminEntitiesPage from './pages/AdminEntitiesPage';
-import NotificationsPage from './pages/NotificationsPage';
-import EntityDashboardPage from './pages/EntityDashboardPage';
+// Lazy-loaded Pages para Code Splitting (Optimización de Rendimiento)
+const HomePage = lazy(() => import('./pages/HomePage'));
+const IncidentDetailPage = lazy(() => import('./pages/IncidentDetailPage'));
+const CreateIncidentPage = lazy(() => import('./pages/CreateIncidentPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const MyIncidentsPage = lazy(() => import('./pages/MyIncidentsPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+const AdminIncidentsPage = lazy(() => import('./pages/AdminIncidentsPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminEntitiesPage = lazy(() => import('./pages/AdminEntitiesPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const EntityDashboardPage = lazy(() => import('./pages/EntityDashboardPage'));
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -57,32 +59,42 @@ function EntityOrAdminRoute({ children }) {
   return (isAuthenticated && isAllowed) ? children : <Navigate to="/" />;
 }
 
+// Fallback de carga (Skeleton UI general)
+const PageLoader = () => (
+  <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+  </div>
+);
+
 function AppContent() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/incidents/:id" element={<IncidentDetailPage />} />
-          <Route path="/incidents/new" element={<ProtectedRoute><CreateIncidentPage /></ProtectedRoute>} />
-          <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
-          <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
-          <Route path="/my-incidents" element={<ProtectedRoute><MyIncidentsPage /></ProtectedRoute>} />
-          <Route path="/profile/:id" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboardRo />} />
-          <Route path="/admin/incidents" element={<AdminOnlyRoute><AdminIncidentsPage /></AdminOnlyRoute>} />
-          <Route path="/admin/users" element={<AdminOnlyRoute><AdminUsersPage /></AdminOnlyRoute>} />
-          <Route path="/admin/entities" element={<AdminOnlyRoute><AdminEntitiesPage /></AdminOnlyRoute>} />
-          <Route path="/admin/entity" element={<EntityOrAdminRoute><EntityDashboardPage /></EntityOrAdminRoute>} />
-          
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+      <main className="flex-1 bg-gray-50">
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/incidents/:id" element={<IncidentDetailPage />} />
+            <Route path="/incidents/new" element={<ProtectedRoute><CreateIncidentPage /></ProtectedRoute>} />
+            <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
+            <Route path="/register" element={<PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>} />
+            <Route path="/my-incidents" element={<ProtectedRoute><MyIncidentsPage /></ProtectedRoute>} />
+            <Route path="/profile/:id" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboardRo />} />
+            <Route path="/admin/incidents" element={<AdminOnlyRoute><AdminIncidentsPage /></AdminOnlyRoute>} />
+            <Route path="/admin/users" element={<AdminOnlyRoute><AdminUsersPage /></AdminOnlyRoute>} />
+            <Route path="/admin/entities" element={<AdminOnlyRoute><AdminEntitiesPage /></AdminOnlyRoute>} />
+            <Route path="/admin/entity" element={<EntityOrAdminRoute><EntityDashboardPage /></EntityOrAdminRoute>} />
+            
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }
@@ -92,6 +104,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppContent />
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </AuthProvider>
     </BrowserRouter>
   );

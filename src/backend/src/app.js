@@ -25,6 +25,8 @@ const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const healthRoutes = require('./routes/health.routes');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 // Importar middleware de errores
 const { errorHandler, notFoundHandler } = require('./middlewares/error.middleware');
@@ -60,6 +62,7 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // ─── Rutas de la API ─────────────────────────────────────────────────────────
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCss: '.swagger-ui .topbar { display: none }' }));
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/incidents', incidentRoutes);

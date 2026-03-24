@@ -39,25 +39,25 @@ export default function LoginPage() {
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700" role="alert">{error}</div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                 className="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="tu@email.com" />
+                placeholder="tu@email.com" aria-invalid={!!error} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
               <div className="relative">
-                <input type={showPass ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required
+                <input id="password" type={showPass ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required
                   className="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 pr-10"
-                  placeholder="••••••••" />
-                <button type="button" onClick={() => setShowPass(!showPass)}
+                  placeholder="••••••••" aria-invalid={!!error} />
+                <button type="button" onClick={() => setShowPass(!showPass)} aria-label={showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPass ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
             </div>

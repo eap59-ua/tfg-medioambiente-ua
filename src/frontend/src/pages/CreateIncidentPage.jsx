@@ -5,7 +5,7 @@ import { Camera, X, Upload, MapPin, Loader2 } from 'lucide-react';
 import * as incidentService from '../services/incident.service';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { CATEGORIES, SEVERITY_CONFIG, MAP_DEFAULTS } from '../utils/constants';
-import Toast from '../components/common/Toast';
+import toast from 'react-hot-toast';
 
 function LocationPicker({ position, onPositionChange }) {
   useMapEvents({
@@ -24,7 +24,6 @@ export default function CreateIncidentPage() {
   const [photos, setPhotos] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState(null);
   const [errors, setErrors] = useState({});
 
   const handleUseMyLocation = useCallback(() => {
@@ -72,9 +71,10 @@ export default function CreateIncidentPage() {
       photos.forEach((p) => formData.append('photos', p));
 
       const result = await incidentService.createIncident(formData);
+      toast.success('Incidencia reportada con éxito');
       navigate(`/incidents/${result.id}`);
     } catch (err) {
-      setToast({ message: err.response?.data?.error || 'Error al crear la incidencia', type: 'error' });
+      toast.error(err.response?.data?.error || 'Error al crear la incidencia');
     } finally {
       setSubmitting(false);
     }
@@ -88,31 +88,32 @@ export default function CreateIncidentPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Título */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
-            <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+            <input id="title" type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
               className={`w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 ${errors.title ? 'border-red-500' : ''}`}
-              placeholder="Ej: Vertido ilegal en el río..." maxLength={200} />
-            {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
+              placeholder="Ej: Vertido ilegal en el río..." maxLength={200} aria-invalid={!!errors.title} />
+            {errors.title && <p className="text-xs text-red-500 mt-1" role="alert">{errors.title}</p>}
           </div>
 
           {/* Descripción */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
-            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+            <textarea id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
               className={`w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 ${errors.description ? 'border-red-500' : ''}`}
-              rows={4} placeholder="Describe el problema con detalle..." maxLength={5000} />
-            {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
+              rows={4} placeholder="Describe el problema con detalle..." maxLength={5000} aria-invalid={!!errors.description} />
+            {errors.description && <p className="text-xs text-red-500 mt-1" role="alert">{errors.description}</p>}
           </div>
 
           {/* Categoría */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-            <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-              className={`w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 ${errors.categoryId ? 'border-red-500' : ''}`}>
+            <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+            <select id="categoryId" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+              className={`w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500 ${errors.categoryId ? 'border-red-500' : ''}`}
+              aria-invalid={!!errors.categoryId}>
               <option value="">Selecciona una categoría</option>
               {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            {errors.categoryId && <p className="text-xs text-red-500 mt-1">{errors.categoryId}</p>}
+            {errors.categoryId && <p className="text-xs text-red-500 mt-1" role="alert">{errors.categoryId}</p>}
           </div>
 
           {/* Severidad */}
@@ -131,17 +132,17 @@ export default function CreateIncidentPage() {
 
           {/* Ubicación */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación * <span className="text-gray-400 font-normal">— Haz click en el mapa</span></label>
-            <div className={`rounded-xl overflow-hidden border-2 ${errors.position ? 'border-red-500' : 'border-gray-200'}`}>
-              <div className="h-64">
-                <MapContainer center={[MAP_DEFAULTS.lat, MAP_DEFAULTS.lng]} zoom={MAP_DEFAULTS.zoom} className="w-full h-full">
+            <label id="location-label" className="block text-sm font-medium text-gray-700 mb-1">Ubicación * <span className="text-gray-400 font-normal">— Haz click en el mapa</span></label>
+            <div className={`rounded-xl overflow-hidden border-2 flex flex-col ${errors.position ? 'border-red-500' : 'border-gray-200'}`} aria-labelledby="location-label">
+              <div className="h-64 basis-full w-full relative z-0">
+                <MapContainer center={[MAP_DEFAULTS.lat, MAP_DEFAULTS.lng]} zoom={MAP_DEFAULTS.zoom} className="w-full h-full z-0">
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <LocationPicker position={position} onPositionChange={setPosition} />
                 </MapContainer>
               </div>
             </div>
-            <button type="button" onClick={handleUseMyLocation} className="mt-2 flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700">
-              <MapPin className="w-4 h-4" /> Usar mi ubicación
+            <button type="button" onClick={handleUseMyLocation} className="mt-2 flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700" aria-label="Usar mi ubicación actual de GPS">
+              <MapPin className="w-4 h-4" aria-hidden="true" /> Usar mi ubicación
             </button>
             {errors.position && <p className="text-xs text-red-500 mt-1">{errors.position}</p>}
           </div>
@@ -183,7 +184,6 @@ export default function CreateIncidentPage() {
           </button>
         </form>
       </div>
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }
