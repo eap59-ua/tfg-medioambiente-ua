@@ -8,6 +8,7 @@
 const incidentService = require('../services/incident.service');
 const photoService = require('../services/photo.service');
 const geocodingService = require('../services/geocoding.service');
+const qrService = require('../services/qr.service');
 const logger = require('../config/logger');
 
 /**
@@ -282,6 +283,43 @@ const getComments = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/v1/incidents/:id/qr
+ * Genera un código QR PNG para compartir la incidencia.
+ */
+const getIncidentQR = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const size = parseInt(req.query.size, 10) || 256;
+    const margin = parseInt(req.query.margin, 10) || 2;
+
+    // Verificar que la incidencia existe
+    const incident = await incidentService.getIncidentById(id, null);
+    if (!incident) {
+      return res.status(404).json({ success: false, error: 'Incidencia no encontrada' });
+    }
+
+    // Verificar visibilidad (rechazar si rejected o eliminada)
+    if (incident.status === 'rejected') {
+      return res.status(403).json({ success: false, error: 'Incidencia no disponible para compartir' });
+    }
+
+    const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:3000';
+    const incidentUrl = `${frontendUrl}/incidents/${id}`;
+
+    const qrBuffer = await qrService.generateQR(incidentUrl, { size, margin });
+
+    res.set({
+      'Content-Type': 'image/png',
+      'Content-Length': qrBuffer.length,
+      'Cache-Control': 'public, max-age=3600',
+    });
+    res.send(qrBuffer);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createIncident,
   getIncidents,
@@ -296,4 +334,5 @@ module.exports = {
   unfollowIncident,
   addComment,
   getComments,
+  getIncidentQR,
 };

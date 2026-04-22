@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import { ThumbsUp, Bell, BellOff, Clock, MessageCircle, ArrowLeft, Edit, Trash2, Send } from 'lucide-react';
+import { ThumbsUp, Bell, BellOff, Clock, MessageCircle, ArrowLeft, Edit, Trash2, Send, Share2 } from 'lucide-react';
 import * as incidentService from '../services/incident.service';
 import SeverityBadge from '../components/incidents/SeverityBadge';
 import StatusBadge from '../components/incidents/StatusBadge';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import Toast from '../components/common/Toast';
+import ShareIncidentModal from '../components/incidents/ShareIncidentModal';
 import { useAuth } from '../hooks/useAuth';
 import { UPLOADS_URL, CATEGORIES } from '../utils/constants';
 
@@ -23,6 +24,7 @@ export default function IncidentDetailPage() {
   const [newComment, setNewComment] = useState('');
   const [toast, setToast] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,6 +122,9 @@ export default function IncidentDetailPage() {
               </button>
             </div>
           )}
+          <button onClick={() => setShowShareModal(true)} className="flex items-center gap-1 px-3 py-1.5 text-sm text-primary-600 hover:bg-primary-50 rounded-lg ml-auto">
+            <Share2 className="w-4 h-4" /> Compartir
+          </button>
         </div>
 
         {/* Photos */}
@@ -249,6 +254,15 @@ export default function IncidentDetailPage() {
       )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <ShareIncidentModal
+          incidentId={id}
+          incidentTitle={incident.title}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </div>
   );
 }

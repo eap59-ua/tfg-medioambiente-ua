@@ -228,6 +228,7 @@ router.get('/', optionalAuth, validateQueryParams, incidentController.getInciden
 router.get('/:id', optionalAuth, incidentController.getIncidentById);
 router.get('/:id/history', optionalAuth, incidentController.getStatusHistory);
 router.get('/:id/comments', optionalAuth, incidentController.getComments);
+router.get('/:id/qr', incidentController.getIncidentQR);  // QR sharing (Sprint 6 — RF-SEC-10)
 
 // ─── Rutas protegidas (requieren autenticación) ─────────────────────────────
 
