@@ -105,6 +105,36 @@ cd ../frontend
 npx playwright test
 ```
 
+## 🛡️ Seguridad (Sprint 6)
+
+### Cloudflare Turnstile (CAPTCHA)
+- El registro requiere verificación Turnstile para prevenir bots.
+- El login exige CAPTCHA tras 3 intentos fallidos consecutivos en 15 minutos.
+- En desarrollo se usan las claves de test de Cloudflare (siempre pasan).
+- En producción, configurar `TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` con claves reales de [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/).
+
+### Autenticación de Doble Factor (2FA TOTP)
+- **Obligatorio** para administradores y entidades responsables.
+- **Opcional** para ciudadanos (recomendado con banner en perfil).
+- Enrolamiento mediante código QR escaneable con cualquier app TOTP (Google Authenticator, Aegis, 2FAS...).
+- Secretos TOTP cifrados en reposo con AES-256-GCM.
+- Protección anti-replay (mismo código no puede usarse dos veces).
+- 10 códigos de recuperación de un solo uso con hash bcrypt.
+- Auditoría de eventos de seguridad en `security_audit_log`.
+
+#### Generación de la clave TOTP (producción)
+```powershell
+# PowerShell
+[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
+# O con openssl
+openssl rand -base64 32
+```
+Guardar en `.env` como `TOTP_ENCRYPTION_KEY`. **Crítico: si se pierde esta clave, se pierden todos los 2FA.**
+
+### QR de compartir
+- Cada incidencia tiene un endpoint `GET /api/v1/incidents/:id/qr` que genera un PNG con el QR de su URL pública.
+- Modal de compartir con QR, enlace copiable y descarga PNG.
+
 ## 📝 Licencia
 Desarrollado en 2026. Proyecto Académico TFG - Universidad de Alicante.
 Repositorio mantenido por `eap59-ua`.
