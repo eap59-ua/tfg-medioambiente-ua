@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { RefreshCw, Map as MapIcon, Layers, CheckCircle } from 'lucide-react';
+import { RefreshCw, Map as MapIcon, Layers, CheckCircle, QrCode, Download } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import adminService from '../services/admin.service';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -10,6 +11,7 @@ import StatusBadge from '../components/incidents/StatusBadge';
 import { STATUS_CONFIG } from '../utils/constants';
 
 const EntityDashboardPage = () => {
+  const { user } = useAuth();
   const [incidents, setIncidents] = useState([]);
   const [meta, setMeta] = useState({ total: 0, pages: 1 });
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,25 @@ const EntityDashboardPage = () => {
 
   if (loading && incidents.length === 0) return <LoadingSpinner fullPage />;
 
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+  const qrUrl = user?.entity_id ? `${apiUrl}/entities/${user.entity_id}/qr?size=300&margin=2` : null;
+
+  const downloadQR = async () => {
+    try {
+      if (!qrUrl) return;
+      const response = await fetch(qrUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ecoalerta-entidad-qr.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setToast({ message: 'Error descargando QR', type: 'error' });
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -75,6 +96,27 @@ const EntityDashboardPage = () => {
           <RefreshCw className="w-4 h-4" /> Refrescar
         </button>
       </div>
+
+      {user?.entity_id && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-primary-50 p-3 rounded-lg">
+              <QrCode className="w-8 h-8 text-primary-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">QR de Perfil Público</h2>
+              <p className="text-sm text-gray-500">Comparte este QR para que los ciudadanos puedan acceder a tu perfil y reportar directamente.</p>
+            </div>
+          </div>
+          <button 
+            onClick={downloadQR}
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Descargar QR
+          </button>
+        </div>
+      )}
 
       {error ? (
         <ErrorMessage message={error} />

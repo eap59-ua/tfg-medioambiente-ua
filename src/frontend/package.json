@@ -33,7 +33,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint src/ --ext .js,.jsx",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "test:e2e": "playwright test"
   },
   "browserslist": {
     "production": [

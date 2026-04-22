@@ -33,6 +33,7 @@ const getEncryptionKey = () => {
  * @returns {string} Formato: iv:authTag:ciphertext (todo en base64)
  */
 const encryptSecret = (plaintext) => {
+  if (!plaintext) return null;
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv, {
@@ -52,6 +53,7 @@ const encryptSecret = (plaintext) => {
  * @returns {string} Texto plano original
  */
 const decryptSecret = (encoded) => {
+  if (!encoded) return null;
   const key = getEncryptionKey();
   const [ivBase64, authTagBase64, ciphertext] = encoded.split(':');
 

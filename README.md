@@ -98,12 +98,22 @@ Para verificar la integridad del código:
 cd src/backend
 
 # Tests Unitarios e Integración con Cobertura
-npm run test:coverage
+npm test
 
-# Entrar al frontend para Tests UI
+# Entrar al entorno de Frontend
 cd ../frontend
-npx playwright test
+
+# Tests End-to-End con Playwright (requiere que la API esté viva)
+npm run test:e2e
 ```
+
+## 👥 Usuarios de Prueba (Seeds)
+Al levantar el entorno con Docker y la BD, se cargarán los siguientes usuarios por defecto:
+- `admin@ecoalerta.es` / `Admin123!` (Rol: **Admin**, sin 2FA)
+- `entidad@seprona.es` / `Entidad123!` (Rol: **Entidad**, sin 2FA)
+- `citizen@test.es` / `Citizen123!` (Rol: **Citizen**, sin 2FA)
+- `citizen_2fa@test.es` / `Citizen123!` (Rol: **Citizen**, con 2FA)
+  - *Nota E2E:* El secreto TOTP fijo para generar códigos de `citizen_2fa` durante testing es `JBSWY3DPEHPK3PXP`.
 
 ## 🛡️ Seguridad (Sprint 6)
 

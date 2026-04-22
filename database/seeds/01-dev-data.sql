@@ -46,8 +46,39 @@ INSERT INTO users (id, email, password_hash, display_name, bio, role, entity_id,
      '$2a$10$vIEC7KuLOBVXtVjiNi4KMuFgXud2nx5QOtY3a0W2eiqN82XMsGiO6',
      'Medio Ambiente - Ayto. Alicante',
      'Concejalía de Medio Ambiente del Ayuntamiento de Alicante.',
-     'entity', 'a0000000-0000-0000-0000-000000000001', TRUE, TRUE)
+     'entity', 'a0000000-0000-0000-0000-000000000001', TRUE, TRUE),
+
+    -- Usuario Entidad (SEPRONA)
+    ('b0000000-0000-0000-0000-000000000005',
+     'entidad@seprona.es',
+     '$2a$10$QY9lL8nwDxsSUhaK.BjB6epd4wzrB5OOX2chCl//l61.qzT6P06kC',
+     'SEPRONA Alicante',
+     'Guardia Civil - Servicio de Protección de la Naturaleza.',
+     'entity', 'a0000000-0000-0000-0000-000000000002', TRUE, TRUE),
+
+    -- Ciudadano 3 (Con 2FA)
+    ('b0000000-0000-0000-0000-000000000006',
+     'citizen_2fa@test.es',
+     '$2a$10$JgCA5glxU8wrUvi5qIzt0u.2DREDpqTUYc8ctzKCCAGXL2eLmACL2',
+     'Citizen 2FA',
+     'Usuario de prueba con 2FA activo.',
+     'citizen', NULL, TRUE, TRUE),
+
+    -- Ciudadano 4 (Sin 2FA)
+    ('b0000000-0000-0000-0000-000000000007',
+     'citizen@test.es',
+     '$2a$10$JgCA5glxU8wrUvi5qIzt0u.2DREDpqTUYc8ctzKCCAGXL2eLmACL2',
+     'Citizen Normal',
+     'Usuario de prueba básico sin 2FA.',
+     'citizen', NULL, TRUE, TRUE)
 ON CONFLICT (email) DO NOTHING;
+
+-- Configurar 2FA para el usuario citizen_2fa@test.es
+INSERT INTO user_2fa (user_id, secret_encrypted, enabled, enabled_at) VALUES
+    ('b0000000-0000-0000-0000-000000000006',
+     'PDVALC9M0ExzZOEM:fddbtTXfKU9mVt/HHWqVYA==:M57fX/u/MYCQKDPLK2Vu8w==',
+     TRUE, NOW())
+ON CONFLICT (user_id) DO NOTHING;
 
 -- ==============================================================================
 -- INCIDENCIAS DE EJEMPLO (zona Alicante / San Vicente del Raspeig)
@@ -107,7 +138,29 @@ INSERT INTO incidents (id, title, description, category_id, reporter_id, assigne
      'a0000000-0000-0000-0000-000000000004', -- Policía Local
      ST_SetSRID(ST_MakePoint(-0.4215, 38.3750), 4326),
      'Calle Berna 15, Playa de San Juan, Alicante',
-     'resolved', 'low', 3, 31)
+     'resolved', 'low', 3, 31),
+
+    -- Incidencia 6: Tala ilegal en pinar protegido
+    ('c0000000-0000-0000-0000-000000000006',
+     'Tala masiva y sin control en pinar protegido',
+     'Se están talando pinos centenarios en la zona protegida de la Font Roja. No hay carteles de autorización y parece una tala furtiva para madera.',
+     5, -- Daño forestal
+     'b0000000-0000-0000-0000-000000000003', -- Carlos
+     'a0000000-0000-0000-0000-000000000002', -- SEPRONA
+     ST_SetSRID(ST_MakePoint(-0.5515, 38.6350), 4326),
+     'Parque Natural de la Font Roja, Alcoy',
+     'pending', 'high', 10, 42),
+
+    -- Incidencia 7: Residuo peligroso (amianto) en descampado
+    ('c0000000-0000-0000-0000-000000000007',
+     'Planchas de uralita abandonadas (Amianto)',
+     'Alguien ha abandonado varias planchas de uralita (fibrocemento con amianto) rotas en el descampado junto al colegio público. Peligro grave por inhalación de fibras.',
+     10, -- Residuos peligrosos
+     'b0000000-0000-0000-0000-000000000006', -- citizen_2fa
+     'a0000000-0000-0000-0000-000000000003', -- Bomberos / Medio Ambiente
+     ST_SetSRID(ST_MakePoint(-0.4900, 38.3500), 4326),
+     'Calle Ficticia 22, Descancapado, Alicante',
+     'assigned', 'critical', 35, 105)
 ON CONFLICT (id) DO NOTHING;
 
 -- ==============================================================================

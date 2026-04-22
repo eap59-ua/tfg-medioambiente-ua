@@ -93,9 +93,11 @@ describe('Auth Service', () => {
         display_name: 'Test User',
         role: 'citizen',
         is_active: true,
+        failed_login_attempts: 0,
       };
 
-      query.mockResolvedValueOnce({ rows: [mockUser] });
+      query.mockResolvedValueOnce({ rows: [mockUser] }); // First query: find user
+      query.mockResolvedValueOnce({ rows: [] }); // Second query: check 2FA
 
       const result = await authService.loginUser({
         email: 'usuario@test.com',
@@ -118,7 +120,8 @@ describe('Auth Service', () => {
         is_active: true,
       };
 
-      query.mockResolvedValueOnce({ rows: [mockUser] });
+      query.mockResolvedValueOnce({ rows: [mockUser] }); // First query: find user
+      query.mockResolvedValueOnce({ rows: [] }); // Second query: update failed attempts
 
       await expect(
         authService.loginUser({

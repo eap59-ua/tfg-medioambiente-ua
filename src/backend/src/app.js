@@ -24,6 +24,7 @@ const twofaRoutes = require('./routes/twofa.routes');
 const incidentRoutes = require('./routes/incident.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
+const entityRoutes = require('./routes/entity.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const healthRoutes = require('./routes/health.routes');
 const swaggerUi = require('swagger-ui-express');
@@ -69,6 +70,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/auth', twofaRoutes);
 app.use('/api/v1/incidents', incidentRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/entities', entityRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 

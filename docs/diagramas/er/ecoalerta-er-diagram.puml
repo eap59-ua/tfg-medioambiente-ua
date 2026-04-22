@@ -1,0 +1,183 @@
+@startuml EcoAlerta_ER_Diagram
+!theme plain
+hide empty methods
+
+entity "USERS" as users {
+  * id : UUID [PK]
+  --
+  * email : VARCHAR(255) [UNIQUE]
+  * password_hash : VARCHAR(255)
+  * display_name : VARCHAR(100)
+  bio : TEXT
+  avatar_url : TEXT
+  * role : ENUM('citizen', 'admin', 'entity', 'moderator')
+  entity_id : UUID [FK]
+  * is_active : BOOLEAN
+  * is_verified : BOOLEAN
+  failed_login_attempts : INTEGER
+  failed_login_window_start : TIMESTAMPTZ
+  * created_at : TIMESTAMPTZ
+  * updated_at : TIMESTAMPTZ
+}
+
+entity "USER_2FA" as user_2fa {
+  * user_id : UUID [PK, FK]
+  --
+  * secret_encrypted : VARCHAR(255)
+  * enabled : BOOLEAN
+  enabled_at : TIMESTAMPTZ
+  last_used_counter : BIGINT
+  last_used_at : TIMESTAMPTZ
+  * created_at : TIMESTAMPTZ
+}
+
+entity "USER_RECOVERY_CODES" as user_recovery_codes {
+  * id : UUID [PK]
+  --
+  * user_id : UUID [FK]
+  * code_hash : VARCHAR(255)
+  * used : BOOLEAN
+  used_at : TIMESTAMPTZ
+}
+
+entity "SECURITY_AUDIT_LOG" as security_audit_log {
+  * id : UUID [PK]
+  --
+  user_id : UUID [FK]
+  * action : VARCHAR(50)
+  * ip_address : VARCHAR(45)
+  user_agent : TEXT
+  details : JSONB
+  * created_at : TIMESTAMPTZ
+}
+
+entity "RESPONSIBLE_ENTITIES" as responsible_entities {
+  * id : UUID [PK]
+  --
+  * name : VARCHAR(200)
+  * type : ENUM
+  contact_email : VARCHAR(255)
+  contact_phone : VARCHAR(20)
+  jurisdiction : GEOMETRY(Polygon, 4326)
+  * is_active : BOOLEAN
+  * created_at : TIMESTAMPTZ
+}
+
+entity "CATEGORIES" as categories {
+  * id : SERIAL [PK]
+  --
+  * name : VARCHAR(100) [UNIQUE]
+  description : TEXT
+  default_severity : ENUM
+  default_entity_id : UUID [FK]
+  icon : VARCHAR(50)
+  color : VARCHAR(7)
+  * is_active : BOOLEAN
+  * created_at : TIMESTAMPTZ
+}
+
+entity "INCIDENTS" as incidents {
+  * id : UUID [PK]
+  --
+  * title : VARCHAR(200)
+  * description : TEXT
+  * category_id : INTEGER [FK]
+  reporter_id : UUID [FK]
+  assigned_entity_id : UUID [FK]
+  * location : GEOMETRY(Point, 4326)
+  address : TEXT
+  * status : ENUM
+  * severity : ENUM
+  priority_score : INTEGER
+  resolved_at : TIMESTAMPTZ
+  resolved_by : UUID [FK]
+  resolution_note : TEXT
+  * is_anonymous : BOOLEAN
+  view_count : INTEGER
+  * created_at : TIMESTAMPTZ
+  * updated_at : TIMESTAMPTZ
+}
+
+entity "INCIDENT_PHOTOS" as incident_photos {
+  * id : UUID [PK]
+  --
+  * incident_id : UUID [FK]
+  * photo_url : TEXT
+  thumbnail_url : TEXT
+  caption : VARCHAR(255)
+  sort_order : INTEGER
+  file_size_bytes : INTEGER
+  * created_at : TIMESTAMPTZ
+}
+
+entity "INCIDENT_COMMENTS" as incident_comments {
+  * id : UUID [PK]
+  --
+  * incident_id : UUID [FK]
+  * user_id : UUID [FK]
+  * content : TEXT
+  * is_official : BOOLEAN
+  parent_id : UUID [FK]
+  * created_at : TIMESTAMPTZ
+  * updated_at : TIMESTAMPTZ
+}
+
+entity "INCIDENT_VOTES" as incident_votes {
+  * incident_id : UUID [PK, FK]
+  * user_id : UUID [PK, FK]
+  --
+  * created_at : TIMESTAMPTZ
+}
+
+entity "INCIDENT_FOLLOWS" as incident_follows {
+  * incident_id : UUID [PK, FK]
+  * user_id : UUID [PK, FK]
+  --
+  * created_at : TIMESTAMPTZ
+}
+
+entity "INCIDENT_STATUS_HISTORY" as incident_status_history {
+  * id : UUID [PK]
+  --
+  * incident_id : UUID [FK]
+  old_status : VARCHAR(30)
+  * new_status : VARCHAR(30)
+  changed_by : UUID [FK]
+  note : TEXT
+  * created_at : TIMESTAMPTZ
+}
+
+entity "NOTIFICATIONS" as notifications {
+  * id : UUID [PK]
+  --
+  * user_id : UUID [FK]
+  * type : VARCHAR(50)
+  * title : VARCHAR(200)
+  message : TEXT
+  reference_type : VARCHAR(30)
+  reference_id : UUID
+  * is_read : BOOLEAN
+  * created_at : TIMESTAMPTZ
+}
+
+users ||--o{ incidents : "reporter_id"
+users ||--o{ incident_comments : "user_id"
+users ||--o{ incident_votes : "user_id"
+users ||--o{ incident_follows : "user_id"
+users }|..|| responsible_entities : "entity_id"
+users ||--|| user_2fa : "user_id"
+users ||--o{ user_recovery_codes : "user_id"
+users ||--o{ security_audit_log : "user_id"
+
+responsible_entities ||--o{ categories : "default_entity_id"
+responsible_entities ||--o{ incidents : "assigned_entity_id"
+
+categories ||--o{ incidents : "category_id"
+
+incidents ||--o{ incident_photos : "incident_id"
+incidents ||--o{ incident_comments : "incident_id"
+incidents ||--o{ incident_votes : "incident_id"
+incidents ||--o{ incident_follows : "incident_id"
+incidents ||--o{ incident_status_history : "incident_id"
+
+@enduml

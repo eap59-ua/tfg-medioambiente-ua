@@ -55,7 +55,7 @@ resolución por parte de autoridades competentes (ayuntamientos, SEPRONA, bomber
 | RF-02 | El sistema permitirá inicio de sesión con JWT (access + refresh token) | Alta | Todos |
 | RF-03 | El sistema permitirá acceso anónimo con funcionalidades restringidas (solo lectura del mapa y listado de incidencias) | Alta | Anónimo |
 | RF-04 | El sistema soportará roles: citizen, admin, entity, moderator | Alta | Sistema |
-| RF-05 | El sistema permitirá recuperación de contraseña por email | Media | Ciudadano |
+| RF-05 | El sistema permitirá recuperación de contraseña por email | *No aplicable — sin infraestructura de email SMTP configurada* | Ciudadano |
 | RF-06 | El sistema permitirá edición del perfil de usuario (nombre, avatar, bio) | Media | Ciudadano |
 | RF-07 | El sistema mostrará un perfil público con las incidencias reportadas por el usuario | Media | Ciudadano |
 
@@ -716,6 +716,15 @@ GET    /api/v1/health                 — Estado del sistema
 - [ ] Accesibilidad WCAG AA
 - [ ] README final
 
+### Sprint 6 — Security Hardening & Engagement
+- [x] Cloudflare Turnstile en Login y Registro
+- [x] TOTP 2FA con cifrado AES-256-GCM
+- [x] Códigos de recuperación hasheados
+- [x] Generación de Códigos QR para incidencias y entidades
+- [x] Actualización de la BD a Esquema v3
+- [x] Testing Unitario de Seguridad (cobertura > 78%)
+- [x] Tests E2E de Flujo 2FA
+
 ---
 
 ## 11. Convenciones de código
@@ -747,6 +756,15 @@ hotfix/xxx          — Correcciones urgentes
 - Nombrado: camelCase (JS), snake_case (SQL)
 - Comentarios JSDoc en funciones públicas
 - Variables de entorno para toda configuración
+
+---
+
+---
+
+## 12. Limitaciones / Trabajo Futuro
+
+### Recuperación de Contraseña
+El flujo de recuperación de contraseña (RF-05 / RF-SEC-02) queda fuera del alcance actual del TFG. La implementación completa requiere una infraestructura de email transaccional (SMTP, SendGrid, o AWS SES) que complica innecesariamente el despliegue del proyecto y la demostración ante el tribunal. Se considera Trabajo Futuro añadir un proveedor de correo para el envío de enlaces de reseteo con tokens seguros de uso único, que también requerirían integración con Turnstile en el formulario.
 
 ---
 
