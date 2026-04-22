@@ -97,7 +97,7 @@ const validateAddComment = [
     .isLength({ min: 1, max: 2000 }).withMessage('El comentario debe tener entre 1 y 2000 caracteres'),
 
   body('parentId')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isUUID().withMessage('parentId debe ser un UUID válido'),
 
   handleValidationErrors,
