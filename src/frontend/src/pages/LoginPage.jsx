@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, LogIn, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import TurnstileWidget from '../components/security/TurnstileWidget';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -11,16 +12,40 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaRequired, setCaptchaRequired] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      const result = await login(email, password, turnstileToken);
+
+      // Flujo 2FA: redirigir a verificación
+      if (result.requires2FA) {
+        navigate('/login/2fa', { state: { tempToken: result.tempToken, email } });
+        return;
+      }
+
+      // Flujo setup 2FA obligatorio (admin/entidad)
+      if (result.requires2FASetup) {
+        navigate('/setup-2fa-required', {
+          state: { tempToken: result.tempToken, role: result.role, email },
+        });
+        return;
+      }
+
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Credenciales incorrectas');
+      const responseData = err.response?.data;
+      // Detectar si el backend pide CAPTCHA
+      if (responseData?.code === 'CAPTCHA_REQUIRED' || responseData?.captchaRequired) {
+        setCaptchaRequired(true);
+        setError('Demasiados intentos fallidos. Completa la verificación de seguridad.');
+      } else {
+        setError(responseData?.error || 'Credenciales incorrectas');
+      }
     } finally {
       setLoading(false);
     }
@@ -61,7 +86,10 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading}
+            {captchaRequired && (
+              <TurnstileWidget onVerify={setTurnstileToken} action="login" className="flex justify-center" />
+            )}
+            <button type="submit" disabled={loading || (captchaRequired && !turnstileToken)}
               className="w-full py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><LogIn className="w-5 h-5" /> Iniciar sesión</>}
             </button>

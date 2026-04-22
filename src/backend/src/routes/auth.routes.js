@@ -10,6 +10,7 @@
 const router = require('express').Router();
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
+const { verifyTurnstile, requireCaptchaOnRetry } = require('../middlewares/turnstile.middleware');
 const {
   validateRegister,
   validateLogin,
@@ -112,8 +113,8 @@ const {
  */
 
 // Rutas públicas (no requieren autenticación)
-router.post('/register', validateRegister, authController.register);
-router.post('/login', validateLogin, authController.login);
+router.post('/register', verifyTurnstile('register'), validateRegister, authController.register);
+router.post('/login', requireCaptchaOnRetry(), validateLogin, authController.login);
 router.post('/refresh', validateRefresh, authController.refresh);
 
 // Rutas protegidas (requieren token JWT válido)

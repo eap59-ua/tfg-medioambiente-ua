@@ -4,6 +4,7 @@
   "private": true,
   "description": "Frontend web — EcoAlerta (TFG UA)",
   "dependencies": {
+    "@marsidev/react-turnstile": "^0.7.2",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.4",
     "leaflet": "^1.9.4",

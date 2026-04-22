@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, UserPlus, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import TurnstileWidget from '../components/security/TurnstileWidget';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const validate = () => {
     if (form.password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
@@ -27,7 +29,7 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
     try {
-      await register(form.email, form.password, form.displayName);
+      await register(form.email, form.password, form.displayName, turnstileToken);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Error en el registro');
@@ -83,7 +85,8 @@ export default function RegisterPage() {
                 className="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Repite la contraseña" aria-invalid={!!error} />
             </div>
-            <button type="submit" disabled={loading}
+            <TurnstileWidget onVerify={setTurnstileToken} action="register" className="flex justify-center" />
+            <button type="submit" disabled={loading || !turnstileToken}
               className="w-full py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><UserPlus className="w-5 h-5" /> Crear cuenta</>}
             </button>

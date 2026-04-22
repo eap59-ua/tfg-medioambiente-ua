@@ -10,16 +10,23 @@ const saveAuth = (data) => {
   localStorage.setItem(USER_KEY, JSON.stringify(data.user));
 };
 
-export const register = async (email, password, displayName) => {
-  const { data } = await api.post('/auth/register', { email, password, displayName });
+export const register = async (email, password, displayName, turnstileToken) => {
+  const { data } = await api.post('/auth/register', { email, password, displayName, turnstileToken });
   saveAuth(data.data);
   return data.data;
 };
 
-export const login = async (email, password) => {
-  const { data } = await api.post('/auth/login', { email, password });
-  saveAuth(data.data);
-  return data.data;
+export const login = async (email, password, turnstileToken) => {
+  const { data } = await api.post('/auth/login', { email, password, turnstileToken });
+  const result = data.data;
+
+  // Si el backend pide 2FA o setup obligatorio, no guardamos tokens finales
+  if (result.requires2FA || result.requires2FASetup) {
+    return result;
+  }
+
+  saveAuth(result);
+  return result;
 };
 
 export const refreshToken = async () => {

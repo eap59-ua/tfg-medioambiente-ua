@@ -1,8 +1,9 @@
 -- ==============================================================================
--- EcoAlerta — Esquema de base de datos v2
+-- EcoAlerta — Esquema de base de datos v3
 -- PostgreSQL 16 + PostGIS 3.4
 -- TFG: Aplicación colaborativa para el cuidado del medio ambiente
 -- Autor: Erardo Aldana Pessoa | Tutor: José Luis Sánchez Romero
+-- Sprint 6: Añadidas tablas user_2fa, user_recovery_codes, security_audit_log
 -- ==============================================================================
 
 -- Extensiones necesarias
@@ -42,6 +43,9 @@ CREATE TABLE IF NOT EXISTS users (
     entity_id       UUID REFERENCES responsible_entities(id) ON DELETE SET NULL,
     is_active       BOOLEAN DEFAULT TRUE,
     is_verified     BOOLEAN DEFAULT FALSE,
+    -- Campos para CAPTCHA tras intentos fallidos (RF-SEC-03)
+    failed_login_attempts   INTEGER DEFAULT 0,
+    failed_login_window_start TIMESTAMPTZ,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
@@ -197,6 +201,50 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notifications_user
     ON notifications (user_id, is_read);
+
+-- ==============================================================================
+-- TABLA: user_2fa — Secretos TOTP por usuario (Sprint 6 — RF-SEC-04..09)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS user_2fa (
+    user_id             UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    secret_encrypted    TEXT NOT NULL,           -- AES-256-GCM: iv:tag:ciphertext (base64)
+    enabled             BOOLEAN NOT NULL DEFAULT FALSE,
+    enabled_at          TIMESTAMPTZ,
+    last_used_counter   BIGINT,                  -- último counter TOTP aceptado (anti-replay)
+    last_used_at        TIMESTAMPTZ,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ==============================================================================
+-- TABLA: user_recovery_codes — Códigos de recuperación 2FA (1:N)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS user_recovery_codes (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    code_hash   TEXT NOT NULL,                   -- bcrypt hash
+    used        BOOLEAN NOT NULL DEFAULT FALSE,
+    used_at     TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_recovery_user_unused
+    ON user_recovery_codes(user_id) WHERE used = FALSE;
+
+-- ==============================================================================
+-- TABLA: security_audit_log — Log de auditoría de seguridad (Sprint 6)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS security_audit_log (
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     UUID REFERENCES users(id) ON DELETE SET NULL,
+    action      VARCHAR(64) NOT NULL,
+    ip          INET,
+    user_agent  TEXT,
+    metadata    JSONB,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_audit_user_time
+    ON security_audit_log(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_action_time
+    ON security_audit_log(action, created_at DESC);
 
 -- ==============================================================================
 -- DATOS INICIALES — Entidades responsables

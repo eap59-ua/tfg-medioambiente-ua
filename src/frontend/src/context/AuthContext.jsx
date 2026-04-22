@@ -24,14 +24,18 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  const loginAction = useCallback(async (email, password) => {
-    const result = await authService.login(email, password);
+  const loginAction = useCallback(async (email, password, turnstileToken) => {
+    const result = await authService.login(email, password, turnstileToken);
+    // Si requiere 2FA, no setear el user aún
+    if (result.requires2FA || result.requires2FASetup) {
+      return result;
+    }
     setUser(result.user);
     return result;
   }, []);
 
-  const registerAction = useCallback(async (email, password, displayName) => {
-    const result = await authService.register(email, password, displayName);
+  const registerAction = useCallback(async (email, password, displayName, turnstileToken) => {
+    const result = await authService.register(email, password, displayName, turnstileToken);
     setUser(result.user);
     return result;
   }, []);

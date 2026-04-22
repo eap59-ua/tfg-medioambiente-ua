@@ -110,9 +110,38 @@ const loginUser = async ({ email, password }) => {
   // Verificar password
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) {
+    // Incrementar contador de intentos fallidos (RF-SEC-03)
+    const windowStart = user.failed_login_window_start
+      ? new Date(user.failed_login_window_start).getTime()
+      : 0;
+    const now = Date.now();
+    const windowMs = 15 * 60 * 1000; // 15 minutos
+
+    if ((now - windowStart) >= windowMs) {
+      // Nueva ventana
+      await query(
+        'UPDATE users SET failed_login_attempts = 1, failed_login_window_start = NOW() WHERE id = $1',
+        [user.id]
+      );
+    } else {
+      // Incrementar en la ventana actual
+      await query(
+        'UPDATE users SET failed_login_attempts = failed_login_attempts + 1 WHERE id = $1',
+        [user.id]
+      );
+    }
+
     const error = new Error('Credenciales inválidas');
     error.statusCode = 401;
     throw error;
+  }
+
+  // Resetear contador de intentos fallidos tras login exitoso
+  if (user.failed_login_attempts > 0) {
+    await query(
+      'UPDATE users SET failed_login_attempts = 0, failed_login_window_start = NULL WHERE id = $1',
+      [user.id]
+    );
   }
 
   const tokens = generateTokens(user);
