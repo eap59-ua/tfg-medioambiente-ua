@@ -144,6 +144,49 @@ const loginUser = async ({ email, password }) => {
     );
   }
 
+  // ─── Flujo 2FA (Sprint 6) ──────────────────────────────────────────────────
+  // Comprobar si el usuario tiene 2FA activo
+  const twofaResult = await query(
+    'SELECT enabled FROM user_2fa WHERE user_id = $1',
+    [user.id]
+  );
+  const has2FA = twofaResult.rows.length > 0 && twofaResult.rows[0].enabled;
+
+  if (has2FA) {
+    // Devolver tempToken para que el frontend pida el código TOTP
+    const tempToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role, scope: '2fa_pending' },
+      process.env.JWT_SECRET,
+      { expiresIn: '5m' }
+    );
+
+    logger.info(`Login con 2FA pendiente: ${user.email}`);
+
+    return {
+      requires2FA: true,
+      tempToken,
+    };
+  }
+
+  // Comprobar si es un rol privilegiado sin 2FA (debe configurarlo obligatoriamente)
+  const privilegedRoles = ['admin', 'entity'];
+  if (privilegedRoles.includes(user.role)) {
+    const tempToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role, scope: '2fa_setup' },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    logger.info(`Login de rol privilegiado sin 2FA — setup obligatorio: ${user.email}`);
+
+    return {
+      requires2FASetup: true,
+      tempToken,
+      role: user.role,
+    };
+  }
+
+  // Login normal (ciudadano sin 2FA)
   const tokens = generateTokens(user);
 
   logger.info(`Login exitoso: ${user.email}`);

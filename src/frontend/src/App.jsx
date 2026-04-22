@@ -23,6 +23,8 @@ const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
 const AdminEntitiesPage = lazy(() => import('./pages/AdminEntitiesPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const EntityDashboardPage = lazy(() => import('./pages/EntityDashboardPage'));
+const TwoFactorLoginPage = lazy(() => import('./pages/TwoFactorLoginPage'));
+const Setup2FARequiredPage = lazy(() => import('./pages/Setup2FARequiredPage'));
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -88,6 +90,10 @@ function AppContent() {
             <Route path="/admin/users" element={<AdminOnlyRoute><AdminUsersPage /></AdminOnlyRoute>} />
             <Route path="/admin/entities" element={<AdminOnlyRoute><AdminEntitiesPage /></AdminOnlyRoute>} />
             <Route path="/admin/entity" element={<EntityOrAdminRoute><EntityDashboardPage /></EntityOrAdminRoute>} />
+            
+            {/* 2FA Routes */}
+            <Route path="/login/2fa" element={<TwoFactorLoginPage />} />
+            <Route path="/setup-2fa-required" element={<Setup2FARequiredPage />} />
             
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

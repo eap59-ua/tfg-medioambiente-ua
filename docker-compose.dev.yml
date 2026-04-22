@@ -44,6 +44,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_me}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGIN: http://localhost:3000
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-1x0000000000000000000000000000000AA}
+      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-dGhpc0lzQVRlc3RLZXlGb3JEZXZPbmx5MzJieXRlcw==}
     ports:
       - "${APP_PORT:-5000}:5000"
     volumes:

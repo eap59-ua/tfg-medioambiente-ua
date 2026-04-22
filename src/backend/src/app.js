@@ -20,6 +20,7 @@ const logger = require('./config/logger');
 
 // Importar rutas
 const authRoutes = require('./routes/auth.routes');
+const twofaRoutes = require('./routes/twofa.routes');
 const incidentRoutes = require('./routes/incident.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
@@ -65,6 +66,7 @@ app.use('/api/', limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customCss: '.swagger-ui .topbar { display: none }' }));
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', twofaRoutes);
 app.use('/api/v1/incidents', incidentRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/admin', adminRoutes);

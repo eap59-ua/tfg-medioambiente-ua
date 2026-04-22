@@ -136,4 +136,8 @@ router.post('/entities', validators.validateEntityCreate, validateRequest, admin
 router.put('/entities/:id', validators.validateEntityUpdate, validateRequest, adminController.updateEntity);
 router.delete('/entities/:id', adminController.deleteEntity);
 
+// 2FA Admin Reset (Sprint 6)
+const twofaController = require('../controllers/twofa.controller');
+router.post('/users/:id/2fa/reset', twofaController.adminReset);
+
 module.exports = router;
