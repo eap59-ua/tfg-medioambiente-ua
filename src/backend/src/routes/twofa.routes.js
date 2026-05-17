@@ -76,7 +76,7 @@
 
 const router = require('express').Router();
 const twofaController = require('../controllers/twofa.controller');
-const { authenticate, requireRole } = require('../middlewares/auth.middleware');
+const { authenticate } = require('../middlewares/auth.middleware');
 
 // ─── Rutas de configuración 2FA (requieren autenticación) ────────────────────
 router.post('/2fa/setup', authenticate, twofaController.setup);

@@ -39,6 +39,7 @@ const generateTokens = (user) => {
  * @returns {object} Usuario sin password_hash
  */
 const sanitizeUser = (user) => {
+  // eslint-disable-next-line no-unused-vars
   const { password_hash: _hash, ...safeUser } = user;
   return safeUser;
 };

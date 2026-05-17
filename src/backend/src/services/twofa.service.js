@@ -82,7 +82,7 @@ const verifyToken = async (userId, code) => {
     [userId]
   );
 
-  if (result.rows.length === 0) return false;
+  if (result.rows.length === 0) {return false;}
 
   const { secret_encrypted, last_used_counter } = result.rows[0];
   const secretBase32 = decryptSecret(secret_encrypted);
@@ -98,7 +98,7 @@ const verifyToken = async (userId, code) => {
   // Verificar con ventana de ±1 step
   const delta = totp.validate({ token: code, window: 1 });
 
-  if (delta === null) return false;
+  if (delta === null) {return false;}
 
   // Calcular counter actual para anti-replay
   const counter = Math.floor(Date.now() / 1000 / TOTP_PERIOD) + delta;

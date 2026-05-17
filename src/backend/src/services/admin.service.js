@@ -222,7 +222,7 @@ const updateIncidentStatusAdmin = async (incidentId, newStatus, adminId, note) =
     await client.query('BEGIN');
 
     const incRes = await client.query('SELECT status, title, reporter_id FROM incidents WHERE id = $1 FOR UPDATE', [incidentId]);
-    if (incRes.rows.length === 0) throw new Error('Incidencia no encontrada');
+    if (incRes.rows.length === 0) {throw new Error('Incidencia no encontrada');}
     
     const oldStatus = incRes.rows[0].status;
     const { title, reporter_id } = incRes.rows[0];
@@ -330,7 +330,7 @@ const updateUserRole = async (userId, newRole) => {
   const res = await db.query(`
     UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, email, display_name, role
   `, [newRole, userId]);
-  if (res.rows.length === 0) throw new Error('Usuario no encontrado');
+  if (res.rows.length === 0) {throw new Error('Usuario no encontrado');}
   return res.rows[0];
 };
 
@@ -338,7 +338,7 @@ const toggleUserActive = async (userId) => {
   const res = await db.query(`
     UPDATE users SET is_active = NOT is_active, updated_at = NOW() WHERE id = $1 RETURNING id, email, is_active
   `, [userId]);
-  if (res.rows.length === 0) throw new Error('Usuario no encontrado');
+  if (res.rows.length === 0) {throw new Error('Usuario no encontrado');}
   return res.rows[0];
 };
 
@@ -371,7 +371,7 @@ const updateEntity = async (id, data) => {
         updated_at = NOW()
     WHERE id = $6 RETURNING *
   `, [name, type, email, phone, isActive, id]);
-  if (res.rows.length === 0) throw new Error('Entidad no encontrada');
+  if (res.rows.length === 0) {throw new Error('Entidad no encontrada');}
   return res.rows[0];
 };
 

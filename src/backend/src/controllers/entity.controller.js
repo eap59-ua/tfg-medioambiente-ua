@@ -1,6 +1,5 @@
 const qrService = require('../services/qr.service');
 const { query } = require('../config/database');
-const logger = require('../config/logger');
 
 /**
  * GET /api/v1/entities/:id/qr

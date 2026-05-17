@@ -54,7 +54,7 @@ const MAX_ATTEMPTS_BEFORE_CAPTCHA = 3;
 const requireCaptchaOnRetry = () => {
   return async (req, res, next) => {
     const { email } = req.body;
-    if (!email) return next();
+    if (!email) {return next();}
 
     try {
       const result = await query(

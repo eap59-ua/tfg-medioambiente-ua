@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const logger = require('../config/logger');
 
 const createTransporter = () => {
   // Para desarrollo usamos variables de entorno (Ethereal o SMTP real).
@@ -11,7 +12,7 @@ const createTransporter = () => {
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT || 587,
-    secure: process.env.SMTP_PORT == 465,
+    secure: process.env.SMTP_PORT === '465',
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -24,7 +25,7 @@ const sendEmail = async (to, subject, html) => {
   
   if (!transporter) {
     // Si no hay SMTP (entorno local sin config), solo loggeamos el mail.
-    console.log(`[Email Service - STUB] TO: ${to} | SUBJ: ${subject}`);
+    logger.info(`[Email Service - STUB] TO: ${to} | SUBJ: ${subject}`);
     return;
   }
 
@@ -35,9 +36,9 @@ const sendEmail = async (to, subject, html) => {
       subject,
       html,
     });
-    console.log(`Email sent: ${info.messageId}`);
+    logger.info(`Email sent: ${info.messageId}`);
   } catch (error) {
-    console.warn(`Failed to send email to ${to}:`, error.message);
+    logger.warn(`Failed to send email to ${to}: ${error.message}`);
   }
 };
 
@@ -62,7 +63,7 @@ const sendStatusChangeEmail = async (userEmail, incidentTitle, oldStatus, newSta
  * Envía un correo a una entidad cuando se le asigna una incidencia
  */
 const sendAssignmentEmail = async (entityEmail, incidentTitle, incidentId) => {
-  if (!entityEmail) return;
+  if (!entityEmail) {return;}
 
   const subject = `EcoAlerta: Nueva incidencia asignada - "${incidentTitle}"`;
   const html = `

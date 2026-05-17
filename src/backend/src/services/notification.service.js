@@ -37,7 +37,7 @@ const getNotifications = async (userId, options = {}) => {
 
   // Get total count
   let countQuery = `SELECT COUNT(*) FROM notifications WHERE user_id = $1`;
-  if (unreadOnly) countQuery += ` AND is_read = false`;
+  if (unreadOnly) {countQuery += ` AND is_read = false`;}
 
   // Get unread count specifically
   const unreadCountQuery = `SELECT COUNT(*) FROM notifications WHERE user_id = $1 AND is_read = false`;
@@ -67,7 +67,7 @@ const markAsRead = async (notificationId, userId) => {
     WHERE id = $1 AND user_id = $2 RETURNING *
   `, [notificationId, userId]);
   
-  if (res.rows.length === 0) throw new Error('Notificación no encontrada o no autorizada');
+  if (res.rows.length === 0) {throw new Error('Notificación no encontrada o no autorizada');}
   return res.rows[0];
 };
 
