@@ -1,6 +1,6 @@
 # EcoAlerta — Plataforma de Incidencias Medioambientales
 
-![EcoAlerta Cover](https://via.placeholder.com/1200x400.png?text=EcoAlerta+-+TFG+Universidad+de+Alicante)
+<!-- EcoAlerta — TFG Universidad de Alicante, 2025-2026 -->
 
 **EcoAlerta** es una aplicación Web Progresiva (PWA) desarrollada como Trabajo de Fin de Grado (TFG) para la Universidad de Alicante. Su objetivo principal es facilitar a la ciudadanía el reporte, seguimiento y resolución de incidencias medioambientales (como vertidos ilegales, contaminación acústica o daños a la flora y fauna) colaborando de forma directa con entidades responsables o administraciones locales.
 
@@ -18,7 +18,7 @@
 | Capa | Tecnología |
 |---|---|
 | **Frontend** | React 18, React Router v6, TailwindCSS, React-Leaflet, Axios. Performance optimizado con React.lazy y PWAs. |
-| **Backend** | Node.js (v14/v18+), Express, JWT, Multer (Manejo de subidas), Winston (Logging). |
+| **Backend** | Node.js 20 LTS, Express 4, JWT, Multer (subidas), Winston (logging), Swagger/OpenAPI. |
 | **Base de Datos** | PostgreSQL 16 con extensión PostGIS 3.4. Consultas parametrizadas (PG Driver). |
 | **Testing** | Jest y Supertest (Unitario > 70% coverage), Playwright (End-to-End browser testing). |
 | **Documentación** | Swagger UI (OpenAPI 3.0). |
@@ -55,7 +55,9 @@ tfg-medioambiente-ua/
 │       │   └── styles/           # Tailwind Entrypoint
 │       ├── tests/e2e/            # Playwright Spec Tests
 │       └── package.json
-└── docker-compose.yml
+├── docker-compose.dev.yml    # Desarrollo (hot reload)
+├── docker-compose.yml        # Producción / Demo
+└── Makefile                  # Comandos rápidos (make dev, make test...)
 ```
 
 ## 🔌 API y Endpoints
@@ -72,23 +74,35 @@ La API cuenta con documentación autogenerada disponible en el entorno interacti
 
 ## 🐳 Ejecución con Docker
 
+### Requisitos previos
+- Docker Desktop ≥ 4.x con Docker Compose v2
+- Git
+- (Opcional) `make` para usar los atajos del Makefile
+
 ### Entorno de Desarrollo
-Este entorno carga los volúmenes del sistema, habilitando hot-reloading en Node.js y React.
+Este entorno monta los volúmenes del sistema, habilitando hot-reloading en Node.js y React.
 ```bash
-docker compose up --build
+# Opción 1: Makefile (recomendado)
+make dev
+
+# Opción 2: Docker Compose directo
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-### Entorno de Producción
-El entorno de producción utiliza Nginx para servir estáticos empaquetados del frontend y ofusca el acceso de base de datos exponiendo únicamente el proxy inverso.
+### Entorno de Producción / Demo
+El entorno de producción utiliza Nginx como proxy inverso para servir estáticos del frontend.
 ```bash
-docker compose -f docker-compose.prod.yml up --build -d
+# Opción 1: Makefile
+make prod
+
+# Opción 2: Docker Compose directo
+docker compose up --build -d
 ```
 
 ### Accesos (Localhost)
 - Frontend PWA: `http://localhost:3000` (Dev) / `http://localhost:80` (Prod)
 - Backend API: `http://localhost:5000/api/v1`
 - API Docs (Swagger): `http://localhost:5000/api/docs`
-- Base de datos (PgAdmin): `http://localhost:5050` _(Ver config para credenciales locales)_
 
 ## 🛡️ Testing
 Para verificar la integridad del código:
