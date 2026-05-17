@@ -1,0 +1,241 @@
+% ==============================================================================
+% EcoAlerta — Memoria del TFG
+% Grado en Ingeniería Informática — Universidad de Alicante
+% Autor: Erardo Aldana Pessoa
+% Tutor: José Luis Sánchez Romero
+% Curso: 2025-26 | Convocatoria C3
+% ==============================================================================
+% Formato: Libro de Estilo EPS UA
+% Compilar con: pdflatex main.tex (2 pasadas) + biber main + pdflatex (2 más)
+% O en Overleaf: simplemente compilar (detecta biblatex automáticamente)
+% ==============================================================================
+
+\documentclass[a4paper, 12pt, twoside, openright]{report}
+
+% ─── CODIFICACIÓN Y TIPOGRAFÍA ──────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{mathpazo}           % Palatino para texto (Familia 2 del Libro de Estilo)
+
+% ─── MÁRGENES — Libro de Estilo EPS ─────────────────────────────────────────
+% Interior (encuadernación): 3.0 cm | Exterior: 2.5 cm | Superior/Inferior: 2.5 cm
+\usepackage[
+  a4paper,
+  inner=3.0cm,
+  outer=2.5cm,
+  top=2.5cm,
+  bottom=2.5cm,
+  headheight=15pt
+]{geometry}
+
+% ─── INTERLINEADO 1.5 ───────────────────────────────────────────────────────
+\usepackage{setspace}
+\onehalfspacing
+
+% ─── CABECERAS Y PIES DE PÁGINA ─────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+% Páginas impares (derechas): título del capítulo a la derecha
+\fancyhead[RO]{\small\nouppercase{\rightmark}}
+% Páginas pares (izquierdas): título del TFG a la izquierda
+\fancyhead[LE]{\small\nouppercase{EcoAlerta — TFG}}
+% Número de página: exterior
+\fancyfoot[RO,LE]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+% Estilo para páginas de inicio de capítulo
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[RO,LE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ─── TÍTULOS — Arial/Helvética (Familia 1) ──────────────────────────────────
+\usepackage{titlesec}
+\usepackage{helvet}  % Helvética como sans-serif
+
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily\Huge\bfseries}  % sffamily = Helvética
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+  {\normalfont\sffamily\Large\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\sffamily\large\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\sffamily\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% ─── IMÁGENES Y FIGURAS ─────────────────────────────────────────────────────
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{float}
+\usepackage{subcaption}  % Para subfiguras
+
+% ─── TABLAS ──────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ─── SÍMBOLOS MATEMÁTICOS (necesario para \checkmark en tablas) ─────────────
+\usepackage{amssymb}
+\providecommand{\cmark}{\ensuremath{\checkmark}}
+\providecommand{\pmark}{$\sim$}
+\providecommand{\xmark}{$\times$}
+
+% ─── CÓDIGO FUENTE — Courier New (Familia 3) ────────────────────────────────
+\usepackage{listings}
+\usepackage{courier}  % Courier como monospace
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  breakatwhitespace=true,
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{gray!50},
+  backgroundcolor=\color{gray!5},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  tabsize=2,
+  showstringspaces=false,
+  captionpos=b,
+  keywordstyle=\color{blue!70}\bfseries,
+  commentstyle=\color{green!50!black}\itshape,
+  stringstyle=\color{orange!70!black},
+}
+
+\lstdefinelanguage{JavaScript}{
+  morekeywords={const, let, var, function, return, if, else, for, while, class,
+    async, await, import, export, from, default, try, catch, throw, new, this,
+    require, module, true, false, null, undefined},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  sensitive=true,
+}
+
+\lstdefinelanguage{SQL}{
+  morekeywords={SELECT, FROM, WHERE, INSERT, INTO, VALUES, UPDATE, SET, DELETE,
+    CREATE, TABLE, INDEX, ON, PRIMARY, KEY, REFERENCES, NOT, NULL, DEFAULT,
+    UNIQUE, CHECK, BOOLEAN, INTEGER, VARCHAR, TEXT, UUID, SERIAL, TIMESTAMPTZ,
+    IF, EXISTS, CASCADE, FUNCTION, TRIGGER, RETURNS, BEGIN, END, AS, LANGUAGE,
+    EXTENSION, GEOMETRY, USING, GIST, BTREE},
+  morestring=[b]',
+  morecomment=[l]{--},
+  sensitive=false,
+}
+
+% ─── COLORES ─────────────────────────────────────────────────────────────────
+\usepackage[dvipsnames]{xcolor}
+\definecolor{uablue}{RGB}{0,128,255}     % Color portada Informática
+\definecolor{linkblue}{RGB}{0,102,204}
+
+% ─── ENLACES ─────────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=linkblue,
+  urlcolor=linkblue,
+  bookmarks=true,
+  bookmarksnumbered=true
+]{hyperref}
+
+% ─── BIBLIOGRAFÍA — BibLaTeX + Biber ────────────────────────────────────────
+\usepackage[
+  backend=biber,
+  style=apa,              % Estilo APA (cambiar a ieee-numeric si el tutor prefiere IEEE)
+  sorting=nyt,
+  maxcitenames=2,
+  mincitenames=1,
+  uniquelist=false,
+  language=spanish
+]{biblatex}
+\addbibresource{referencias.bib}
+
+% ─── OTROS PAQUETES ÚTILES ──────────────────────────────────────────────────
+\usepackage{enumitem}    % Listas personalizadas
+\usepackage{pdfpages}    % Incluir PDFs (portada)
+\usepackage{appendix}    % Anexos
+\usepackage{csquotes}    % Comillas correctas para biblatex
+\usepackage{glossaries}  % Glosario/acrónimos (opcional)
+\usepackage{tikz}        % Diagramas (opcional)
+
+% ─── ACRÓNIMOS ───────────────────────────────────────────────────────────────
+\newacronym{pwa}{PWA}{Progressive Web Application}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{jwt}{JWT}{JSON Web Token}
+\newacronym{crud}{CRUD}{Create, Read, Update, Delete}
+\newacronym{gps}{GPS}{Global Positioning System}
+\newacronym{srs}{SRS}{Software Requirements Specification}
+\newacronym{ux}{UX}{User Experience}
+\newacronym{ui}{UI}{User Interface}
+
+% ─── METADATOS DEL PDF ───────────────────────────────────────────────────────
+\hypersetup{
+  pdftitle={EcoAlerta — Aplicación colaborativa para propiciar el cuidado del medio ambiente},
+  pdfauthor={Erardo Aldana Pessoa},
+  pdfsubject={Trabajo Fin de Grado — Universidad de Alicante},
+  pdfkeywords={medio ambiente, incidencias, geolocalización, PWA, PostGIS, React}
+}
+
+% ==============================================================================
+% DOCUMENTO
+% ==============================================================================
+\begin{document}
+
+% ─── PORTADA ─────────────────────────────────────────────────────────────────
+% Opción 1: Incluir la portada oficial en PDF (recomendado)
+% \includepdf[pages=1]{plantillas/portada.pdf}
+% Opción 2: Portada generada en LaTeX (provisional hasta tener la plantilla oficial)
+\input{capitulos/00-portada}
+
+% ─── PÁGINAS PRELIMINARES (numeración romana) ────────────────────────────────
+\pagenumbering{roman}
+
+% Agradecimientos (opcional)
+\input{capitulos/00-agradecimientos}
+
+% Resumen
+\input{capitulos/00-resumen}
+
+% Índices
+\tableofcontents
+\listoffigures
+\listoftables
+
+% ─── CUERPO DE LA MEMORIA (numeración arábiga) ──────────────────────────────
+\cleardoublepage
+\pagenumbering{arabic}
+
+\input{capitulos/01-introduccion}
+\input{capitulos/02-estado-del-arte}
+\input{capitulos/03-analisis-disenyo}
+\input{capitulos/04-implementacion}
+\input{capitulos/05-evaluacion}
+\input{capitulos/06-conclusiones}
+
+% ─── BIBLIOGRAFÍA ────────────────────────────────────────────────────────────
+\cleardoublepage
+\printbibliography[heading=bibintoc, title={Bibliografía}]
+
+% ─── ANEXOS ──────────────────────────────────────────────────────────────────
+\begin{appendices}
+\input{capitulos/anexo-a-instalacion}
+\input{capitulos/anexo-b-manual-usuario}
+\input{capitulos/anexo-c-modelo-negocio}
+\end{appendices}
+
+\end{document}

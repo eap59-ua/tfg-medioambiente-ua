@@ -1,0 +1,52 @@
+% !TeX program = lualatex
+% !TeX encoding = UTF-8
+%% =============================================================================
+%% main-borrador-tutoria-1.tex — EcoAlerta TFG (Borrador parcial para tutor)
+%%
+%% Incluye: portada oficial, nota de progreso, resumen + abstract, TOC,
+%%          Cap 1, Cap 2, Cap 3 (completo), Cap 6.
+%% Omite: Cap 4, Cap 5, anexos (disponibles en main.tex).
+%% =============================================================================
+
+\makeatletter
+\def\input@path{{cls/}{sty/}{sty/componentes/}{recursos/}}
+\makeatother
+
+\input{eps-metadata}
+\documentclass{eps-tfg}
+\input{configuracion}
+\usepackage[software]{eps-componentes}
+
+\addbibresource{referencias.bib}
+\makeglossaries
+\input{contenido/anexos/acronimos}
+
+\usepackage{pdfpages}
+
+\begin{document}
+
+\frontmatter
+
+% Portada oficial (solo a color)
+% Portada oficial EPS (PDF rellenado por el autor)
+\includepdf[pages=-,fitpaper=true]{recursos/pdf_externos/portada-oficial-eap.pdf}
+
+% Nota de progreso para el tutor
+\input{contenido/frontmatter/borrador-nota-progreso}
+
+% Resumen y abstract
+\input{contenido/frontmatter/preliminares-borrador}
+
+% Índices
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+
+\input{contenido/capitulos/01-introduccion}
+\input{contenido/capitulos/02-estado-del-arte}
+\input{contenido/capitulos/03-analisis-disenyo}
+\input{contenido/capitulos/06-conclusiones}
+
+\end{document}

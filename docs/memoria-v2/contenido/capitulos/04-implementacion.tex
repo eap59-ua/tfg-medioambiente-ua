@@ -1,0 +1,275 @@
+% ==============================================================================
+\chapter{Implementación}
+\label{ch:implementacion}
+% ==============================================================================
+
+Este capítulo se basa en documentar el desarrollo. Describe la estructura del repositorio, el entorno, los seis sprints (con las decisiones técnicas más relevantes de cada uno), algunos extractos de código y el \textit{pipeline} de integración continua.
+
+
+\section{Entorno y herramientas}
+\label{sec:entorno}
+
+Se ha trabajado en Windows~11 con PowerShell. Las herramientas usadas son:
+
+\begin{itemize}
+  \item \textbf{IDE}: Google Antigravity (\textit{fork} de VS~Code con agentes de IA).
+  \item \textbf{Git} con convención \textit{Conventional Commits}.
+  \item \textbf{Docker Desktop} con Docker Compose v2.
+  \item \textbf{Node.js 20 LTS} y \textbf{PostgreSQL 16 + PostGIS 3.4} (en contenedor).
+  \item \textbf{Pruebas}: Jest~29 + Supertest~7 (\textit{backend}); Playwright~1.38 (E2E, vía MCP de Antigravity).
+  \item \textbf{Bibliografía}: Zotero exportando a BibLaTeX.
+  \item \textbf{Documentación API}: Swagger UI en \texttt{/api/docs}.
+  \item \textbf{MCPs}: GitHub, Context7, Playwright, Figma.
+\end{itemize}
+
+Se eligió Antigravity por su integración nativa con agentes (que encaja con el flujo SDD descrito en la sección~\ref{sec:metodologia}) y la compatibilidad con el ecosistema MCP, que permite ejecutar Playwright sin salir del editor.
+
+
+\section{Estructura del repositorio}
+\label{sec:estructura-repo}
+
+\begin{verbatim}
+tfg-medioambiente-ua/
+|-- .github/workflows/       # CI/CD GitHub Actions
+|-- database/                # init.sql, seeds
+|-- docs/                    # Documentacion del TFG
+|   |-- memoria/             #   Fuentes LaTeX
+|   |-- diagramas/           #   Fuentes PlantUML
+|   |-- sprints/             #   Specs SDD por sprint
+|-- nginx/                   # Reverse proxy
+|-- src/
+|   |-- backend/             # API Node.js + Express
+|   `-- frontend/            # SPA React + Tailwind + PWA
+|-- docker-compose.dev.yml
+|-- docker-compose.yml
+|-- Makefile
+`-- EcoAlerta_Development_Spec_v1.md
+\end{verbatim}
+
+El \textit{backend} sigue la organización \textit{routes~$\rightarrow$~controllers~$\rightarrow$~services} típica de Express: las rutas definen \textit{endpoints}, los controladores orquestan petición/respuesta, y los servicios encapsulan la lógica y las consultas. Los validadores usan \texttt{express-validator}. El \textit{frontend} se organiza por \textit{feature}: \path{components/}, \path{pages/}, \path{context/}, \path{hooks/}, \path{services/}, \path{utils/}.
+
+
+\section{Desarrollo por sprints}
+\label{sec:sprints}
+
+El desarrollo se organizó en seis \textit{sprints} de una semana. La Tabla~\ref{tab:sprints-resumen} resume cada uno; mientras que abajo se amplían los puntos técnicos más relevantes.
+
+\begin{table}[H]
+\centering
+\caption{Resumen de los seis sprints.}
+\label{tab:sprints-resumen}
+\small
+\begin{tabular}{@{}L{1cm}L{3.8cm}L{8cm}@{}}
+\toprule
+\textbf{S.} & \textbf{Tema} & \textbf{Entregables} \\
+\midrule
+1 & Auth + BD              & Esquema PostGIS, JWT dual, roles, \textit{middlewares} de seguridad \\
+2 & CRUD incidencias       & Creación con foto y GPS, validaciones, \textit{thumbnails} con Sharp \\
+3 & Mapa interactivo       & Leaflet + \textit{clusters}, filtros, búsqueda con \texttt{ST\_DWithin} \\
+4 & Admin + delegación     & Dashboard, cambio de estado, asignación, notificaciones \\
+5 & Testing + PWA          & Jest, Playwright, Service Worker, manifest, Swagger \\
+6 & \textit{Security hardening} & 2FA TOTP, Turnstile, \textit{audit log}, \textit{rate limit} por usuario \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Sprint 1: autenticación y BD}
+
+La BD se inicializa con un \texttt{init.sql} ejecutado por el contenedor en el primer arranque: habilita PostGIS, crea las trece tablas, define los \texttt{ENUM} (\texttt{user\_role}, \texttt{incident\_status}, \texttt{incident\_severity}), crea el índice GIST sobre \texttt{incidents.location} e inserta las 12 categorías y las 5 entidades por defecto.
+
+Para la autenticación se usa JWT con \textit{access token} de 15~minutos y \textit{refresh token} de 7~días. La función que firma ambos:
+
+\begin{jscode}
+const generateTokens = (user) => {
+  const payload = { id: user.id, email: user.email, role: user.role };
+  return {
+    accessToken:  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' }),
+    refreshToken: jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }),
+  };
+};
+\end{jscode}
+\captionof{listing}{Generación de \textit{access} y \textit{refresh tokens} JWT. Elaboración propia.}\label{lst:jwt-tokens}
+
+Las contraseñas se guardan en \texttt{password\_hash} con \textit{bcrypt}~\parencite{bcrypt} a 10 rondas (RNF-05). El \textit{middleware} \texttt{authenticate} verifica el token en cada petición protegida y pone el \textit{payload} en \texttt{req.user}; \texttt{optionalAuth} permite que los \textit{endpoints} de lectura pública funcionen sin token (RF-03). El control por rol es un \textit{factory}:
+
+\begin{jscode}
+const requireRole = (roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role))
+    return res.status(403).json({ success: false, error: 'Acceso restringido' });
+  next();
+};
+const requireAdmin  = requireRole(['admin']);
+const requireEntity = requireRole(['entity']);
+\end{jscode}
+\captionof{listing}{\textit{Middleware} de control de acceso por rol. Elaboración propia.}\label{lst:require-role}
+
+
+\subsection{Sprint 2: CRUD de incidencias}
+
+Aquí se monta el flujo principal: crear una incidencia con foto y GPS. Hay que destacar tres puntos:
+
+\begin{itemize}
+  \item \textbf{Subida \textit{multipart}} con \texttt{multer}, controlando tamaño y tipo MIME antes del controlador.
+  \item \textbf{\textit{Thumbnails}} JPEG (400~px, calidad 80) con \texttt{sharp}, generados en el servidor (RF-16).
+  \item \textbf{Ubicación} guardada con \texttt{ST\_SetSRID(ST\_MakePoint(lng, lat), 4326)} para fijar el SRID y evitar ambigüedad en consultas posteriores.
+\end{itemize}
+
+En el \textit{frontend}, la página \texttt{CreateIncidentPage} es un formulario por pasos: geolocalización automática (con \textit{fallback} a selección manual sobre el mapa), categoría y severidad, fotos con previsualización, descripción. Si no hay conexión, el borrador queda en IndexedDB y se sincroniza cuando vuelve la red.
+
+
+\subsection{Sprint 3: mapa interactivo}
+
+Se usa \texttt{react-leaflet} sobre \textit{tiles} de OpenStreetMap. Los marcadores se colorean por severidad mediante iconos SVG (RF-23) y se agrupan en \textit{clusters} con \texttt{leaflet.markercluster} (RF-21). Los filtros se componen dinámicamente y se proyectan en la consulta al \textit{backend}.
+
+La búsqueda por radio es la consulta más característica del sistema:
+
+\begin{jscode}
+const getNearbyIncidents = async (lat, lng, radiusKm = 5, filters = {}) => {
+  const radius = radiusKm * 1000;
+  const where = [`ST_DWithin(i.location::geography,
+                  ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $3)`];
+  const values = [lng, lat, radius];
+  // ... filtros dinamicos por status, categoryId, severity ...
+  const result = await query(`SELECT i.*, ST_Distance(...) AS distance_meters
+    FROM incidents i WHERE ${where.join(' AND ')}
+    ORDER BY distance_meters ASC LIMIT 50`, values);
+  return result.rows;
+};
+\end{jscode}
+\captionof{listing}{Búsqueda de incidencias cercanas con filtros dinámicos y orden por distancia. Elaboración propia.}\label{lst:nearby-incidents}
+
+Tres detalles importantes: la proyección a \texttt{geography} hace que la distancia sea en metros sobre la superficie terrestre y no en grados; los votos se agregan en una subconsulta para no contar filas duplicadas; el orden por \texttt{distance\_meters} aprovecha que la distancia ya se calculó. El \textit{geocoding} por dirección (RF-24) llama a Nominatim con caché en memoria.
+
+
+\subsection{Sprint 4: admin y delegación}
+
+Páginas \texttt{AdminDashboardPage} (con Recharts), \texttt{AdminIncidentsPage} (tabla con filtros y acciones masivas), \texttt{AdminUsersPage} y \texttt{AdminEntitiesPage}. La vista para entidades responsables es \texttt{EntityDashboardPage}: filtra automáticamente por \texttt{assigned\_entity\_id} del usuario.
+
+El cambio de estado (RF-31) es una transición atómica: la función \texttt{changeIncidentStatus} valida que la transición sea coherente con el diagrama de la Figura~\ref{fig:estados-incidencia}, escribe en \texttt{incident\_status\_history}, actualiza el campo \texttt{status} y dispara una notificación al autor y a los seguidores. Todo dentro de \texttt{BEGIN}/\texttt{COMMIT} para asegurar consistencia.
+
+Las notificaciones se generan en el \textit{backend} y se entregan por \textit{polling} cada 30 segundos desde el componente \texttt{NotificationBell}. Elegí \textit{polling} sobre WebSockets por simplicidad de despliegue y porque la frecuencia es baja. Las notificaciones \textit{push} reales (RF-45) se montaron en el siguiente sprint con el Service Worker.
+
+
+\subsection{Sprint 5: testing y PWA}
+
+Aquí se consolida la calidad. Bateria de pruebas en tres niveles (unitarias con Jest, integración con Supertest, E2E con Playwright). La cobertura final del \textit{backend} se discute en el Capítulo~\ref{ch:evaluacion}. Queda por debajo del 70\,\%, sobre todo en \textit{branches}, y se recoge como limitación.
+
+PWA: el \texttt{manifest.json} declara iconos, nombre, color y \texttt{display: standalone}. El Service Worker usa \textit{cache-first} para \textit{assets} estáticos y \textit{network-first} con \textit{fallback} a caché para llamadas API. Esto permite consultar el mapa y las incidencias guardadas sin conexión.
+
+Swagger se genera con \texttt{swagger-jsdoc} a partir de anotaciones \texttt{@swagger} en las rutas y se sirve en \texttt{/api/docs} con \texttt{swagger-ui-express}. Documentación y código no se desincronizan.
+
+
+\subsection{Sprint 6: \textit{security hardening}}
+
+Además de todo ello, se han añadido tres mejoras de seguridad. Las tablas \texttt{user\_2fa}, \texttt{user\_recovery\_codes} y \texttt{security\_audit\_log} entraron aquí, pasando el modelo de 10 a 13 entidades.
+
+\begin{itemize}
+  \item \textbf{2FA TOTP}. Integración de \texttt{otpauth} (RFC~6238) y \texttt{qrcode}. El secreto se guarda \textbf{cifrado} con AES-256 a partir de una clave maestra fuera del código fuente. Los códigos de recuperación, de un solo uso, se guardan \textit{hasheados}.
+  \item \textbf{Turnstile} (\textit{captcha} de Cloudflare). Componente \texttt{@marsidev/react-turnstile} en el \textit{frontend}; \textit{middleware} \texttt{turnstile.middleware.js} valida el token contra la API de Cloudflare en el \textit{backend}.
+  \item \textbf{\textit{Audit log}}. Cada evento de seguridad (login OK/KO, cambio de rol, activación 2FA) se guarda en \texttt{security\_audit\_log} con IP, \textit{user agent} y metadatos JSONB. No se borra. \texttt{audit.service.js} centraliza la escritura.
+\end{itemize}
+
+Se ha añadido también \textit{rate limiting} por usuario con los contadores \texttt{failed\_login\_attempts} y \texttt{failed\_login\_window\_start} en \texttt{users}, complementando el de \texttt{express-rate-limit} por IP. La doble protección frena fuerza bruta aunque el atacante rote IPs.
+
+
+\section{\textit{Frontend}: notas adicionales}
+\label{sec:frontend-destacados}
+
+La aplicación usa \texttt{react-router-dom} v6 con rutas públicas (mapa, detalle, login, registro) y rutas protegidas por rol. Las protegidas se envuelven en un \texttt{ProtectedRoute} que mira el contexto y redirige a \texttt{/login} si toca. \textit{Layout} con \texttt{Navbar} en escritorio y \texttt{MobileBottomNav} en móvil.
+
+El estado de autenticación vive en \texttt{AuthContext}, que expone \texttt{login}, \texttt{logout}, \texttt{refresh} y \texttt{user}. Los \textit{tokens} van en \texttt{localStorage}. Un interceptor de Axios detecta 401 por expiración y renueva el \textit{access token} con el \textit{refresh} antes de reintentar la petición. El \textit{hook} \texttt{useAuth} es el punto de acceso al contexto.
+
+\textbf{Componentes reutilizables clave}: SeverityBadge, StatusBadge, IncidentMarker, MapFilters, NotificationBell, TwoFactorSetupModal, TwoFactorVerifyForm.
+
+
+\section{Despliegue con Docker Compose}
+\label{sec:despliegue}
+
+\path{docker-compose.yml} define cinco componentes: \texttt{db} (PostgreSQL 16 + PostGIS 3.4 con \texttt{init.sql} y volumen \texttt{pgdata}), \texttt{backend} (Node 20 con Express en el puerto 5000), \texttt{frontend} (build de la SPA), \texttt{nginx} (\textit{reverse proxy} HTTPS y servidor de estáticos), y el volumen \texttt{pgdata}. \texttt{docker compose up -d} levanta el sistema completo (RNF-10).
+
+El \texttt{Makefile} ofrece atajos: \texttt{make dev}, \texttt{make test}, \texttt{make lint}, \texttt{make prod}, \texttt{make db-reset}.
+
+
+\section{Integración continua}
+\label{sec:cicd}
+
+\path{.github/workflows/ci.yml} se dispara en cada \textit{push} y \textit{pull request}. Tres etapas:
+
+\begin{enumerate}
+  \item \textbf{Lint} con ESLint sobre \textit{backend} y \textit{frontend}.
+  \item \textbf{Test} con Jest del \textit{backend} y reporte de cobertura archivado como artefacto.
+  \item \textbf{Build} de la imagen de producción del \textit{frontend}.
+\end{enumerate}
+
+El historial de \textit{commits} sigue \textit{Conventional Commits}, lo que permite generar el \texttt{CHANGELOG.md} automáticamente.
+
+
+\section{Capturas de pantalla}
+\label{sec:sprints-ui}
+
+A continuación se muestran las pantallas más representativas de la aplicación en funcionamiento, ordenadas según el flujo típico del ciudadano y la vista del administrador.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figuras/ui-mapa-principal.png}
+  \caption{Pantalla principal con el mapa de incidencias y el panel lateral de filtros. Captura propia.}
+  \label{fig:ui-mapa}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\textwidth]{figuras/ui-crear-incidencia.png}
+  \caption{Formulario de reporte de una incidencia, con categoría, severidad y ubicación. Captura propia.}
+  \label{fig:ui-reporte}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\textwidth]{figuras/ui-detalle.png}
+  \caption{Detalle de una incidencia con sus fotos, votos, comentarios y estado. Captura propia.}
+  \label{fig:ui-detalle}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figuras/ui-admin.png}
+  \caption{Dashboard del administrador con gráficos agregados (Recharts). Captura propia.}
+  \label{fig:ui-admin-cap}
+\end{figure}
+
+
+\section{Retos técnicos resueltos}
+\label{sec:retos}
+
+Algunos retos no triviales del proyecto, relevantes para la defensa:
+
+\subsubsection*{Rendimiento geoespacial}
+  La consulta «incidencias en un radio» se degrada rápido sin índice. \texttt{ST\_DWithin} con índice GIST hace que PostgreSQL descarte filas antes de calcular distancias, manteniendo latencias por debajo del umbral del RNF-01 incluso con miles de incidencias.
+
+\subsubsection*{Renovación transparente del \textit{token}}
+  JWT \textit{stateless} simplifica escalar pero complica invalidar. Se resuelve con \textit{access} corto (15~min), \textit{refresh} largo (7~días) con rotación en cada uso, y un interceptor Axios que renueva el \textit{access} sin que el usuario vea un 401 espurio.
+
+\subsubsection*{Inyección SQL}
+  Todas las consultas usan parámetros posicionales (\texttt{\$1}, \texttt{\$2}\dots) del \textit{driver} \texttt{pg}, nunca concatenación. En \texttt{getNearbyIncidents}, donde el número de filtros varía, los valores se acumulan en un \textit{array} y se pasan al \textit{driver} sin entrar al \textit{parser} SQL como cadena.
+
+\subsubsection*{Cifrado de secretos 2FA}
+  Un secreto TOTP en claro en BD sería como una contraseña débil ante un \textit{leak}. Lo cifro con AES-256 usando una clave maestra en variable de entorno, así un volcado de BD no basta para comprometer el segundo factor. Los códigos de recuperación van \textit{hasheados} porque nunca se han de recuperar en claro.
+
+\subsubsection*{\textit{Offline} con sincronización diferida}
+  El uso típico ocurre en zonas con cobertura inestable (rural, parajes naturales). El Service Worker cachea la UI y las llamadas a \texttt{/incidents/nearby}; los borradores van a IndexedDB y se sincronizan al recuperar conexión. Activación automática en navegadores con \textit{Background Sync}.
+
+
+\section{Asistencia de IA en la implementación}
+\label{sec:ia-implementacion}
+
+Tal y como se ha mencionado al inicio del trabajo, en la sección~\ref{sec:uso-ia}, parte importante del código se escribió con asistencia del agente de Antigravity siguiendo SDD. El flujo en cada sprint fue:
+
+\begin{enumerate}
+  \item Redacto la especificación del sprint en \path{docs/sprints/sprint-N.md}: requisitos a cubrir, criterios de aceptación, esquema de pruebas.
+  \item El agente genera código a partir de la especificación, con acceso \textit{read-only} al resto del repositorio como contexto.
+  \item Se revisa, se ejecutan pruebas locales, se depura y se ajusta manualmente lo que el agente hace mal.
+  \item \textit{Commit} en \textit{Conventional Commits} y \texttt{CHANGELOG.md} actualizado.
+\end{enumerate}
+
+Las intervenciones manuales más relevantes ocurrieron en la consulta geoespacial (el agente proponía \texttt{ST\_Distance} con \texttt{WHERE}, ineficiente; se cambió a \texttt{ST\_DWithin} tras revisar la documentación de PostGIS), en la transacción del cambio de estado (añadí \texttt{BEGIN}/\texttt{COMMIT} que el agente había omitido) y en la configuración del Service Worker (donde la estrategia inicial rompía las peticiones autenticadas). En esos puntos la IA propone soluciones que pasan los tests pero no son las óptimas; ahí entra la revisión humana.

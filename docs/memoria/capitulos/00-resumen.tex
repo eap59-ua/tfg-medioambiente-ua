@@ -1,0 +1,20 @@
+% ==============================================================================
+% Resumen ejecutivo (≤ 500 palabras). También se entrega aparte en UAproject.
+% ==============================================================================
+
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+\label{ch:resumen}
+
+EcoAlerta es una aplicación web progresiva (PWA) concebida como red social cívica especializada en medio ambiente. Permite a cualquier ciudadano reportar incidencias medioambientales (vertidos ilegales, contaminación, incendios forestales, animales abandonados o maltratados, daños a espacios naturales, entre otras) con foto y GPS, las clasifica por categoría y severidad, y las delega a la entidad responsable correcta (ayuntamiento, SEPRONA, bomberos, policía local) mediante un flujo de estados trazable. Los ciudadanos consultan el mapa público sin registrarse y, al autenticarse, votan, comentan y siguen los reportes de otros usuarios, creando un componente social que ayuda a priorizar las incidencias más relevantes.
+
+He desarrollado el proyecto en seis \textit{sprints} de una semana con enfoque iterativo e incremental, aplicando \textit{Spec-Driven Development} (SpecKit) para combinar especificaciones formales y asistencia de agentes de IA en el IDE Google Antigravity. El uso de IA está declarado de forma explícita en la memoria; las decisiones de diseño, la revisión de código y la responsabilidad final son mías.
+
+Tecnológicamente el sistema tiene tres capas en Docker Compose: SPA en React 18 con Tailwind y Leaflet sobre OpenStreetMap (instalable como PWA, con soporte \textit{offline}), API REST en Node.js 20 + Express 4 (con JWT dual token, 2FA TOTP, \textit{rate limiting} y Cloudflare Turnstile), y PostgreSQL 16 con PostGIS 3.4 (índice GIST y \texttt{ST\_DWithin} para consultas geoespaciales). El modelo tiene 13 entidades que cubren incidencias, fotos, comentarios, votos, seguimientos, historial de estados, notificaciones y un \textit{audit log} de seguridad.
+
+He definido 46 requisitos funcionales en cinco módulos (autenticación, incidencias, mapa, administración, social) y 12 requisitos no funcionales. La API expone 35 \textit{endpoints} REST documentados con Swagger. La validación combina pruebas unitarias y de integración con Jest+Supertest, y pruebas E2E con Playwright en tres navegadores; todo en un \textit{pipeline} de GitHub Actions que se ejecuta en cada \textit{push}.
+
+Los resultados confirman la viabilidad del sistema: despliegue reproducible con un comando, cobertura del \textit{backend} por encima del 60\,\%, búsquedas geoespaciales en un radio de 5~km por debajo de 500~ms con bases de datos de miles de incidencias y validación de todos los requisitos funcionales de prioridad alta. Como trabajo futuro propongo apertura a municipios reales mediante convenios, una aplicación nativa complementaria, integración con sistemas de gestión municipal existentes y un análisis más profundo del modelo de negocio B2G.
+
+\vspace{0.8cm}
+\noindent\textbf{Palabras clave:} aplicación cívica, medio ambiente, PostGIS, PWA, React, Node.js, JWT, Docker, Spec-Driven Development, OpenStreetMap.

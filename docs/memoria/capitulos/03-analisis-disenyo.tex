@@ -1,0 +1,350 @@
+% ==============================================================================
+\chapter{Análisis y diseño}
+\label{ch:analisis-disenyo}
+% ==============================================================================
+
+Este capítulo describe el análisis de requisitos y el diseño técnico de EcoAlerta: metodología, actores, requisitos funcionales y no funcionales, casos de uso, arquitectura, modelo de datos, diseño de la API REST y diseño preliminar de la interfaz. Es la base sobre la que se ha construido la implementación del Capítulo~\ref{ch:implementacion}.
+
+
+\section{Metodología de desarrollo}
+\label{sec:metodologia}
+
+He organizado el desarrollo en seis \textit{sprints} de una semana, con enfoque iterativo e incremental. La razón es práctica: los requisitos cambian con cada tutoría, conviene tener un producto funcional pronto para recibir realimentación, y el calendario disponible es ajustado.
+
+Sobre los \textit{sprints} aplico \textbf{Spec-Driven Development} (SpecKit)~\cite{speckit}, con cuatro fases por iteración:
+
+\begin{enumerate}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Specify}: redacto la especificación funcional del \textit{sprint} y los criterios de aceptación.
+  \item \textbf{Plan}: descompongo en tareas concretas con dependencias.
+  \item \textbf{Implement}: ejecuto las tareas con asistencia del agente de IA en Google Antigravity.
+  \item \textbf{Verify}: pruebas unitarias, de integración y E2E, y validación de los criterios.
+\end{enumerate}
+
+SDD me sirve por una razón específica: como uso asistencia de IA (sección~\ref{sec:uso-ia}), necesito una especificación previa que sirva tanto de guía al agente como de referencia para revisar lo que produce. El documento maestro \texttt{EcoAlerta\_Development\_Spec\_v1.md} vive en el repositorio como fuente de verdad. He tenido tutorías con el tutor cada dos semanas; las actas están en \path{docs/actas-tutorias/}.
+
+
+\section{Actores del sistema}
+\label{sec:actores}
+
+Cinco actores con sus accesos:
+
+\begin{table}[H]
+\centering
+\caption{Actores del sistema.}
+\label{tab:actores}
+\small
+\begin{tabular}{@{}L{3.2cm}L{7.5cm}L{3cm}@{}}
+\toprule
+\textbf{Actor} & \textbf{Descripción} & \textbf{Autenticación} \\
+\midrule
+Ciudadano anónimo       & Consulta el mapa y el detalle de incidencias. No puede crear, votar ni comentar. & Ninguna \\
+Ciudadano registrado    & Crea incidencias, vota, comenta y sigue reportes. Tiene perfil social. & JWT \\
+Administrador           & Valida, asigna a entidades y cambia estados. Accede al \textit{dashboard}. & JWT (rol \texttt{admin}) \\
+Entidad responsable     & Ayuntamiento, SEPRONA, bomberos, policía local u ONG. Recibe asignaciones. & JWT (rol \texttt{entity}) \\
+Sistema                 & Notificaciones automáticas, escalado por \textit{timeout} y \textit{audit log}. & Interno \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La separación entre anónimo y registrado es deliberada: el mapa público funciona como herramienta de transparencia cívica abierta a cualquiera, y al mismo tiempo las acciones con responsabilidad (crear, votar, comentar) requieren cuenta para que queden trazadas.
+
+
+\section{Requisitos}
+\label{sec:requisitos}
+
+He definido 46 requisitos funcionales, agrupados en cinco módulos, y 12 requisitos no funcionales. La prioridad funcional es \textit{Alta} (sistema mínimo viable), \textit{Media} (importante para experiencia) o \textit{Baja} (deseable).
+
+
+\subsection{Requisitos funcionales}
+\label{subsec:rf}
+
+\begin{longtable}{@{}L{1.3cm}L{1.3cm}L{8.5cm}L{2.5cm}@{}}
+\caption{Requisitos funcionales (RF-01 a RF-46).} \label{tab:rf} \\
+\toprule
+\textbf{ID} & \textbf{Pri.} & \textbf{Descripción} & \textbf{Actor} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Pri.} & \textbf{Descripción} & \textbf{Actor} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\textit{\textbf{Módulo de autenticación}}} \\
+RF-01 & Alta  & Registro con email y contraseña. & Ciudadano \\
+RF-02 & Alta  & Login con tokens JWT \textit{access} y \textit{refresh}. & Todos \\
+RF-03 & Alta  & Acceso anónimo en lectura (mapa y listado). & Anónimo \\
+RF-04 & Alta  & Roles: \texttt{citizen}, \texttt{admin}, \texttt{entity}, \texttt{moderator}. & Sistema \\
+RF-05 & Baja  & Recuperación de contraseña por email (limitada por SMTP). & Ciudadano \\
+RF-06 & Media & Edición de perfil. & Ciudadano \\
+RF-07 & Media & Perfil público con incidencias del usuario. & Ciudadano \\
+\multicolumn{4}{@{}l}{\textit{\textbf{Módulo de incidencias}}} \\
+RF-10 & Alta  & Creación con título, descripción, categoría, fotos y GPS. & Ciudadano reg. \\
+RF-11 & Alta  & Captura automática de la ubicación GPS. & Sistema \\
+RF-12 & Alta  & Selección manual en el mapa si no hay GPS. & Ciudadano \\
+RF-13 & Alta  & Clasificación por categoría (12 predefinidas). & Sistema \\
+RF-14 & Alta  & Severidad: leve, moderado, grave, crítico. & Ciud./Admin \\
+RF-15 & Alta  & 1--5 fotos por incidencia, máx. 10~MB cada una. & Ciudadano \\
+RF-16 & Media & \textit{Thumbnails} automáticos. & Sistema \\
+RF-17 & Media & Edición/eliminación solo si \texttt{status = pending}. & Ciudadano \\
+RF-18 & Media & Historial de cambios en \texttt{incident\_status\_history}. & Sistema \\
+RF-19 & Baja  & Borradores con capacidad \textit{offline} (PWA). & Ciudadano \\
+\multicolumn{4}{@{}l}{\textit{\textbf{Módulo de mapa interactivo}}} \\
+RF-20 & Alta  & Mapa con todas las incidencias geolocalizadas. & Todos \\
+RF-21 & Alta  & Agrupación en \textit{clusters} al disminuir el zoom. & Sistema \\
+RF-22 & Alta  & Filtros por categoría, severidad, estado, fecha y distancia. & Todos \\
+RF-23 & Alta  & Marcadores coloreados por severidad. & Sistema \\
+RF-24 & Media & Búsqueda por dirección (\textit{geocoding}). & Todos \\
+RF-25 & Alta  & Detalle al pulsar el marcador. & Todos \\
+RF-26 & Media & Búsquedas por radio (\texttt{ST\_DWithin}). & Sistema \\
+\multicolumn{4}{@{}l}{\textit{\textbf{Módulo de administración y delegación}}} \\
+RF-30 & Alta  & Panel admin con \textit{dashboard} de estadísticas. & Admin \\
+RF-31 & Alta  & Cambio de estado: pending $\rightarrow$ validated $\rightarrow$ in\_progress $\rightarrow$ resolved/rejected. & Admin \\
+RF-32 & Alta  & Asignación a entidades responsables. & Admin \\
+RF-33 & Alta  & Notificación a la entidad y actualización de estado. & Entidad \\
+RF-34 & Media & Escalado automático por \textit{timeout} configurable. & Sistema \\
+RF-35 & Media & Estadísticas por categoría, estado, zona, tiempo de resolución. & Admin \\
+RF-36 & Media & Gestión de categorías y entidades. & Admin \\
+RF-37 & Baja  & Marcado de duplicadas con vinculación. & Admin \\
+\multicolumn{4}{@{}l}{\textit{\textbf{Módulo social y notificaciones}}} \\
+RF-40 & Alta  & Votación de incidencias. & Ciudadano \\
+RF-41 & Alta  & Comentarios con distintivo de oficiales. & Ciud./Admin/Ent. \\
+RF-42 & Alta  & Notificación al autor y seguidores en cambio de estado. & Sistema \\
+RF-43 & Media & Seguimiento de incidencias. & Ciudadano \\
+RF-44 & Media & Perfil de usuario con incidencias, votos y estadísticas. & Ciudadano \\
+RF-45 & Media & Notificaciones \textit{push} con Service Worker. & Sistema \\
+RF-46 & Baja  & Notificaciones por email para cambios importantes. & Sistema \\
+\end{longtable}
+
+
+\subsection{Requisitos no funcionales}
+\label{subsec:rnf}
+
+Los RNF son atributos de calidad medibles. Cada uno se valida con métricas en el Capítulo~\ref{ch:evaluacion}.
+
+\begin{table}[H]
+\centering
+\caption{Requisitos no funcionales.}
+\label{tab:rnf}
+\small
+\begin{tabular}{@{}L{1.3cm}L{2.8cm}L{9cm}@{}}
+\toprule
+\textbf{ID} & \textbf{Categoría} & \textbf{Descripción} \\
+\midrule
+RNF-01 & Rendimiento    & Tiempo de respuesta API < 500~ms para el 95\,\% de peticiones. \\
+RNF-02 & Rendimiento    & Soporte de al menos 100 usuarios simultáneos. \\
+RNF-03 & Usabilidad     & \textit{Responsive}: 320~px, 768~px, $\geq$~1024~px. \\
+RNF-04 & Portabilidad   & PWA instalable con \texttt{manifest.json} y Service Worker. \\
+RNF-05 & Seguridad      & Contraseñas con \textit{bcrypt} (mínimo 10 rondas). \\
+RNF-06 & Seguridad      & \textit{Rate limiting} en todos los \textit{endpoints}. \\
+RNF-07 & Seguridad      & HTTPS obligatorio en producción. \\
+RNF-08 & Calidad        & Cobertura de pruebas unitarias > 70\,\% en \textit{backend}. \\
+RNF-09 & Calidad        & Tests E2E para los 3 flujos principales. \\
+RNF-10 & Mantenibilidad & Despliegue reproducible con un comando (\texttt{docker compose up}). \\
+RNF-11 & Mantenibilidad & Documentación Swagger/OpenAPI. \\
+RNF-12 & Accesibilidad  & WCAG 2.1 nivel AA. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Casos de uso}
+\label{sec:casos-uso}
+
+La Figura~\ref{fig:casos-uso} muestra los casos de uso por módulo. \texttt{<<requiere>>} marca los que necesitan autenticación; \texttt{<<include>>} marca los que disparan otro caso (por ejemplo, validar siempre incluye notificar al autor).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figuras/casos-uso.png}
+  \caption{Diagrama de casos de uso. Elaboración propia a partir de RF-01--RF-46.}
+  \label{fig:casos-uso}
+\end{figure}
+
+El actor \textit{Sistema} agrupa los procesos sin intervención humana directa: notificaciones tras cambios de estado (RF-42), escalado por \textit{timeout} (RF-34) y \textit{audit log} de seguridad.
+
+
+\section{Arquitectura del sistema}
+\label{sec:arquitectura}
+
+Arquitectura cliente-servidor de tres capas:
+
+\begin{enumerate}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Presentación}: SPA React~18 con Tailwind y Leaflet. Instalable como PWA.
+  \item \textbf{Lógica}: API REST en Node.js~20 + Express~4, con controladores, servicios, \textit{middlewares} y validadores. Swagger en \texttt{/api/docs}.
+  \item \textbf{Datos}: PostgreSQL~16 con PostGIS~3.4 (tipos geométricos, \texttt{ST\_DWithin}, índices GIST).
+\end{enumerate}
+
+Sobre las tres capas, un \textit{reverse proxy} nginx termina HTTPS, sirve los estáticos del \textit{frontend} y redirige \texttt{/api/*} al \textit{backend}. Todo se despliega con Docker Compose, que da reproducibilidad (RNF-10) y simplifica la demo de la defensa.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figuras/arquitectura.png}
+  \caption{Arquitectura de componentes.}
+  \label{fig:arquitectura}
+\end{figure}
+
+Servicios externos: \textit{tiles} de OpenStreetMap y \textit{geocoding} contra Nominatim. Ambos gratuitos; evitan dependencias de proveedores comerciales con API de pago, lo que simplifica el modelo de negocio del Anexo~\ref{app:modelo-negocio}.
+
+
+\subsection{Stack tecnológico}
+\label{subsec:stack}
+
+El tutor me dio libertad para elegir el \textit{stack}, con la condición de razonarlo. La Tabla~\ref{tab:stack} resume las tecnologías y la justificación breve de cada elección.
+
+\begin{table}[H]
+\centering
+\caption{Stack tecnológico.}
+\label{tab:stack}
+\small
+\begin{tabular}{@{}L{2.2cm}L{4cm}L{7cm}@{}}
+\toprule
+\textbf{Capa} & \textbf{Tecnología} & \textbf{Justificación} \\
+\midrule
+\textit{Frontend}    & React 18 + Tailwind & Maduro, integración con Leaflet, \textit{responsive} sencillo. \\
+Mapas         & Leaflet + OSM & \textit{Open source}, sin API key ni cuota. \\
+PWA           & Service Worker & Instalable, caché \textit{offline} (RF-19, RNF-04). \\
+\textit{Backend}     & Node.js 20 LTS + Express 4 & Asíncrono, ecosistema amplio, LTS hasta 2026. \\
+BD            & PostgreSQL 16 + PostGIS 3.4 & Tipos geométricos, \texttt{ST\_DWithin}, índices GIST (RF-26). \\
+Auth          & JWT (access+refresh) + bcrypt & Stateless, escalable, RNF-05. \\
+Contenedores  & Docker Compose & Despliegue con un comando (RNF-10). \\
+CI/CD         & GitHub Actions & Gratuito, \textit{lint} y tests por \textit{push}. \\
+Pruebas       & Jest + Supertest + Playwright & Pirámide unit/integration/E2E (RNF-08, RNF-09). \\
+\textit{Logging}     & Winston & Estructurado JSON. \\
+API docs      & Swagger & Anotaciones en código, sin desincronización (RNF-11). \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Modelo de datos}
+\label{sec:modelo-datos}
+
+El modelo tiene 13 entidades, agrupadas en cuatro subsistemas:
+
+\begin{itemize}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Identidad y seguridad}: \texttt{users}, \texttt{user\_2fa}, \texttt{user\_recovery\_codes}, \texttt{security\_audit\_log}.
+  \item \textbf{Catálogos}: \texttt{categories}, \texttt{responsible\_entities}.
+  \item \textbf{Núcleo de incidencias}: \texttt{incidents}, \texttt{incident\_photos}, \texttt{incident\_comments}, \texttt{incident\_status\_history}.
+  \item \textbf{Interacción social y notificaciones}: \texttt{incident\_votes}, \texttt{incident\_follows}, \texttt{notifications}.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figuras/modelo-er.png}
+  \caption{Modelo entidad-relación (13 tablas).}
+  \label{fig:modelo-er}
+\end{figure}
+
+
+\subsection{Entidades principales}
+
+\textbf{users}. Información de los usuarios, con \texttt{role}, \texttt{entity\_id}, \texttt{is\_active} e \texttt{is\_verified}. Los contadores \texttt{failed\_login\_attempts} y \texttt{failed\_login\_window\_start} dan \textit{rate limit} por usuario que refuerza RNF-06.
+
+\textbf{user\_2fa, user\_recovery\_codes}. Añadidas en el Sprint~6. Habilitan 2FA TOTP y guardan códigos de recuperación cifrados.
+
+\textbf{security\_audit\_log}. Eventos de seguridad (login OK/KO, cambios de rol y contraseña) con IP, \textit{user agent} y JSONB. No se borra: es el \textit{audit trail} del sistema.
+
+\textbf{responsible\_entities}. Catálogo de organismos asignables. \texttt{jurisdiction} es \texttt{GEOMETRY(Polygon, 4326)} para asignación geoespacial automática a futuro.
+
+\textbf{categories}. Las 12 categorías predefinidas, con severidad por defecto y entidad responsable sugerida. Reduce fricción al reportar.
+
+\textbf{incidents}. Entidad central. \texttt{location} es \texttt{GEOMETRY(Point, 4326)} con índice GIST para consultas geoespaciales (RF-26). \texttt{priority\_score} se deriva de severidad y votos para ordenar el \textit{dashboard} (RF-35).
+
+\textbf{incident\_photos, incident\_comments, incident\_votes, incident\_follows}. Relaciones 1:N (fotos, comentarios) y N:M (votos, seguimientos). Las dos últimas usan PK compuesta \texttt{(incident\_id, user\_id)} para garantizar unicidad sin índice extra.
+
+\textbf{incident\_status\_history}. Historial inmutable de transiciones (RF-18). Cada cambio inserta una fila con estado anterior, nuevo, usuario y nota opcional.
+
+\textbf{notifications}. Por usuario. \texttt{reference\_type} y \texttt{reference\_id} actúan como \textit{soft foreign key} polimórfica.
+
+
+\subsection{Rendimiento geoespacial}
+
+Las consultas más frecuentes son del tipo «incidencias en un radio de X~km». Las resuelvo con \texttt{ST\_DWithin} sobre un índice GIST:
+
+\begin{lstlisting}[language=SQL, basicstyle=\ttfamily\small, frame=single, backgroundcolor=\color{gray!5}]
+CREATE INDEX idx_incidents_location ON incidents USING GIST (location);
+
+SELECT id, title, severity FROM incidents
+WHERE  ST_DWithin(location::geography,
+                  ST_MakePoint(:lng, :lat)::geography,
+                  :radius_meters);
+\end{lstlisting}
+
+La proyección a \texttt{geography} antes de \texttt{ST\_DWithin} hace que la distancia se evalúe en metros sobre la superficie terrestre, no en grados sobre el plano cartesiano (que daría resultados incorrectos fuera del ecuador).
+
+
+\section{Flujo de estados de una incidencia}
+\label{sec:flujo-estados}
+
+Cada incidencia pasa por un ciclo de vida acotado, implementado como \texttt{ENUM} en PostgreSQL.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figuras/estados-incidencia.png}
+  \caption{Diagrama de estados de la incidencia. Cada transición se guarda en \texttt{incident\_status\_history}.}
+  \label{fig:estados-incidencia}
+\end{figure}
+
+El estado inicial es \texttt{pending}. Desde ahí, el admin valida, rechaza o marca como duplicada. Tras validar, asigna a una entidad y la incidencia pasa a \texttt{assigned} (con notificación automática al autor, RF-42). La entidad confirma el inicio del trabajo (\texttt{in\_progress}) y al actuar la cierra como \texttt{resolved} con nota obligatoria. Como excepción, una entidad puede rechazar si no es de su competencia. El RF-34 contempla escalado automático por \textit{timeout} si una incidencia en \texttt{in\_progress} no avanza.
+
+
+\section{Diseño de la API REST}
+\label{sec:api}
+
+La API expone 35 \textit{endpoints} bajo \texttt{/api/v1}, organizados en seis recursos. Documentación interactiva Swagger en \texttt{/api/docs}.
+
+\begin{longtable}{@{}L{1.5cm}L{6cm}L{7cm}@{}}
+\caption{Endpoints principales.} \label{tab:api-endpoints} \\
+\toprule
+\textbf{Método} & \textbf{Ruta} & \textbf{Descripción} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Método} & \textbf{Ruta} & \textbf{Descripción} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\textit{Auth}} \\
+POST   & \texttt{/auth/register}                & Registro. \\
+POST   & \texttt{/auth/login}                   & Login (\textit{access}+\textit{refresh}). \\
+POST   & \texttt{/auth/refresh}                 & Renovar \textit{access token}. \\
+GET/PUT & \texttt{/auth/me}                     & Perfil del usuario autenticado. \\
+\multicolumn{3}{@{}l}{\textit{Incidents}} \\
+GET    & \texttt{/incidents}                    & Listado paginado con filtros. \\
+GET    & \texttt{/incidents/:id}                & Detalle con fotos y comentarios. \\
+POST   & \texttt{/incidents}                    & Creación (\textit{multipart}). \\
+PUT/DELETE & \texttt{/incidents/:id}            & Edición/baja (autor o admin). \\
+GET    & \texttt{/incidents/nearby}             & Geoespacial (\texttt{lat}, \texttt{lng}, \texttt{radius}). \\
+GET    & \texttt{/incidents/:id/history}        & Historial de estados. \\
+POST   & \texttt{/incidents/:id/vote}           & Votar. \\
+POST   & \texttt{/incidents/:id/follow}         & Seguir. \\
+POST   & \texttt{/incidents/:id/comments}       & Comentar. \\
+\multicolumn{3}{@{}l}{\textit{Admin}} \\
+GET    & \texttt{/admin/dashboard}              & Estadísticas. \\
+GET/PUT & \texttt{/admin/incidents}             & Listado y cambios de estado/asignación. \\
+GET/PUT & \texttt{/admin/users}                 & Gestión de usuarios y roles. \\
+GET/POST/PUT & \texttt{/admin/entities}         & CRUD de entidades responsables. \\
+\multicolumn{3}{@{}l}{\textit{Users / Notifications / Health}} \\
+GET    & \texttt{/users/:id/*}                  & Perfil público, incidencias, estadísticas. \\
+GET/PUT & \texttt{/notifications}               & Listar y marcar como leídas. \\
+GET    & \texttt{/health}                       & \textit{Health check}. \\
+\end{longtable}
+
+La autenticación usa el esquema \texttt{Bearer} sobre JWT. \textit{Access token} de 15 minutos, \textit{refresh token} de 7 días con rotación en cada uso. El \textit{middleware} verifica firma y vigencia antes de poblar \texttt{req.user}.
+
+
+\section{Diseño de la interfaz de usuario}
+\label{sec:disenyo-ui}
+
+Tres principios:
+
+\begin{enumerate}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Mobile-first}: el caso de uso principal (reportar sobre el terreno) ocurre desde el móvil. Los \textit{breakpoints} de Tailwind adaptan la UI a pantallas mayores (RNF-03).
+  \item \textbf{Mapa como eje}: la pantalla principal es el mapa, no una lista. Transmite densidad y distribución del problema, coherente con la naturaleza cívica del producto.
+  \item \textbf{Accesibilidad}: contrastes verificados, navegación por teclado y etiquetas ARIA en los controles (RNF-12).
+\end{enumerate}
+
+Las pantallas clave son: mapa principal, formulario de reporte, detalle de incidencia, panel admin y perfil de usuario. Las capturas de la aplicación real están en el Capítulo~\ref{ch:implementacion} (sección~\ref{sec:sprints-ui}) y en el manual del Anexo~\ref{app:manual-usuario}.
+
+% TODO: añadir capturas reales aquí cuando estén

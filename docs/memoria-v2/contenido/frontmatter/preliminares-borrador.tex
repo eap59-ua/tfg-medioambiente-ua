@@ -1,0 +1,40 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PRELIMINARES DEL BORRADOR — solo resumen y abstract
+% (los agradecimientos definitivos se incorporan en la versión final)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Resumen
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+EcoAlerta es una aplicación web progresiva (PWA) concebida como red social cívica especializada en medio ambiente. Permite a cualquier ciudadano reportar incidencias medioambientales (vertidos ilegales, contaminación, incendios forestales, animales abandonados o maltratados, daños a espacios naturales, entre otras) con foto y GPS, las clasifica por categoría y severidad, y las delega a la entidad responsable correcta (ayuntamiento, SEPRONA, bomberos, policía local) mediante un flujo de estados trazable. Los ciudadanos consultan el mapa público sin registrarse y, al autenticarse, votan, comentan y siguen los reportes de otros usuarios.
+
+He desarrollado el proyecto en seis \textit{sprints} de una semana con enfoque iterativo e incremental, aplicando \textit{Spec-Driven Development} (SpecKit) para combinar especificaciones formales y asistencia de agentes de IA en el IDE Google Antigravity. El uso de IA está declarado de forma explícita en la memoria.
+
+Tecnológicamente el sistema tiene tres capas en Docker Compose: SPA en React 18 con Tailwind y Leaflet sobre OpenStreetMap (instalable como PWA, con soporte \textit{offline}), API REST en Node.js 20 + Express 4 (con JWT dual token, 2FA TOTP, \textit{rate limiting} y Cloudflare Turnstile), y PostgreSQL 16 con PostGIS 3.4. El modelo tiene 13 entidades.
+
+He definido 46 requisitos funcionales en cinco módulos y 12 requisitos no funcionales. La API expone 35 \textit{endpoints} REST documentados con Swagger. La validación combina Jest+Supertest y Playwright en tres navegadores, sobre un \textit{pipeline} de GitHub Actions.
+
+Los resultados confirman la viabilidad del sistema: despliegue reproducible con un comando, cobertura del \textit{backend} por encima del 60\,\%, búsquedas geoespaciales en un radio de 5~km por debajo de 500~ms y validación de todos los requisitos funcionales de prioridad alta.
+
+\noindent\textbf{Palabras clave:} aplicación cívica, medio ambiente, PostGIS, PWA, React, Node.js, JWT, Docker, Spec-Driven Development.
+
+\clearpage
+
+%% Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+EcoAlerta is a Progressive Web Application (PWA) conceived as a civic social network specialised in environmental issues. It allows any citizen to report environmental incidents (illegal dumping, pollution, wildfires, abandoned or mistreated animals, damage to natural areas, among other categories) with a photo and GPS coordinates. The system classifies each report by category and severity, and delegates it to the appropriate responsible entity (city council, SEPRONA, fire department, local police) through a traceable state flow. Citizens consult the public map without registering and, once authenticated, vote, comment and follow other users' reports.
+
+The project was developed in six one-week sprints following an iterative and incremental approach, applying Spec-Driven Development (SpecKit) to combine formal specifications with AI agent assistance in the Google Antigravity IDE. The use of AI is explicitly declared in the report.
+
+Technologically, the system has three layers deployed with Docker Compose: a SPA in React 18 with Tailwind and Leaflet over OpenStreetMap (installable as a PWA with offline support), a REST API in Node.js 20 + Express 4 (with JWT dual token, TOTP 2FA, rate limiting and Cloudflare Turnstile), and PostgreSQL 16 with PostGIS 3.4. The data model has 13 entities.
+
+46 functional requirements were defined across five modules plus 12 non-functional requirements. The REST API exposes 35 endpoints documented with Swagger. Validation combines Jest+Supertest and Playwright across three browsers, on a GitHub Actions pipeline.
+
+Results confirm the system's viability: reproducible deployment with one command, backend test coverage above 60\,\%, geospatial searches within a 5~km radius under 500~ms and validation of all high-priority functional requirements.
+
+\noindent\textbf{Keywords:} civic application, environment, PostGIS, PWA, React, Node.js, JWT, Docker, Spec-Driven Development.
+
+\clearpage

@@ -1,0 +1,86 @@
+@startuml EcoAlerta_Arquitectura_Componentes
+' ============================================================================
+' EcoAlerta — Diagrama de Arquitectura de Componentes
+' Fuente: docker-compose.yml + src/backend + src/frontend + Spec v1 §6
+' ============================================================================
+
+!theme plain
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam component {
+  BackgroundColor #F4F8FC
+  BorderColor #0080FF
+  ArrowColor #0060B0
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam cloud {
+  BackgroundColor #FFF8E1
+  BorderColor #F9A825
+}
+skinparam node {
+  BackgroundColor #ECEFF1
+  BorderColor #455A64
+}
+
+' ─── CLIENTE ────────────────────────────────────────────────────────────────
+node "Dispositivo del ciudadano" as Client {
+  component "Navegador\n(PWA instalable)" as Browser {
+    component "React 18 + Tailwind" as React
+    component "Leaflet.js\n(mapas)"  as Leaflet
+    component "Service Worker\n(cache offline)"  as SW
+    component "IndexedDB\n(borradores)" as IDB
+  }
+}
+
+' ─── SERVIDOR ───────────────────────────────────────────────────────────────
+node "Servidor (Docker Compose)" as Server {
+
+  component "nginx\n(reverse proxy + HTTPS)" as Nginx
+
+  package "Backend (Node.js 20 + Express 4)" as Backend {
+    component "app.js\n(entry point)" as App
+    component "Routes\n(auth, incidents, admin,\nusers, notifications)" as Routes
+    component "Controllers" as Controllers
+    component "Services\n(auth, incident,\nnotification, entity)" as Services
+    component "Middlewares\n(JWT, rate-limit,\nvalidation, logger)" as Middlewares
+    component "Validators\n(Joi)" as Validators
+    component "Swagger UI\n(/api/docs)" as Swagger
+  }
+
+  database "PostgreSQL 16\n+ PostGIS 3.4" as DB {
+    component "Tablas (13)\n+ índice GIST" as Tables
+    component "Seeds\n(12 categorías,\n5 entidades)" as Seeds
+  }
+
+  folder "Storage local\n(uploads/)" as Storage
+}
+
+' ─── SERVICIOS EXTERNOS ─────────────────────────────────────────────────────
+cloud "OpenStreetMap\n(tiles)"           as OSM
+cloud "Nominatim\n(geocoding)"           as Nominatim
+cloud "GitHub Actions\n(CI/CD)"          as GHA
+cloud "GitHub\n(repositorio)"            as GitHub
+
+' ─── FLUJOS ─────────────────────────────────────────────────────────────────
+Browser   -[#0080FF]-> Nginx           : HTTPS\n(443)
+Nginx     -[#0080FF]-> App             : HTTP\n(internal)
+Nginx     -->          React           : static files
+App       -->          Routes
+Routes    -->          Middlewares
+Middlewares --> Controllers
+Controllers --> Services
+Services  -->          DB              : SQL\n(pg driver)
+Services  -->          Storage         : fotos
+Controllers --> Validators
+App       -->          Swagger
+
+Leaflet   -[#F9A825]-> OSM             : tiles
+React     -[#F9A825]-> Nominatim       : búsqueda\nde direcciones
+
+GitHub    -[dashed]->  GHA             : push
+GHA       -[dashed]->  Server          : deploy
+
+@enduml

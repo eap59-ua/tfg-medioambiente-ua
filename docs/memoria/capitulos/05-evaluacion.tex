@@ -1,0 +1,173 @@
+% ==============================================================================
+\chapter{Evaluación}
+\label{ch:evaluacion}
+% ==============================================================================
+
+Recojo en este capítulo los resultados de validar EcoAlerta: pruebas automatizadas (Jest, Supertest, Playwright), verificación del cumplimiento de los requisitos del Capítulo~\ref{ch:analisis-disenyo} y resultados preliminares de pruebas con usuarios reales.
+
+
+\section{Pruebas automatizadas del \textit{backend}}
+\label{sec:tests-backend}
+
+Las pruebas del \textit{backend} se ejecutan con Jest~29 y Supertest~7, en tres niveles:
+
+\begin{itemize}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Unitarias de controladores y \textit{middlewares}} (con mocks): \texttt{auth.controller.test.js}, \texttt{auth.middleware.test.js}, \texttt{auth.service.test.js}, \texttt{admin.controller.test.js}, \texttt{admin.service.test.js}, \texttt{error.middleware.test.js}, \texttt{incident.controller.test.js}, \texttt{incident.service.test.js}, \texttt{notification.service.test.js}, \texttt{photo.service.test.js}, \texttt{upload.middleware.test.js}, \texttt{routes.test.js}, \texttt{geocoding.service.test.js}.
+  \item \textbf{Servicios de seguridad}: \texttt{crypto.service.test.js}, \texttt{qr.service.test.js}, \texttt{turnstile.service.test.js}, \texttt{twofa.service.test.js}.
+  \item \textbf{Integración de API}: \texttt{auth.routes.test.js}, extensible al resto de recursos.
+\end{itemize}
+
+La cobertura final, medida con el reporte HTML de Jest (\path{src/backend/coverage/lcov-report/index.html}), está en la Tabla~\ref{tab:coverage-final}.
+
+\begin{table}[H]
+\centering
+\caption{Cobertura final del \textit{backend}.}
+\label{tab:coverage-final}
+\small
+\begin{tabular}{@{}L{3cm}L{2.5cm}L{2.5cm}L{4.5cm}@{}}
+\toprule
+\textbf{Métrica} & \textbf{Cobertura} & \textbf{Objetivo (RNF-08)} & \textbf{Comentario} \\
+\midrule
+\textit{Statements} & 61{,}52\,\% & > 70\,\% & Por encima del 50\,\% mínimo \\
+\textit{Branches}   & 38{,}91\,\% & > 70\,\% & No cumple (limitación) \\
+\textit{Functions}  & 62{,}40\,\% & > 70\,\% & Mayoría de controladores \\
+\textit{Lines}      & 62{,}92\,\% & > 70\,\% & Lógica de negocio cubierta \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La cobertura está por debajo del 70\,\% que me marqué. La razón es que muchas ramas de manejo de error (\textit{catch} de excepciones específicas, \textit{timeouts} de servicios externos, escenarios de concurrencia) no se prueban explícitamente. Lo discuto como limitación en el Capítulo~\ref{ch:conclusiones}.
+
+
+\section{Pruebas \textit{end-to-end} con Playwright}
+\label{sec:tests-e2e}
+
+Las pruebas E2E corren con Playwright sobre la aplicación completa levantada con Docker Compose. Cubren los tres flujos principales (RNF-09) y un cuarto de seguridad añadido en el Sprint~6. La Tabla~\ref{tab:tests-e2e} resume los \textit{specs}.
+
+\begin{table}[H]
+\centering
+\caption{Pruebas E2E con Playwright.}
+\label{tab:tests-e2e}
+\small
+\begin{tabular}{@{}L{4cm}L{8.5cm}@{}}
+\toprule
+\textbf{Spec} & \textbf{Escenarios} \\
+\midrule
+\texttt{incident-report.spec.js} & Registro, login, creación de incidencia con foto y GPS, marcador en el mapa, voto, comentario. \\
+\texttt{map-navigation.spec.js}  & Zoom, paneo, filtros por categoría y severidad, búsqueda por dirección, detalle. \\
+\texttt{admin-management.spec.js} & Acceso al \textit{dashboard}, cambio de estado, asignación a entidad, notificación al autor. \\
+\texttt{security.spec.js}        & Activación de 2FA, verificación en \textit{login}, código de recuperación, límite de intentos. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las pruebas se ejecutan en Chromium, Firefox y WebKit en paralelo. Un ciclo completo de las cuatro \textit{specs} en los tres navegadores tarda unos cuatro minutos.
+
+
+\section{Validación del cumplimiento de requisitos}
+\label{sec:validacion-requisitos}
+
+\providecommand{\cmark}{\ensuremath{\checkmark}}
+\providecommand{\pmark}{$\sim$}
+\providecommand{\xmark}{$\times$}
+
+Resumen del cumplimiento (\cmark{} cumplido, \pmark{} parcial, \xmark{} fuera de alcance). Los requisitos parciales se deben sobre todo a infraestructura externa (SMTP, certificados, \textit{scheduler}) que no he desplegado en desarrollo.
+
+\begin{longtable}{@{}L{1.5cm}L{1cm}L{10cm}@{}}
+\caption{Resumen del cumplimiento de requisitos funcionales.} \label{tab:validacion-rf} \\
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+RF-01..04 & \cmark & Registro, login JWT, acceso anónimo y roles verificados con tests unitarios e integración. \\
+RF-05     & \pmark & Implementado, sin SMTP real para validar end-to-end. \\
+RF-06..07 & \cmark & Edición de perfil y perfil público operativos. \\
+RF-10..18 & \cmark & CRUD de incidencias con foto, GPS, severidad, historial e índice GIST verificado. \\
+RF-19     & \pmark & Borradores en IndexedDB OK; \textit{Background Sync} solo en Chrome. \\
+RF-20..26 & \cmark & Mapa con \textit{clustering}, filtros, \texttt{ST\_DWithin}, \textit{geocoding}. \\
+RF-30..33 & \cmark & Dashboard, cambios de estado, asignación a entidad y notificaciones. \\
+RF-34     & \pmark & Diseñado pero falta el \textit{scheduler} (trabajo futuro). \\
+RF-35..36 & \cmark & Estadísticas y CRUD de catálogos en panel admin. \\
+RF-37     & \pmark & API disponible, UI simplificada. \\
+RF-40..44 & \cmark & Votos, comentarios oficiales, notificaciones, seguimiento, perfil social. \\
+RF-45     & \pmark & Service Worker registrado; \textit{push} requiere VAPID en producción. \\
+RF-46     & \xmark & Fuera de alcance (sin SMTP). \\
+\end{longtable}
+
+\begin{table}[H]
+\centering
+\caption{Cumplimiento de requisitos no funcionales.}
+\label{tab:validacion-rnf}
+\small
+\begin{tabular}{@{}L{1.5cm}L{1cm}L{10cm}@{}}
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+RNF-01 & \cmark & Latencia geoespacial < 300~ms en local. \\
+RNF-02 & \pmark & Sin prueba de carga (dimensionado teórico OK). \\
+RNF-03 & \cmark & \textit{Responsive} verificado en 320, 768 y 1024~px. \\
+RNF-04 & \cmark & PWA instalable. \\
+RNF-05 & \cmark & \textit{bcrypt} con 10 rondas. \\
+RNF-06 & \cmark & \textit{Rate limit} por IP y por usuario. \\
+RNF-07 & \pmark & nginx preparado, falta certificado real. \\
+RNF-08 & \pmark & Cobertura 61--63\,\% (objetivo 70\,\%). \\
+RNF-09 & \cmark & 4 \textit{specs} E2E. \\
+RNF-10 & \cmark & \texttt{docker compose up -d}. \\
+RNF-11 & \cmark & Swagger en \texttt{/api/docs}. \\
+RNF-12 & \pmark & Contrastes y teclado verificados; auditoría WCAG completa pendiente. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Pruebas de usabilidad}
+\label{sec:usabilidad}
+
+Para complementar las pruebas automáticas hice una prueba de usabilidad ligera con tres usuarios:
+
+\begin{enumerate}[leftmargin=1.2cm, itemsep=2pt]
+  \item Reclutamiento de tres personas con perfiles distintos (edad, familiaridad con la tecnología, experiencia con apps cívicas).
+  \item Presentación breve del objetivo del sistema, sin instrucciones detalladas.
+  \item Tres tareas: consultar una incidencia en el mapa, crear una incidencia con foto, votar una existente.
+  \item Observación sin intervención, anotando dificultades y tiempos.
+  \item Entrevista corta al final con cinco preguntas abiertas.
+\end{enumerate}
+
+% TODO: rellenar con los resultados reales
+
+\begin{table}[H]
+\centering
+\caption{Resultados preliminares (plantilla, pendiente de rellenar).}
+\label{tab:usabilidad}
+\small
+\begin{tabular}{@{}L{3cm}L{3cm}L{3cm}L{3cm}@{}}
+\toprule
+\textbf{Tarea} & \textbf{Usuario A} & \textbf{Usuario B} & \textbf{Usuario C} \\
+\midrule
+Consultar mapa  & [tiempo / éxito] & [tiempo / éxito] & [tiempo / éxito] \\
+Crear incidencia & [tiempo / éxito] & [tiempo / éxito] & [tiempo / éxito] \\
+Votar incidencia & [tiempo / éxito] & [tiempo / éxito] & [tiempo / éxito] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Valoración global}
+\label{sec:valoracion-global}
+
+Tras la evaluación destaco lo siguiente:
+
+\begin{itemize}[leftmargin=1.2cm, itemsep=2pt]
+  \item Todos los requisitos funcionales de prioridad alta están cumplidos y respaldados por pruebas. Los parciales son consecuencia de no tener desplegada la infraestructura externa.
+  \item Los requisitos no funcionales se cumplen en su mayoría; la cobertura del \textit{backend} es el \textit{gap} más visible (61--63\,\% frente a 70\,\%), aunque está por encima del 50\,\% que se considera mínimo industrial.
+  \item El sistema es reproducible con un comando, lo que satisface OBJ-2 y OBJ-8.
+  \item La pirámide de pruebas tiene la forma adecuada: muchas unitarias, integración moderada, E2E sobre los tres flujos principales más seguridad.
+\end{itemize}
+
+Las limitaciones se discuten con detalle en el capítulo siguiente, junto con las líneas de trabajo futuro.

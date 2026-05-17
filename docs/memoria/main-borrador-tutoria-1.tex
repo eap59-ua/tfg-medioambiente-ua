@@ -1,0 +1,147 @@
+% ==============================================================================
+% EcoAlerta — BORRADOR para tutoría 1 (versión compacta, ~30-40 páginas)
+% NO ES la memoria final. Para la memoria completa usar main.tex.
+% ==============================================================================
+% Compilar con: pdflatex main-borrador-tutoria-1.tex (2 pasadas)
+% No requiere biber porque no hay bibliografía en este borrador.
+% ==============================================================================
+
+\documentclass[a4paper, 12pt, twoside, openright]{report}
+
+% ─── CODIFICACIÓN Y TIPOGRAFÍA ──────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{mathpazo}
+
+% ─── MÁRGENES — Libro de Estilo EPS ─────────────────────────────────────────
+\usepackage[a4paper, inner=3.0cm, outer=2.5cm, top=2.5cm, bottom=2.5cm, headheight=15pt]{geometry}
+
+\usepackage{setspace}
+\onehalfspacing
+
+% ─── CABECERAS Y PIES DE PÁGINA ─────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO]{\small\nouppercase{\rightmark}}
+\fancyhead[LE]{\small\nouppercase{EcoAlerta — TFG (Borrador)}}
+\fancyfoot[RO,LE]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[RO,LE]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% ─── TÍTULOS ────────────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\usepackage{helvet}
+\titleformat{\chapter}[display]{\normalfont\sffamily\Huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}{\normalfont\sffamily\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\sffamily\large\bfseries}{\thesubsection}{1em}{}
+
+% ─── TABLAS Y FIGURAS ───────────────────────────────────────────────────────
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!60!black}
+\usepackage{amssymb}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\providecommand{\cmark}{\ensuremath{\checkmark}}
+\providecommand{\pmark}{$\sim$}
+\providecommand{\xmark}{$\times$}
+
+\definecolor{uablue}{RGB}{0,128,255}
+
+% Stub de \cite para no requerir biblatex en el borrador
+\providecommand{\cite}[1]{[\texttt{#1}]}
+
+% ─── METADATOS ──────────────────────────────────────────────────────────────
+\title{EcoAlerta — Aplicación colaborativa para propiciar el cuidado del medio ambiente}
+\author{Erardo Aldana Pessoa}
+\date{Borrador para tutoría — \today}
+
+% ──────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ─── PORTADA PROVISIONAL ────────────────────────────────────────────────────
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\sffamily\bfseries\color{uablue}\Huge EcoAlerta}\\[0.6cm]
+{\sffamily\Large Aplicación colaborativa para propiciar el cuidado del medio ambiente}\\[2cm]
+{\Large\textit{Borrador parcial para revisión}}\\[1cm]
+{\Large Trabajo Fin de Grado}\\[0.4cm]
+{\large Grado en Ingeniería Informática\\Universidad de Alicante}\\[3cm]
+\begin{tabular}{rl}
+\large\textbf{Autor:} & \large Erardo Aldana Pessoa \\[0.3cm]
+\large\textbf{Tutor:} & \large José Luis Sánchez Romero \\[0.3cm]
+\large\textbf{Convocatoria:} & \large C3 — Curso 2025--2026 \\[0.3cm]
+\large\textbf{Fecha del borrador:} & \large \today \\
+\end{tabular}
+\vfill
+{\small\textit{Este documento es un borrador parcial entregado al tutor. Para la versión completa, ver \texttt{main.tex} del repositorio.}}
+\end{titlepage}
+
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% ─── NOTA DE PROGRESO ──────────────────────────────────────────────────────
+\input{capitulos/borrador-nota-progreso.tex}
+
+\newpage
+
+% ─── ÍNDICE COMPLETO DEL DOCUMENTO FINAL ───────────────────────────────────
+\chapter*{Índice previsto del documento final}
+\addcontentsline{toc}{chapter}{Índice previsto del documento final}
+
+A continuación se presenta el índice estructural completo de la memoria final, con indicación del estado de cada capítulo (\cmark{} redactado, \pmark{} en redacción, \xmark{} pendiente):
+
+\begin{center}
+\small
+\begin{tabular}{@{}L{0.7cm}L{8cm}L{1cm}L{2.5cm}@{}}
+\toprule
+\textbf{N.º} & \textbf{Título del capítulo} & \textbf{Estado} & \textbf{Páginas est.} \\
+\midrule
+   & Resumen + abstract & \cmark & 2 \\
+   & Agradecimientos & \pmark & 1 \\
+1  & Introducción & \cmark & 7 \\
+2  & Estado del arte & \pmark & 13 \\
+3  & Análisis y diseño & \cmark & 22 \\
+4  & Implementación & \cmark & 15 \\
+5  & Evaluación & \pmark & 10 \\
+6  & Conclusiones y trabajo futuro & \cmark & 6 \\
+A  & Guía de instalación (anexo) & \cmark & 4 \\
+B  & Manual de usuario (anexo) & \pmark & 7 \\
+C  & Modelo de negocio (anexo) & \cmark & 5 \\
+   & Bibliografía & \cmark & 2 \\
+\midrule
+   & \textbf{Total estimado} & & \textbf{$\sim$94} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent Leyenda: \cmark{} redactado y compilable; \pmark{} estructurado pero pendiente de incorporar capturas, observaciones de campo o resultados de usuarios reales.
+
+\newpage
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ─── CAPÍTULOS INCLUIDOS EN ESTE BORRADOR ──────────────────────────────────
+\input{capitulos/01-introduccion.tex}
+\input{capitulos/borrador-cap3-resumen.tex}
+\input{capitulos/06-conclusiones.tex}
+
+\end{document}

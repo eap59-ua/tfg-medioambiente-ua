@@ -1,0 +1,157 @@
+% ==============================================================================
+\chapter{Evaluación}
+\label{ch:evaluacion}
+% ==============================================================================
+
+Una vez cerrado el desarrollo tocaba comprobar que lo construido realmente funcionaba. Me apoyo en pruebas automatizadas a varios niveles (Jest y Supertest en el \textit{backend}, Playwright para los flujos completos), en la verificación punto por punto de los requisitos del Capítulo~\ref{ch:analisis-disenyo} y en un protocolo de evaluación con usuarios reales que dejo planificado como trabajo futuro inmediato.
+
+
+\section{Pruebas automatizadas del \textit{backend}}
+\label{sec:tests-backend}
+
+Las pruebas del \textit{backend} corren sobre Jest~29~\parencite{jest} y Supertest~7. Las he repartido en tres bloques según lo que cubre cada uno.
+
+El primero contiene las pruebas unitarias. Aíslan cada controlador o \textit{middleware} y mockean lo que necesitan a su alrededor: base de datos, servicios externos, dependencias auxiliares. Son el grueso de la suite porque salen baratas de mantener y se ejecutan rápido. Aquí entran \texttt{auth.controller.test.js}, \texttt{auth.middleware.test.js}, \texttt{auth.service.test.js}, \texttt{admin.controller.test.js}, \texttt{admin.service.test.js}, \texttt{error.middleware.test.js}, \texttt{incident.controller.test.js}, \texttt{incident.service.test.js}, \texttt{notification.service.test.js}, \texttt{photo.service.test.js}, \texttt{upload.middleware.test.js}, \texttt{routes.test.js} y \texttt{geocoding.service.test.js}.
+
+El segundo bloque cubre los servicios añadidos en el Sprint~6, todos relacionados con seguridad: \texttt{crypto.service.test.js}, \texttt{qr.service.test.js}, \texttt{turnstile.service.test.js} y \texttt{twofa.service.test.js}. Aquí he puesto más cuidado del habitual, porque un fallo en el cifrado o en la generación de códigos TOTP no aparece a simple vista pero sí en una auditoría.
+
+El tercer bloque levanta una instancia real de Express y comprueba las rutas de extremo a extremo sin mocks: \texttt{auth.routes.test.js}. El patrón es replicable al resto de recursos y queda apuntado como ampliación natural de la suite.
+
+La cobertura final, medida con el reporte HTML de Jest (\path{src/backend/coverage/lcov-report/index.html}), se muestra en la Tabla~\ref{tab:coverage-final}.
+
+\begin{table}[H]
+\centering
+\caption{Cobertura final del \textit{backend}.}
+\label{tab:coverage-final}
+\small
+\begin{tabular}{@{}L{3cm}L{2.5cm}L{2.5cm}L{4.5cm}@{}}
+\toprule
+\textbf{Métrica} & \textbf{Cobertura} & \textbf{Objetivo (RNF-08)} & \textbf{Comentario} \\
+\midrule
+\textit{Statements} & 61{,}52\,\% & > 70\,\% & Por encima del 50\,\% mínimo \\
+\textit{Branches}   & 38{,}91\,\% & > 70\,\% & No cumple (limitación) \\
+\textit{Functions}  & 62{,}40\,\% & > 70\,\% & Mayoría de controladores \\
+\textit{Lines}      & 62{,}92\,\% & > 70\,\% & Lógica de negocio cubierta \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La cobertura está por debajo del 70\,\% que se marcó. La razón es que muchas ramas de manejo de error (\textit{catch} de excepciones específicas, \textit{timeouts} de servicios externos, escenarios de concurrencia) no se prueban explícitamente. Este hecho es discutido como limitación en el próximo capítulo.
+
+
+\section{Pruebas \textit{end-to-end} con Playwright}
+\label{sec:tests-e2e}
+
+Las pruebas E2E corren con Playwright~\parencite{playwright} sobre la aplicación completa levantada con Docker Compose. Cubren los tres flujos principales (RNF-09) y un cuarto de seguridad añadido en el Sprint~6. La Tabla~\ref{tab:tests-e2e} resume los \textit{specs}.
+
+\begin{table}[H]
+\centering
+\caption{Pruebas E2E con Playwright.}
+\label{tab:tests-e2e}
+\small
+\begin{tabular}{@{}L{4cm}L{8.5cm}@{}}
+\toprule
+\textbf{Spec} & \textbf{Escenarios} \\
+\midrule
+\texttt{incident-report.spec.js} & Registro, login, creación de incidencia con foto y GPS, marcador en el mapa, voto, comentario. \\
+\texttt{map-navigation.spec.js}  & Zoom, paneo, filtros por categoría y severidad, búsqueda por dirección, detalle. \\
+\texttt{admin-management.spec.js} & Acceso al \textit{dashboard}, cambio de estado, asignación a entidad, notificación al autor. \\
+\texttt{security.spec.js}        & Activación de 2FA, verificación en \textit{login}, código de recuperación, límite de intentos. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las pruebas se ejecutan en Chromium, Firefox y WebKit en paralelo. Un ciclo completo de las cuatro \textit{specs} en los tres navegadores tarda unos cuatro minutos.
+
+
+\section{Validación del cumplimiento de requisitos}
+\label{sec:validacion-requisitos}
+
+Resumen del cumplimiento ($\checkmark${} cumplido, $\sim${} parcial, $\times${} fuera de alcance). Los requisitos parciales se deben sobre todo a infraestructura externa (SMTP, certificados, \textit{scheduler}) que no se ha desplegado en desarrollo.
+
+\begin{longtable}{@{}L{1.5cm}L{1cm}L{10cm}@{}}
+\caption{Resumen del cumplimiento de requisitos funcionales.} \label{tab:validacion-rf} \\
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+RF-01..04 & $\checkmark$ & Registro, login JWT, acceso anónimo y roles verificados con tests unitarios e integración. \\
+RF-05     & $\sim$ & Implementado, sin SMTP real para validar end-to-end. \\
+RF-06..07 & $\checkmark$ & Edición de perfil y perfil público operativos. \\
+RF-10..18 & $\checkmark$ & CRUD de incidencias con foto, GPS, severidad, historial e índice GIST verificado. \\
+RF-19     & $\sim$ & Borradores en IndexedDB OK; \textit{Background Sync} solo en Chrome. \\
+RF-20..26 & $\checkmark$ & Mapa con \textit{clustering}, filtros, \texttt{ST\_DWithin}, \textit{geocoding}. \\
+RF-30..33 & $\checkmark$ & Dashboard, cambios de estado, asignación a entidad y notificaciones. \\
+RF-34     & $\sim$ & Diseñado pero falta el \textit{scheduler} (trabajo futuro). \\
+RF-35..36 & $\checkmark$ & Estadísticas y CRUD de catálogos en panel admin. \\
+RF-37     & $\sim$ & API disponible, UI simplificada. \\
+RF-40..44 & $\checkmark$ & Votos, comentarios oficiales, notificaciones, seguimiento, perfil social. \\
+RF-45     & $\sim$ & Service Worker registrado; \textit{push} requiere VAPID en producción. \\
+RF-46     & $\times$ & Fuera de alcance (sin SMTP). \\
+\end{longtable}
+
+\begin{table}[H]
+\centering
+\caption{Cumplimiento de requisitos no funcionales.}
+\label{tab:validacion-rnf}
+\small
+\begin{tabular}{@{}L{1.5cm}L{1cm}L{10cm}@{}}
+\toprule
+\textbf{ID} & \textbf{} & \textbf{Evidencia} \\
+\midrule
+RNF-01 & $\checkmark$ & Latencia geoespacial < 300~ms en local. \\
+RNF-02 & $\sim$ & Sin prueba de carga (dimensionado teórico OK). \\
+RNF-03 & $\checkmark$ & \textit{Responsive} verificado en 320, 768 y 1024~px. \\
+RNF-04 & $\checkmark$ & PWA instalable. \\
+RNF-05 & $\checkmark$ & \textit{bcrypt} con 10 rondas. \\
+RNF-06 & $\checkmark$ & \textit{Rate limit} por IP y por usuario. \\
+RNF-07 & $\sim$ & nginx preparado, falta certificado real. \\
+RNF-08 & $\sim$ & Cobertura 61--63\,\% (objetivo 70\,\%). \\
+RNF-09 & $\checkmark$ & 4 \textit{specs} E2E. \\
+RNF-10 & $\checkmark$ & \texttt{docker compose up -d}. \\
+RNF-11 & $\checkmark$ & Swagger en \texttt{/api/docs}. \\
+RNF-12 & $\sim$ & Contrastes y teclado verificados; auditoría WCAG completa pendiente. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Pruebas de usabilidad: protocolo y trabajo futuro}
+\label{sec:usabilidad}
+
+La validación de la usabilidad con usuarios reales se ha planificado siguiendo un protocolo ligero pensado para detectar problemas graves de interacción (\textit{think-aloud} sobre las tareas críticas). La realización efectiva con una muestra suficiente queda como trabajo futuro inmediato; se discuten las limitaciones derivadas en el Capítulo~\ref{ch:conclusiones} y se desarrollan los pasos previstos en la sección~\ref{sec:trabajo-futuro}.
+
+\subsection*{Protocolo planificado}
+
+\begin{enumerate}
+  \item Reclutamiento de entre tres y cinco personas con perfiles distintos (rango de edad, familiaridad con la tecnología, experiencia previa con aplicaciones cívicas).
+  \item Presentación breve del objetivo del sistema sin instrucciones detalladas, para observar la interacción espontánea.
+  \item Tres tareas: consultar una incidencia en el mapa, crear una incidencia con foto y votar una existente. Cada tarea se cronometra y se marca como completada o fallida.
+  \item Observación sin intervención del facilitador, anotando dificultades, vacilaciones y verbalizaciones del participante.
+  \item Entrevista breve al cierre con cinco preguntas abiertas sobre claridad, fluidez y aspectos a mejorar.
+\end{enumerate}
+
+\subsection*{Indicadores planeados}
+
+Se prevén dos clases de indicadores. Los cuantitativos (tiempo medio por tarea, tasa de finalización, número de errores graves) permitirán comparar el rendimiento entre perfiles. Los cualitativos (frases textuales del participante, puntos de fricción identificados, sugerencias) ofrecerán pistas concretas para iteraciones posteriores. La síntesis se organizará en tres bloques: hallazgos positivos comunes a todos los participantes, fricciones detectadas y recomendaciones de mejora.
+
+
+\section{Valoración global}
+\label{sec:valoracion-global}
+
+Tras la evaluación se destaca lo siguiente:
+
+\begin{itemize}
+  \item Todos los requisitos funcionales de prioridad alta están cumplidos y respaldados por pruebas. Los parciales son consecuencia de no tener desplegada la infraestructura externa.
+  \item Los requisitos no funcionales se cumplen en su mayoría; la cobertura del \textit{backend} es el \textit{gap} más visible (61--63\,\% frente a 70\,\%), aunque está por encima del 50\,\% que se considera mínimo industrial.
+  \item El sistema es reproducible con un comando, lo que satisface OBJ-2 y OBJ-8.
+  \item La pirámide de pruebas tiene la forma adecuada: muchas unitarias, integración moderada, E2E sobre los tres flujos principales más seguridad.
+\end{itemize}
+
+Las limitaciones se discuten con detalle en el capítulo siguiente, junto con las líneas de trabajo futuro.

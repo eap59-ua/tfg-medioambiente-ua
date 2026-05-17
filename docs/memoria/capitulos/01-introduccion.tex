@@ -1,0 +1,62 @@
+% ==============================================================================
+\chapter{Introducción}
+\label{ch:introduccion}
+% ==============================================================================
+
+\section{Motivación y contexto}
+\label{sec:motivacion}
+
+España vive una década compleja en lo medioambiental: incendios forestales recurrentes ligados al cambio climático, contaminación atmosférica en ciudades, vertidos en suelos rústicos, maltrato animal. La Ley 7/2022 de residuos, la Ley de bienestar animal y el Pacto Verde Europeo definen un marco exigente, pero su efectividad depende de algo concreto: \textbf{detectar a tiempo lo que pasa sobre el terreno}.
+
+Los datos son claros. El Ministerio del Interior registra más de 10\,000 incendios forestales al año en España. El SEPRONA tramita más de 130\,000 actuaciones anuales por infracciones medioambientales. Una buena parte de estas incidencias llega tarde a los canales oficiales, o no llega.
+
+A la vez, la ciudadanía tiene en el bolsillo lo que necesitaría para reportarlas: el INE estimó en 2023 que el 97{,}7\,\% de los hogares españoles tiene Internet y que más del 95\,\% dispone de un \textit{smartphone} con cámara y GPS. El problema es que los canales tradicionales (teléfono 112, oficinas presenciales, formularios web genéricos sin geolocalización) no aprovechan ese flujo y no devuelven seguimiento al denunciante.
+
+Existen aplicaciones internacionales que sí cubren este hueco. \textit{FixMyStreet} en el Reino Unido lleva desde 2007 acumulando más de dos millones de incidencias reportadas por ciudadanos. \textit{iNaturalist} agrega 180 millones de observaciones de biodiversidad. \textit{Línea Verde} ofrece en España un canal municipal de quejas en más de 300 municipios. El Capítulo~\ref{ch:estado-del-arte} las analiza con detalle. Pero ninguna combina, a la vez, reporte geolocalizado con foto, delegación automatizada a la entidad responsable correcta (que no siempre es el ayuntamiento), niveles de severidad ligados al impacto ambiental, y un componente social que ayude a priorizar.
+
+De ahí nace este trabajo. \textbf{EcoAlerta} es una aplicación web progresiva (PWA) que combina red social cívica y reporte medioambiental: cualquier ciudadano reporta una incidencia con foto y GPS en menos de un minuto, el sistema la clasifica por categoría y severidad, la delega a la entidad responsable (ayuntamiento, SEPRONA, bomberos, policía local) mediante un flujo de estados trazable, y otros usuarios pueden votar y seguir su evolución. Cualquier persona consulta el mapa público sin registrarse; las acciones con responsabilidad (crear, votar, comentar) requieren cuenta y quedan trazadas.
+
+
+\section{Objetivos}
+\label{sec:objetivos}
+
+El objetivo general del proyecto es:
+
+\begin{quote}
+\textit{Diseñar, implementar y validar una aplicación web progresiva que facilite a la ciudadanía el reporte geolocalizado de incidencias medioambientales y permita su delegación automatizada a entidades responsables, con flujo de estados trazable y componente social.}
+\end{quote}
+
+Lo divido en ocho objetivos específicos:
+
+\begin{description}[leftmargin=2.2cm, style=nextline, labelindent=0.3cm]
+  \item[OBJ-1] Analizar el estado del arte de aplicaciones cívicas medioambientales e identificar huecos de cobertura.
+  \item[OBJ-2] Definir una arquitectura escalable basada en contenedores, separando presentación, lógica y datos, con soporte geoespacial.
+  \item[OBJ-3] Diseñar un modelo de datos relacional con extensión PostGIS que represente incidencias, fotos, actores, flujos y eventos sociales con \textit{audit trail}.
+  \item[OBJ-4] Implementar una API REST documentada con OpenAPI/Swagger, con control de acceso por roles y \textit{rate limiting}.
+  \item[OBJ-5] Desarrollar una interfaz web progresiva \textit{mobile-first}, instalable, con soporte \textit{offline} básico, mapa interactivo y conformidad con WCAG~2.1~AA.
+  \item[OBJ-6] Incorporar mecanismos de seguridad propios de aplicaciones reales: JWT con rotación de tokens, 2FA, \textit{captcha} invisible, \textit{audit log} y cifrado de secretos.
+  \item[OBJ-7] Validar el sistema con una pirámide de pruebas (unitarias, integración, E2E) y pruebas de usabilidad con usuarios reales.
+  \item[OBJ-8] Producir documentación reproducible (despliegue con un comando, API documentada, manual de usuario) y un estudio preliminar de modelo de negocio.
+\end{description}
+
+
+\section{Uso de herramientas de inteligencia artificial}
+\label{sec:uso-ia}
+
+He usado herramientas de IA generativa en este TFG y lo declaro de forma explícita aquí, siguiendo lo que indica la Universidad de Alicante sobre integridad académica cuando la asistencia está permitida y se reconoce. Esta sección recoge qué he usado, para qué, y dónde he tomado yo las decisiones.
+
+\paragraph{Herramientas.}  He usado los modelos \textit{Claude} (Anthropic) y \textit{Gemini} (Google), este último integrado en el IDE \textit{Google Antigravity} para programación asistida por agentes.
+
+\paragraph{Tareas asistidas.}  La IA me ha ayudado con: generación inicial de \textit{boilerplate} (estructura de rutas Express, componentes React, configuraciones Docker), refactorización de fragmentos ya escritos, generación de pruebas Jest a partir del contrato de los servicios, redacción de borradores de la memoria a partir de la especificación, y revisión ortográfica y de estilo.
+
+\paragraph{Lo que he hecho yo sin delegar.}  La idea, el alcance y los objetivos del proyecto. La elección del \textit{stack} y del modelo de datos. El análisis de las cinco aplicaciones de referencia: descarga, uso real y observaciones propias. Las pruebas de usabilidad. La revisión de cada bloque de código generado y su validación con ejecución local. La argumentación de los capítulos de análisis, evaluación y conclusiones.
+
+\paragraph{Auditoría.}  El proyecto vive en un repositorio Git público con \textit{commits} en convención \textit{Conventional Commits}, lo que permite reconstruir el proceso. Las especificaciones de cada \textit{sprint} están en \path{docs/sprints/} y se redactaron antes de pedir asistencia al agente. Asumo la responsabilidad de explicar y justificar en la defensa cualquier decisión de diseño, fragmento de código o párrafo de la memoria, sin distinción de cómo se generó inicialmente.
+
+\paragraph{Mi posición.}  El valor del TFG está en tres cosas que la IA no aporta: la identificación del hueco de cobertura que tapa EcoAlerta, el diseño integrado del flujo ciudadano--administrador--entidad, y la ingeniería de requisitos que convierte una idea en 46 RF verificables. La IA es una herramienta de productividad; las decisiones y la responsabilidad son mías.
+
+
+\section{Estructura de la memoria}
+\label{sec:estructura-memoria}
+
+El resto del documento se organiza así. El Capítulo~\ref{ch:estado-del-arte} analiza cinco aplicaciones de referencia y compara las tecnologías evaluadas. El Capítulo~\ref{ch:analisis-disenyo} presenta requisitos, casos de uso, arquitectura, modelo de datos y diseño de la API. El Capítulo~\ref{ch:implementacion} describe el desarrollo en seis \textit{sprints}, con extractos de código y decisiones técnicas. El Capítulo~\ref{ch:evaluacion} recoge resultados de pruebas y validación de requisitos. El Capítulo~\ref{ch:conclusiones} cierra con logros, limitaciones y trabajo futuro. Los anexos incluyen guía de instalación, manual de usuario y un análisis preliminar de modelo de negocio.

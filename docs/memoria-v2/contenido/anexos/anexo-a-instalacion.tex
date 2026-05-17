@@ -1,0 +1,95 @@
+% ==============================================================================
+\chapter{Guía de instalación}
+\label{app:instalacion}
+% ==============================================================================
+
+Este anexo recoge el proceso para levantar EcoAlerta desde cero en una máquina de desarrollo. Los comandos están probados en Windows~11 con PowerShell, pero son equivalentes en Linux (bash/zsh) y macOS.
+
+
+\section*{Requisitos previos}
+
+\begin{itemize}
+  \item \textbf{Docker Desktop} 4.30 o superior, con Compose v2.
+  \item \textbf{Git} 2.40 o superior.
+  \item Puertos libres: 3000, 5000, 5432, 80, 443.
+  \item 4~GB de RAM libre y 5~GB de disco.
+  \item (Opcional) \textbf{Make} para los atajos del \texttt{Makefile}.
+\end{itemize}
+
+
+\section*{Clonado y configuración}
+
+\begin{verbatim}
+git clone https://github.com/eap59-ua/tfg-medioambiente-ua.git
+cd tfg-medioambiente-ua
+Copy-Item .env.example .env       # PowerShell
+# o:  cp .env.example .env        # bash/zsh
+\end{verbatim}
+
+Las variables de entorno imprescindibles para desarrollo local son \texttt{DB\_PASSWORD}, \texttt{JWT\_SECRET} y \texttt{MFA\_KEY}. Las dos últimas conviene generarlas con \texttt{openssl rand -base64 48} y \texttt{openssl rand -base64 32}. El resto puede quedarse con valores por defecto.
+
+
+\section*{Arranque}
+
+Con Make:
+\begin{verbatim}
+make dev
+\end{verbatim}
+
+Sin Make:
+\begin{verbatim}
+docker compose -f docker-compose.dev.yml up --build
+\end{verbatim}
+
+El primer arranque tarda 3--8 minutos (descarga imágenes y construye). Cuando aparezca \texttt{Server listening on port 5000}, los servicios están disponibles:
+
+\begin{itemize}
+  \item \textbf{Frontend}: \url{http://localhost:3000}
+  \item \textbf{Backend API}: \url{http://localhost:5000/api/v1}
+  \item \textbf{Swagger UI}: \url{http://localhost:5000/api/docs}
+  \item \textbf{PostgreSQL}: \texttt{localhost:5432}
+\end{itemize}
+
+
+\section*{Credenciales por defecto}
+
+Los \textit{seeds} crean un administrador y cinco entidades responsables:
+
+\begin{itemize}
+  \item \textbf{Email}: \texttt{admin@ecoalerta.es}
+  \item \textbf{Password}: \texttt{Admin123!}
+\end{itemize}
+
+\textbf{Cambiar obligatoriamente} en cualquier despliegue real.
+
+
+\section*{Comandos útiles}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}L{4cm}L{8cm}@{}}
+\toprule
+\textbf{Comando} & \textbf{Descripción} \\
+\midrule
+\texttt{make dev}      & Entorno de desarrollo con \textit{hot-reload}. \\
+\texttt{make stop}     & Para los contenedores. \\
+\texttt{make test}     & Ejecuta Jest del \textit{backend}. \\
+\texttt{make lint}     & ESLint en \textit{backend} y \textit{frontend}. \\
+\texttt{make rebuild}  & Reconstruye sin caché. \\
+\texttt{make logs}     & Logs de todos los servicios. \\
+\texttt{make prod}     & Entorno de producción. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section*{Problemas frecuentes}
+
+\textbf{Puerto 5432 ocupado.}  Hay PostgreSQL local corriendo. Páralo o cambia el mapeo en \texttt{docker-compose.dev.yml}.
+
+\textbf{BD no inicializada.}  El contenedor ya existía y \texttt{init.sql} no se ejecutó. Borrar volumen: \texttt{docker compose down -v \&\& make dev}.
+
+\textbf{Permisos en Windows.}  Si Docker se queja de \texttt{node\_modules}, habilitar el \textit{filesystem sharing} para el disco del repositorio en la configuración de Docker Desktop.
+
+\textbf{Tokens inválidos al reiniciar.}  \texttt{JWT\_SECRET} no debe cambiar entre reinicios; los tokens emitidos antes dejarían de validar.

@@ -1,0 +1,112 @@
+% ==============================================================================
+\chapter{Manual de usuario}
+\label{app:manual-usuario}
+% ==============================================================================
+
+Esta guía explica cómo se usa EcoAlerta desde cada uno de los perfiles definidos en la sección~\ref{sec:actores}. Dividida por rol; cada operación se acompaña de la captura correspondiente.
+
+
+\section{Ciudadano anónimo}
+\label{sec:manual-anonimo}
+
+Sin registrarse, el ciudadano puede consultar el mapa público.
+
+\textbf{Consultar el mapa.}  Al entrar a \url{http://localhost:3000} aparece el mapa con los marcadores de las incidencias activas, centrado por defecto en la Universidad de Alicante. El color del marcador refleja la severidad (verde leve, amarillo moderado, naranja grave, rojo crítico). La Figura~\ref{fig:manual-mapa-movil} muestra la vista en un dispositivo móvil de 375~px de ancho.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\textwidth]{figuras/manual-mapa.png}
+  \caption{Vista del mapa en dispositivo móvil (\textit{viewport} 375~px). Captura propia.}
+  \label{fig:manual-mapa-movil}
+\end{figure}
+
+\textbf{Filtrar.}  El botón «Filtros» despliega un panel con categoría, severidad, estado, rango de fechas y distancia desde la posición del usuario. Los filtros se combinan con AND.
+
+\textbf{Consultar el detalle.}  Click en un marcador abre un \textit{popup} con resumen y enlace al detalle, donde se ven las fotos, descripción, historial de estados, comentarios (incluidos los oficiales) y número de votos.
+
+
+\section{Ciudadano registrado}
+\label{sec:manual-ciudadano}
+
+Tras registrarse y verificar la cuenta, además de lo anterior:
+
+\textbf{Registro y login.}  Email válido, contraseña segura (mínimo 8 caracteres, una mayúscula, un número, un símbolo) y nombre de usuario. La Figura~\ref{fig:manual-registro} muestra el formulario de registro.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figuras/manual-registro.png}
+  \caption{Formulario de registro del ciudadano. Captura propia.}
+  \label{fig:manual-registro}
+\end{figure}
+
+Desde el perfil se puede activar 2FA por TOTP con Google Authenticator, Authy o equivalente. La Figura~\ref{fig:manual-2fa} muestra el modal de activación con el código QR generado por el servidor (el QR de la captura se ha difuminado por seguridad).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.70\textwidth]{figuras/manual-2fa.png}
+  \caption{Modal de activación del segundo factor (2FA) con código QR. Captura propia.}
+  \label{fig:manual-2fa}
+\end{figure}
+
+\textbf{Crear una incidencia.}  Botón «Reportar». Pasos:
+
+\begin{enumerate}
+  \item Permitir acceso a la ubicación cuando lo pida el navegador.
+  \item Verificar o ajustar la posición sobre el mapa.
+  \item Categoría (12 opciones) y severidad (el sistema sugiere una por defecto).
+  \item Título y descripción breve.
+  \item Subir 1--5 fotos (máx. 10~MB cada una).
+  \item Pulsar «Publicar».
+\end{enumerate}
+
+Sin conexión, el borrador queda en IndexedDB y se sincroniza al recuperar la red.
+
+\textbf{Votar, comentar, seguir.}  Desde el detalle: el icono de apoyo (un voto por usuario), comentarios libres (los del autor se destacan) y «Seguir» para recibir notificaciones de cambios.
+
+\textbf{Mi perfil.}  Listado de mis incidencias, mis votos, mis comentarios y estadísticas. Activación de 2FA y cambio de contraseña.
+
+
+\section{Administrador}
+\label{sec:manual-admin}
+
+Acceso al panel \texttt{/admin} con rol \texttt{admin}.
+
+\textbf{Dashboard.}  Gráficos de incidencias por categoría, por estado, evolución temporal, distribución por municipio y tiempo medio de resolución. La Figura~\ref{fig:manual-admin-gestion} muestra la pantalla de gestión de incidencias del administrador, con tabla filtrable y acciones masivas.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figuras/manual-admin-dashboard.png}
+  \caption{Panel de gestión de incidencias del administrador. Captura propia.}
+  \label{fig:manual-admin-gestion}
+\end{figure}
+
+\textbf{Gestión de incidencias.}  Tabla con filtros avanzados. Acciones por incidencia: validar/rechazar, asignar a entidad, marcar como duplicada, comentar como oficial, cambio manual de estado.
+
+\textbf{Usuarios y entidades.}  CRUD de usuarios (filtros por rol y estado, cambio de rol, desactivación) y de entidades responsables (con jurisdicción geoespacial opcional).
+
+
+\section{Entidad responsable}
+\label{sec:manual-entidad}
+
+El usuario con rol \texttt{entity} pertenece a una entidad concreta y solo ve las incidencias asignadas a ella. Sus capacidades:
+
+\begin{itemize}
+  \item Cola de incidencias asignadas, ordenadas por prioridad.
+  \item Marcar como \texttt{in\_progress}.
+  \item Cerrar como \texttt{resolved} con nota obligatoria.
+  \item Rechazar por falta de competencia.
+  \item Comentarios oficiales visibles al autor y a los seguidores.
+\end{itemize}
+
+
+\section{Accesibilidad}
+\label{sec:manual-accesibilidad}
+
+Toda la app es navegable por teclado y compatible con lectores de pantalla. Atajos:
+
+\begin{itemize}
+  \item \texttt{Tab} / \texttt{Shift+Tab}: recorrer controles.
+  \item \texttt{Enter}: activar el control.
+  \item \texttt{Esc}: cerrar \textit{modales}.
+  \item \texttt{+} / \texttt{-}: zoom in/out en el mapa.
+\end{itemize}

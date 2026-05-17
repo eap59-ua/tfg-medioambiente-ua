@@ -1,0 +1,167 @@
+% ==============================================================================
+\chapter{Estado del arte}
+\label{ch:estado-del-arte}
+% ==============================================================================
+
+Este capítulo revisa aplicaciones cívicas relevantes para EcoAlerta, compara las tecnologías candidatas para cada capa y justifica las decisiones tomadas en el diseño del Capítulo~\ref{ch:analisis-disenyo}.
+
+
+\section{Contexto: aplicaciones cívicas geolocalizadas}
+\label{sec:contexto-apps}
+
+Las aplicaciones cívicas con reporte geolocalizado son parte del movimiento \textit{civic tech}. Tres innovaciones las hicieron viables a partir de mediados de los 2000:
+
+\begin{enumerate}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textit{Smartphones} con cámara y GPS (iPhone 2007, Android 2008): cualquier ciudadano puede generar evidencia fotográfica geolocalizada en tiempo real.
+  \item OpenStreetMap (2004): cartografía libre, sin dependencia de proveedores comerciales.
+  \item Datos abiertos y leyes de transparencia (en España, Ley 19/2013): marco para el intercambio bidireccional ciudadano--administración.
+\end{enumerate}
+
+A partir de ahí se consolidan dos familias: las \textbf{generalistas} (FixMyStreet, SeeClickFix, que cubren cualquier incidencia urbana) y las \textbf{especializadas} (iNaturalist para biodiversidad, Línea Verde para reporte municipal en España). EcoAlerta se sitúa en un hueco intermedio: especializada en medio ambiente, con componente social.
+
+
+\section{Aplicaciones analizadas}
+\label{sec:apps-analizadas}
+
+He seleccionado cinco aplicaciones por relevancia y heterogeneidad: FixMyStreet, Línea Verde, iNaturalist, SeeClickFix y Epicollect5. Las tres primeras las he probado yo mismo en el móvil con la plantilla \path{docs/estado-del-arte/plantilla-analisis.docx}. Las dos últimas las analizo desde la documentación.
+
+
+\subsection{FixMyStreet}
+\label{subsec:fixmystreet}
+
+Desarrollada en 2007 por mySociety, una organización británica sin ánimo de lucro de \textit{civic tech}. Código abierto bajo licencia AGPL-3.0. La han desplegado cientos de ayuntamientos, incluida la versión \textit{FixMyStreet Bruxelles} que he usado.
+
+% TODO (USUARIO): rellenar tras probar la app
+
+\textbf{Funcionalidades observadas.}  % funcionalidades concretas
+\textbf{Flujo.}  % paso a paso
+\textbf{Tecnología.}  Web con diseño \textit{mobile-friendly}, mapas OSM. \textit{Backend} en Perl con Plack y PostgreSQL.
+\textbf{Puntos fuertes.}  % 3-5 puntos
+\textbf{Puntos débiles.}  % 3-5 puntos
+
+
+\subsection{Línea Verde}
+\label{subsec:linea-verde}
+
+Servicio comercial de \textit{Línea Verde Configuración y Servicios Medioambientales S.A.}, en más de 300 municipios españoles. Modelo B2G \textit{white-label}: cada ayuntamiento contrata el servicio y obtiene su versión personalizada.
+
+% TODO (USUARIO): rellenar tras probar la app
+\textbf{Funcionalidades observadas.}
+\textbf{Flujo.}
+\textbf{Tecnología.}  App móvil nativa (iOS/Android) y portal web. \textit{Backend} no público.
+\textbf{Puntos fuertes.}
+\textbf{Puntos débiles.}
+
+
+\subsection{iNaturalist}
+\label{subsec:inaturalist}
+
+Plataforma de ciencia ciudadana para observación de biodiversidad. Nació en 2008 en la Universidad de California; ahora la gestionan California Academy of Sciences y National Geographic Society. Más de 180 millones de observaciones a nivel mundial.
+
+% TODO (USUARIO): rellenar tras probar la app
+\textbf{Funcionalidades observadas.}
+\textbf{Flujo.}
+\textbf{Tecnología.}  App móvil nativa y web. Ruby on Rails, PostgreSQL con PostGIS, Elasticsearch. Servicio de reconocimiento de imagen con redes neuronales que sugiere especies.
+\textbf{Puntos fuertes.}
+\textbf{Puntos débiles.}
+
+
+\subsection{SeeClickFix}
+\label{subsec:seeclickfix}
+
+Fundado en 2008 en New Haven (EE.UU.), referente del reporte cívico americano. Adquirido por CivicPlus en 2019, sigue operando en municipios norteamericanos.
+
+\textbf{Funcionalidades.}  Reporte geolocalizado con foto, categorías estandarizadas, flujo de estados (recibido, reconocido, en curso, resuelto), panel administrativo, integración con sistemas \textit{backend} municipales vía API.
+
+\textbf{Tecnología.}  App móvil nativa (iOS/Android) y web. API documentada para integraciones.
+
+\textbf{Relevancia para EcoAlerta.}  Valida el modelo B2G con flujo de estados trazable. Su limitación es el foco urbano exclusivo: no aborda incendios forestales, fauna silvestre ni daños a espacios naturales.
+
+
+\subsection{Epicollect5}
+\label{subsec:epicollect}
+
+Proyecto del Imperial College London para recolección de datos de campo en investigación científica. Usado en epidemiología, conservación y ecología.
+
+\textbf{Funcionalidades.}  Formularios personalizados, recolección \textit{offline} con sincronización diferida, exportación en CSV/JSON. Gratuito para investigación.
+
+\textbf{Tecnología.}  App móvil y web. \textit{Stack} no documentado públicamente.
+
+\textbf{Relevancia para EcoAlerta.}  Su robustez \textit{offline}-\textit{first} es referencia para el RF-19. Su enfoque genérico lo hace demasiado amplio para el ciudadano medio, pero útil para ONG conservacionistas que pueden configurar formularios específicos.
+
+
+\section{Comparativa funcional}
+\label{sec:comparativa-funcional}
+
+\providecommand{\cmark}{\ensuremath{\checkmark}}
+\providecommand{\pmark}{$\sim$}
+\providecommand{\xmark}{$\times$}
+
+\begin{longtable}{@{}L{4.5cm}C{1.4cm}C{1.4cm}C{1.4cm}C{1.4cm}C{1.4cm}C{1.4cm}@{}}
+\caption{Comparativa funcional. \cmark{} sí, \pmark{} parcial, \xmark{} no.} \label{tab:comparativa-funcional} \\
+\toprule
+\textbf{Funcionalidad} & \textbf{FixMy\-Street} & \textbf{Línea Verde} & \textbf{iNatu\-ralist} & \textbf{SeeClick\-Fix} & \textbf{Epi\-collect} & \textbf{Eco\-Alerta} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Funcionalidad} & \textbf{FixMy\-Street} & \textbf{Línea Verde} & \textbf{iNatu\-ralist} & \textbf{SeeClick\-Fix} & \textbf{Epi\-collect} & \textbf{Eco\-Alerta} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Reporte geolocalizado con foto    & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+Enfoque medioambiental específico & \xmark & \pmark & \cmark & \xmark & \pmark & \cmark \\
+Delegación a entidades            & \pmark & \cmark & \xmark & \cmark & \xmark & \cmark \\
+Flujo de estados trazable         & \cmark & \pmark & \xmark & \cmark & \xmark & \cmark \\
+Componente social (votos, comentarios) & \pmark & \xmark & \cmark & \pmark & \xmark & \cmark \\
+Perfil público de usuario         & \xmark & \xmark & \cmark & \pmark & \xmark & \cmark \\
+Acceso anónimo de consulta        & \cmark & \cmark & \cmark & \cmark & \pmark & \cmark \\
+Niveles de severidad explícitos   & \pmark & \xmark & \xmark & \pmark & \cmark & \cmark \\
+\textit{Audit trail} completo     & \xmark & \xmark & \xmark & \pmark & \xmark & \cmark \\
+PWA instalable                    & \pmark & \xmark & \xmark & \xmark & \pmark & \cmark \\
+\textit{Offline}                  & \xmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
+2FA / \textit{audit} de seguridad & \xmark & \xmark & \xmark & \xmark & \xmark & \cmark \\
+\textit{Open source}              & \cmark & \xmark & \cmark & \xmark & \pmark & \cmark \\
+\end{longtable}
+
+Ninguna aplicación cubre simultáneamente las seis dimensiones que busca EcoAlerta: enfoque medioambiental, delegación a entidades heterogéneas (no solo municipales), flujo trazable, social significativo, severidad con impacto en priorización y \textit{audit trail}. Ese hueco es el punto de partida del proyecto (OBJ-1).
+
+
+\section{Tecnologías evaluadas}
+\label{sec:comparativa-tecnica}
+
+Para cada capa consideré varias opciones. La Tabla~\ref{tab:tecnologias} resume las decisiones y por qué.
+
+\begin{table}[H]
+\centering
+\caption{Decisiones tecnológicas por capa.}
+\label{tab:tecnologias}
+\small
+\begin{tabular}{@{}L{2.8cm}L{4cm}L{6cm}@{}}
+\toprule
+\textbf{Capa} & \textbf{Elección vs alternativas} & \textbf{Razón} \\
+\midrule
+Plataforma & PWA \textit{vs} app nativa & PWA con una sola \textit{code base}, distribución por URL, instalable. La nativa quedaría como trabajo futuro. \\
+\textit{Frontend} & React \textit{vs} Vue, Angular & React tiene la mejor integración con Leaflet (\texttt{react-leaflet}), gran mercado laboral en España, y ya conocía la herramienta. \\
+BD & PostgreSQL+PostGIS \textit{vs} MongoDB & PostGIS aporta \texttt{ST\_DWithin}, índices GIST y transacciones. El modelo relacional encaja mejor con las relaciones del dominio. MongoDB obligaría a denormalizar. \\
+Mapa & Leaflet+OSM \textit{vs} Google Maps & Leaflet es \textit{open source}, sin coste ni dependencia comercial. Coherente con la filosofía \textit{civic tech} de las apps de referencia. \\
+Metodología & SDD \textit{vs} Scrum clásico & Para un solo desarrollador con asistencia IA, la especificación previa funciona como guía al agente y como base para revisar. Más útil que un Scrum tradicional pensado para equipos. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Posicionamiento de EcoAlerta}
+\label{sec:posicionamiento}
+
+A partir del análisis, EcoAlerta combina elementos de varias fuentes:
+
+\begin{itemize}[leftmargin=1.2cm, itemsep=2pt]
+  \item Flujo de estados trazable de FixMyStreet y SeeClickFix, ampliado con validación, marcado de duplicados y escalado por \textit{timeout}.
+  \item Delegación B2G multi-entidad de Línea Verde, generalizada a entidades no municipales (SEPRONA, bomberos, ONG).
+  \item Componente social de iNaturalist (seguimiento, votos, comentarios), adaptado al ámbito medioambiental con la distinción de comentarios oficiales.
+  \item \textit{Offline} robusto al estilo Epicollect5, con Service Worker e IndexedDB.
+  \item Mecanismos de seguridad propios (2FA TOTP, \textit{audit log}, Cloudflare Turnstile) ausentes en las cinco apps analizadas.
+\end{itemize}
+
+Con eso, más la prioridad dada a la accesibilidad WCAG y a la transparencia (código abierto y declaración explícita del uso de IA), se cubre el hueco que las aplicaciones existentes dejan.

@@ -1,0 +1,66 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PÁGINAS PRELIMINARES — EcoAlerta TFG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% =====================================================================
+%% AGRADECIMIENTOS
+%% =====================================================================
+\chapter*{Agradecimientos}
+\addcontentsline{toc}{chapter}{Agradecimientos}
+
+% TODO: ajustar a gusto del autor
+A mi tutor, José Luis Sánchez Romero, por la disponibilidad, los consejos técnicos y la libertad que me ha dado para definir el alcance y el \textit{stack} del proyecto. Sin esa libertad, EcoAlerta no habría salido como ha salido.
+
+A mi familia, por el apoyo incondicional durante todos los años del Grado.
+
+A los compañeros con los que he compartido asignaturas, prácticas y discusiones; aprender al lado de gente competente es la mejor manera de aprender.
+
+A la \EPSfacultad{} de la \EPSuniversidad{} por la formación recibida.
+
+A mi novia Ana, por ayudarme a estructurar el trabajo de manera más óptima y por ser un apoyo constante durante el desarrollo del proyecto.
+
+\clearpage
+
+
+%% =====================================================================
+%% RESUMEN
+%% =====================================================================
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+EcoAlerta es una aplicación web progresiva (PWA) concebida como red social cívica especializada en medio ambiente. Permite a cualquier ciudadano reportar incidencias medioambientales (vertidos ilegales, contaminación, incendios forestales, animales abandonados o maltratados, daños a espacios naturales, entre otras) con foto y GPS, las clasifica por categoría y severidad, y las delega a la entidad responsable correcta (ayuntamiento, SEPRONA, bomberos, policía local) mediante un flujo de estados trazable. Los ciudadanos consultan el mapa público sin registrarse y, al autenticarse, votan, comentan y siguen los reportes de otros usuarios, creando un componente social que ayuda a priorizar las incidencias más relevantes.
+
+He desarrollado el proyecto en seis \textit{sprints} de una semana con enfoque iterativo e incremental, aplicando \textit{Spec-Driven Development} (SpecKit) para combinar especificaciones formales y asistencia de agentes de IA en el IDE Google Antigravity. El uso de IA está declarado de forma explícita en la memoria; las decisiones de diseño, la revisión de código y la responsabilidad final son mías.
+
+Tecnológicamente el sistema tiene tres capas en Docker Compose: SPA en React 18 con Tailwind y Leaflet sobre OpenStreetMap (instalable como PWA, con soporte \textit{offline}), API REST en Node.js 20 + Express 4 (con JWT dual token, 2FA TOTP, \textit{rate limiting} y Cloudflare Turnstile), y PostgreSQL 16 con PostGIS 3.4 (índice GIST y \texttt{ST\_DWithin} para consultas geoespaciales). El modelo tiene 13 entidades que cubren incidencias, fotos, comentarios, votos, seguimientos, historial de estados, notificaciones y un \textit{audit log} de seguridad.
+
+He definido 46 requisitos funcionales en cinco módulos (autenticación, incidencias, mapa, administración, social) y 12 requisitos no funcionales. La API expone 35 \textit{endpoints} REST documentados con Swagger. La validación combina pruebas unitarias y de integración con Jest+Supertest, y pruebas E2E con Playwright en tres navegadores; todo en un \textit{pipeline} de GitHub Actions.
+
+Los resultados confirman la viabilidad del sistema: despliegue reproducible con un comando, cobertura del \textit{backend} por encima del 60\,\%, búsquedas geoespaciales en un radio de 5~km por debajo de 500~ms y validación de todos los requisitos funcionales de prioridad alta.
+
+\vspace{0.5cm}
+\noindent\textbf{Palabras clave:} aplicación cívica, medio ambiente, PostGIS, PWA, React, Node.js, JWT, Docker, Spec-Driven Development, OpenStreetMap.
+
+\clearpage
+
+
+%% =====================================================================
+%% ABSTRACT (English)
+%% =====================================================================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+EcoAlerta is a Progressive Web Application (PWA) conceived as a civic social network specialised in environmental issues. It allows any citizen to report environmental incidents (illegal dumping, pollution, wildfires, abandoned or mistreated animals, damage to natural areas, among other categories) with a photo and GPS coordinates. The system classifies each report by category and severity, and delegates it to the appropriate responsible entity (city council, SEPRONA, fire department, local police) through a traceable state flow. Citizens consult the public map without registering and, once authenticated, vote, comment and follow other users' reports, creating a social component that helps prioritise the most relevant incidents.
+
+The project was developed in six one-week sprints following an iterative and incremental approach, applying Spec-Driven Development (SpecKit) to combine formal specifications with AI agent assistance in the Google Antigravity IDE. The use of AI is explicitly declared in the report; design decisions, code review and final responsibility belong to the author.
+
+Technologically, the system has three layers deployed with Docker Compose: a SPA in React 18 with Tailwind and Leaflet over OpenStreetMap (installable as a PWA with offline support), a REST API in Node.js 20 + Express 4 (with JWT dual token, TOTP 2FA, rate limiting and Cloudflare Turnstile), and PostgreSQL 16 with PostGIS 3.4 (GIST index and \texttt{ST\_DWithin} for geospatial queries). The data model has 13 entities covering incidents, photos, comments, votes, follows, status history, notifications and a security audit log.
+
+46 functional requirements were defined across five modules (authentication, incidents, map, administration, social) plus 12 non-functional requirements. The REST API exposes 35 endpoints documented with Swagger. Validation combines unit and integration tests with Jest+Supertest, and E2E tests with Playwright across three browsers; the entire pipeline runs on GitHub Actions.
+
+Results confirm the system's viability: reproducible deployment with one command, backend test coverage above 60\,\%, geospatial searches within a 5~km radius under 500~ms, and validation of all high-priority functional requirements.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} civic application, environment, PostGIS, PWA, React, Node.js, JWT, Docker, Spec-Driven Development, OpenStreetMap.
+
+\clearpage

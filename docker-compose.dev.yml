@@ -19,7 +19,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./database/seeds:/docker-entrypoint-initdb.d/seeds
+      - ./database/seeds/01-dev-data.sql:/docker-entrypoint-initdb.d/02-seeds.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ecoalerta} -d ${DB_NAME:-ecoalerta_dev}"]
       interval: 10s
@@ -45,7 +45,7 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGIN: http://localhost:3000
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-1x0000000000000000000000000000000AA}
-      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-dGhpc0lzQVRlc3RLZXlGb3JEZXZPbmx5MzJieXRlcw==}
+      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-dGhpc0lzQVRlc3RLZXlGb3JEZXZPbmx5MzJieXRlcyE=}
     ports:
       - "${APP_PORT:-5000}:5000"
     volumes:

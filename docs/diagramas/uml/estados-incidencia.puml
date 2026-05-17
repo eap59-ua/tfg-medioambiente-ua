@@ -1,0 +1,82 @@
+@startuml EcoAlerta_Estados_Incidencia
+' ============================================================================
+' EcoAlerta — Diagrama de Estados de una Incidencia
+' Fuente: Spec v1 §8 + tabla incident_status_history
+' Estados del ENUM: pending, validated, assigned, in_progress, resolved,
+'                   rejected, duplicate
+' ============================================================================
+
+!theme plain
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #F4F8FC
+  BorderColor #0080FF
+  ArrowColor #0060B0
+  FontSize 12
+}
+skinparam ArrowColor #555555
+
+[*] --> pending : Ciudadano crea incidencia\n(POST /api/incidents)
+
+state "pending" as pending {
+  pending : Recién reportada
+  pending : Aún no validada por admin
+}
+
+state "validated" as validated {
+  validated : Admin ha confirmado que el caso es real
+  validated : Lista para asignar
+}
+
+state "assigned" as assigned {
+  assigned : Asignada a una entidad\n(Bomberos, SEPRONA, Ayuntamiento…)
+  assigned : Notificación enviada
+}
+
+state "in_progress" as in_progress {
+  in_progress : La entidad está actuando
+  in_progress : Se puede añadir comentario oficial
+}
+
+state "resolved" as resolved {
+  resolved : Cerrada con resolution_note
+  resolved : resolved_at, resolved_by registrados
+}
+
+state "rejected" as rejected {
+  rejected : No procede (falsa alarma, fuera de\ncompetencia, información insuficiente)
+}
+
+state "duplicate" as duplicate {
+  duplicate : Vinculada a otra incidencia existente
+}
+
+pending      --> validated    : Admin valida
+pending      --> rejected     : Admin rechaza
+pending      --> duplicate    : Admin marca como duplicada
+validated    --> assigned     : Admin asigna entidad\n(assigned_entity_id)
+assigned     --> in_progress  : Entidad acepta\ny empieza a trabajar
+in_progress  --> resolved     : Entidad cierra con nota
+
+' ─── TRANSICIONES EXCEPCIONALES ─────────────────────────────────────────────
+assigned   --> rejected : Entidad rechaza\n(no competencia)
+in_progress --> rejected : Entidad marca\ncomo improcedente
+
+rejected   --> [*]
+duplicate  --> [*]
+resolved   --> [*]
+
+note right of pending
+  El sistema registra cada cambio
+  en **incident_status_history**
+  (audit log completo)
+end note
+
+note left of in_progress
+  Si no se resuelve en el timeout
+  configurado, el **Sistema** escala
+  la incidencia automáticamente
+  (RF-34)
+end note
+
+@enduml

@@ -1,0 +1,87 @@
+% ==============================================================================
+\chapter{Modelo de negocio preliminar}
+\label{app:modelo-negocio}
+% ==============================================================================
+
+Análisis preliminar del modelo de negocio para una hipotética puesta en producción de EcoAlerta. No es parte del alcance técnico del TFG; lo incluyo para cumplir el OBJ-8.
+
+
+\section*{Propuesta de valor}
+
+EcoAlerta aporta valor a tres actores distintos:
+
+\textbf{Ciudadanía.}  Canal ágil y transparente para reportar problemas medioambientales con seguimiento. Refuerzo del sentido de participación con el componente social.
+
+\textbf{Administraciones locales.}  Bajan el coste de recolección de incidencias y mejoran la calidad de los datos (foto, GPS, categoría). Panel de gestión integral, cuadro de mando para reportes a autoridades superiores.
+
+\textbf{Entidades especializadas (SEPRONA, bomberos, ONG).}  Cola priorizada de incidencias de su competencia, con evidencia que acelera la intervención.
+
+
+\section*{Segmentos de mercado}
+
+Tres segmentos:
+
+\textbf{Ayuntamientos medianos (10\,000--100\,000 habitantes).}  Segmento principal. Concejalías de Medio Ambiente con poco desarrollo tecnológico propio. España tiene unos 2\,500 municipios en este rango, mercado amplio.
+
+\textbf{Ayuntamientos grandes y diputaciones.}  Requieren integración con sistemas propios. Pocos clientes pero contratos unitarios mayores.
+
+\textbf{Espacios naturales protegidos y ONG.}  Parques naturales, reservas, confederaciones hidrográficas, asociaciones (SEO/BirdLife, Ecologistas en Acción, WWF España). Plataforma de recolección estandarizada para sus voluntarios.
+
+
+\section*{Fuentes de ingresos}
+
+Modelo \textbf{B2G \textit{freemium}} con tres planes. La aplicación es gratuita para el ciudadano (no hay modelo viable que cobre por reportar un problema medioambiental). Los ingresos vienen de las administraciones y organizaciones que contratan.
+
+\begin{table}[H]
+\centering
+\caption{Planes propuestos.}
+\label{tab:planes}
+\small
+\begin{tabular}{@{}L{2.5cm}L{3cm}L{7.5cm}@{}}
+\toprule
+\textbf{Plan} & \textbf{Precio} & \textbf{Incluye} \\
+\midrule
+Básico (gratis) & 0~€/mes & Panel admin básico, hasta 100 incidencias/mes, 1 admin, mapa con marca de agua. \\
+Municipal & 150--300~€/mes & Incidencias ilimitadas, 5 admins, sin marca de agua, integración con email corporativo, exportación de informes, soporte por email. \\
+Empresarial & 600--1\,200~€/mes & Multi-municipio, integración con Gestiona o GESCON, API personalizada, soporte prioritario, formación inicial, gamificación ciudadana personalizable. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Fuentes adicionales: consultoría de implantación inicial (tarifa puntual por puesta en marcha) y subvenciones europeas (Next Generation EU para digitalización municipal, programa LIFE de medio ambiente).
+
+
+\section*{Estructura de costes}
+
+\begin{itemize}
+  \item \textbf{Infraestructura \textit{cloud}}: 50--200~€/mes para un despliegue modesto (VPS, CDN, backups). Escala con el uso.
+  \item \textbf{Almacenamiento de fotos}: $\sim$0,02~€/GB/mes en S3 o equivalente. Crece linealmente con el volumen.
+  \item \textbf{Dominio y certificados}: 20--100~€/año.
+  \item \textbf{Personal}: en fases tempranas, un desarrollador a tiempo parcial. Con crecimiento, un equipo mínimo (1 \textit{full-stack}, 1 soporte/ventas).
+  \item \textbf{Cumplimiento legal}: registro de tratamientos RGPD, política de privacidad, posible DPO externo ($\sim$100~€/mes).
+\end{itemize}
+
+
+\section*{Viabilidad}
+
+Ejercicio sencillo a dos años: captación de 20 municipios en plan \textit{Municipal} (200~€/mes medio) y 3 clientes \textit{Empresarial} (900~€/mes medio) da unos 80\,400~€/año a partir del mes 24, frente a costes de 50\,000--60\,000~€/año. Margen razonable para un proyecto autofinanciable tras una fase inicial de inversión.
+
+El riesgo principal es el ciclo de venta largo del B2G (licitaciones, plazos administrativos). Mitigación: empezar con municipios pequeños mediante contratos menores (sin licitación) y casos de éxito replicables.
+
+
+\section*{Aspectos legales}
+
+Cualquier puesta en producción debe abordar como mínimo:
+
+\begin{itemize}
+  \item RGPD: base jurídica del tratamiento, política de privacidad, formulario de derechos, registro de actividades.
+  \item Consentimiento explícito para geolocalización y foto.
+  \item Condiciones de uso y política de moderación de comentarios.
+  \item Acuerdos de Encargo de Tratamiento con las administraciones contratantes.
+  \item Honor e imagen de personas retratadas en las fotos: procedimiento de borrado a petición y, si aplica, difuminado automático de rostros y matrículas.
+\end{itemize}
+
+
+\section*{Conclusión}
+
+El modelo es técnicamente viable y económicamente defendible, con ciclo de venta largo pero alta replicabilidad una vez probado en los primeros clientes. El producto desarrollado en este TFG da una base sólida para un piloto con un municipio dispuesto a colaborar, idealmente en la provincia de Alicante.

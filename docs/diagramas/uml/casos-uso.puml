@@ -1,0 +1,127 @@
+@startuml EcoAlerta_Casos_de_Uso
+' ============================================================================
+' EcoAlerta — Diagrama de Casos de Uso
+' Fuente: Spec v1 §2 (actores) + §3 (RF-01..RF-46)
+' Renderizar: https://www.plantuml.com/plantuml/uml  o  plantuml casos-uso.puml
+' ============================================================================
+
+!theme plain
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #F4F8FC
+  BorderColor #0080FF
+}
+
+' ─── ACTORES ────────────────────────────────────────────────────────────────
+actor "Ciudadano\nanónimo"   as Anon
+actor "Ciudadano\nregistrado" as Ciud
+actor "Administrador"         as Admin
+actor "Entidad\nresponsable"  as Ent
+actor "Sistema"               as Sys
+
+' ─── MÓDULO: CONSULTA PÚBLICA ────────────────────────────────────────────────
+rectangle "Consulta pública (anónima)" {
+  usecase "Ver mapa de incidencias"         as UC_VerMapa
+  usecase "Ver detalle de incidencia"       as UC_VerDetalle
+  usecase "Filtrar por categoría/severidad" as UC_Filtrar
+  usecase "Buscar por dirección"            as UC_Buscar
+}
+
+Anon --> UC_VerMapa
+Anon --> UC_VerDetalle
+Anon --> UC_Filtrar
+Anon --> UC_Buscar
+
+' ─── MÓDULO: AUTENTICACIÓN ──────────────────────────────────────────────────
+rectangle "Autenticación" {
+  usecase "Registrarse"              as UC_Reg
+  usecase "Iniciar sesión (JWT)"     as UC_Login
+  usecase "Configurar 2FA (TOTP)"    as UC_2FA
+  usecase "Editar perfil"            as UC_EditPerf
+  usecase "Cerrar sesión"            as UC_Logout
+}
+
+Anon --> UC_Reg
+Anon --> UC_Login
+Ciud --> UC_EditPerf
+Ciud --> UC_2FA
+Ciud --> UC_Logout
+
+' ─── MÓDULO: REPORTE DE INCIDENCIAS ─────────────────────────────────────────
+rectangle "Reporte y participación" {
+  usecase "Crear incidencia\n(foto + GPS)"  as UC_Crear
+  usecase "Editar incidencia propia"        as UC_Editar
+  usecase "Cancelar incidencia propia"      as UC_Cancelar
+  usecase "Votar incidencia"                as UC_Votar
+  usecase "Comentar"                        as UC_Comentar
+  usecase "Seguir incidencia"               as UC_Seguir
+}
+
+Ciud --> UC_Crear
+Ciud --> UC_Editar
+Ciud --> UC_Cancelar
+Ciud --> UC_Votar
+Ciud --> UC_Comentar
+Ciud --> UC_Seguir
+
+Ciud -.-> UC_VerMapa
+Ciud -.-> UC_VerDetalle
+Ciud -.-> UC_Filtrar
+Ciud -.-> UC_Buscar
+
+' ─── MÓDULO: ADMINISTRACIÓN ─────────────────────────────────────────────────
+rectangle "Administración" {
+  usecase "Dashboard de estadísticas" as UC_Dash
+  usecase "Validar / rechazar\nincidencia"    as UC_Validar
+  usecase "Asignar a entidad"         as UC_Asignar
+  usecase "Marcar como duplicada"     as UC_Dup
+  usecase "Gestionar categorías"      as UC_GestCat
+  usecase "Gestionar entidades"       as UC_GestEnt
+  usecase "Comentar como oficial"     as UC_OficAdmin
+}
+
+Admin --> UC_Dash
+Admin --> UC_Validar
+Admin --> UC_Asignar
+Admin --> UC_Dup
+Admin --> UC_GestCat
+Admin --> UC_GestEnt
+Admin --> UC_OficAdmin
+
+' ─── MÓDULO: ENTIDAD RESPONSABLE ────────────────────────────────────────────
+rectangle "Entidad responsable" {
+  usecase "Ver incidencias\nasignadas"    as UC_VerAsig
+  usecase "Marcar 'en progreso'"          as UC_EnProg
+  usecase "Resolver incidencia"           as UC_Resolver
+  usecase "Añadir comentario oficial"     as UC_Oficial
+}
+
+Ent --> UC_VerAsig
+Ent --> UC_EnProg
+Ent --> UC_Resolver
+Ent --> UC_Oficial
+
+' ─── MÓDULO: SISTEMA (automatizado) ─────────────────────────────────────────
+rectangle "Procesos automáticos" {
+  usecase "Enviar notificación\nde cambio de estado" as UC_Notif
+  usecase "Registrar evento\nen audit log"           as UC_Audit
+  usecase "Escalar incidencia\nen timeout"           as UC_Escalar
+}
+
+Sys --> UC_Notif
+Sys --> UC_Audit
+Sys --> UC_Escalar
+
+' ─── RELACIONES <<include>> / <<extend>> ────────────────────────────────────
+UC_Crear ..> UC_Login        : <<requiere>>
+UC_Votar ..> UC_Login        : <<requiere>>
+UC_Comentar ..> UC_Login     : <<requiere>>
+UC_Validar ..> UC_Notif      : <<include>>
+UC_Asignar ..> UC_Notif      : <<include>>
+UC_Resolver ..> UC_Notif     : <<include>>
+UC_Login ..> UC_Audit        : <<include>>
+
+@enduml

@@ -1,0 +1,111 @@
+% !TeX program = lualatex
+% !TeX encoding = UTF-8
+%% =============================================================================
+%% main.tex — EcoAlerta TFG
+%% Plantilla EPS UA (jmrplens/TFG-TFM_EPS) v2.1.0
+%% =============================================================================
+
+% Rutas de búsqueda para clase y paquetes
+\makeatletter
+\def\input@path{{cls/}{sty/}{sty/componentes/}{recursos/}}
+\makeatother
+
+% Estándares modernos (PDF/UA-2 y Tagging)
+\input{eps-metadata}
+
+% Cargar clase
+% openany: permite que los capítulos arranquen en cualquier página, no
+% solo impares. Elimina las páginas en blanco intermedias que el modo
+% twoside,openright fuerza para encuadernación física. Como la entrega
+% es digital (RUA), no hay encuadernación y esas blancas no aportan.
+\documentclass[openany]{eps-tfg}
+
+% Configuración del documento
+\input{configuracion}
+
+% Componentes especializados (informática)
+\usepackage[software]{eps-componentes}
+
+% Bibliografía
+\addbibresource{referencias.bib}
+
+% Acrónimos y glosario
+\makeglossaries
+\input{contenido/anexos/acronimos}
+
+\usepackage{pdfpages}
+
+% Reducir el espacio que KOMA-Script deja antes del título de capítulo.
+% La plantilla por defecto deja casi un tercio de página en blanco antes
+% del nombre del capítulo, lo que hace que en pantalla se vean huecos
+% gigantescos. Comprimo el bloque a un único \vspace ligero.
+\RedeclareSectionCommand[
+  beforeskip=-1pt,
+  afterskip=24pt
+]{chapter}
+\renewcommand*{\chapterheadstartvskip}{\vspace*{1.5\baselineskip}}
+
+\begin{document}
+
+% Interlineado 1.5 global (Libro de Estilo EPS)
+\onehalfspacing
+
+%% =======================================================================
+%% FRONTMATTER — Páginas preliminares
+%% =======================================================================
+\frontmatter
+
+% Portadas oficiales (color y B/N)
+% Portada oficial EPS (PDF rellenado por el autor)
+\includepdf[pages=-,fitpaper=true]{recursos/pdf_externos/portada-oficial-eap.pdf}
+
+% Páginas preliminares (resumen, agradecimientos)
+\input{contenido/frontmatter/preliminares}
+
+% Índices — se añaden al TOC para que aparezcan listados (era una pega
+% señalada en la revisión: la TOC no se referenciaba a los otros índices).
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{chapter}{Índice de figuras}
+\listoftables
+\addcontentsline{toc}{chapter}{Índice de tablas}
+\indiceCodigos
+\addcontentsline{toc}{chapter}{Índice de listados}
+
+%% =======================================================================
+%% MAINMATTER — Cuerpo del trabajo
+%% =======================================================================
+\mainmatter
+
+\input{contenido/capitulos/01-introduccion}
+\input{contenido/capitulos/02-estado-del-arte}
+\input{contenido/capitulos/03-analisis-disenyo}
+\input{contenido/capitulos/04-implementacion}
+\input{contenido/capitulos/05-evaluacion}
+\input{contenido/capitulos/06-conclusiones}
+
+%% =======================================================================
+%% MATERIAL FINAL — Bibliografía, Glosario y Anexos
+%% =======================================================================
+% Nota: NO usamos \backmatter aquí porque desactivaría la numeración de
+% los \chapter, y queremos que los anexos salgan como "Anexo A", "Anexo B"
+% y "Anexo C" (con letra). El \appendix se encarga de cambiar la
+% numeración de \chapter a letras.
+
+% Bibliografía
+\printbibliography[heading=bibintoc]
+
+% Glosario / acrónimos
+% Forzamos que aparezcan TODOS los acrónimos definidos, aunque no se hayan
+% usado explícitamente con \gls{} en el texto. Es lo que un tribunal espera
+% encontrar en una lista de acrónimos: el inventario completo.
+\glsaddall
+\printglossary[type=\acronymtype, title={Acrónimos}, toctitle={Acrónimos}]
+
+% Anexos — \appendix renumera los \chapter como A, B, C
+\appendix
+\input{contenido/anexos/anexo-a-instalacion}
+\input{contenido/anexos/anexo-b-manual-usuario}
+\input{contenido/anexos/anexo-c-modelo-negocio}
+
+\end{document}

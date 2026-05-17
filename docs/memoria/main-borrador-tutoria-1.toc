@@ -1,0 +1,31 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{Nota sobre este borrador}{\es@scroman {i}}{chapter*.1}%
+\contentsline {chapter}{Índice previsto del documento final}{\es@scroman {iii}}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivación y contexto}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos del proyecto}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Uso de herramientas de inteligencia artificial}{3}{section.1.3}%
+\contentsline {paragraph}{Herramientas utilizadas.}{4}{paragraph*.4}%
+\contentsline {paragraph}{Tareas asistidas.}{4}{paragraph*.5}%
+\contentsline {paragraph}{Tareas realizadas exclusivamente por el autor.}{4}{paragraph*.6}%
+\contentsline {paragraph}{Mecanismos de garantía de autoría.}{4}{paragraph*.7}%
+\contentsline {paragraph}{Posicionamiento del autor.}{5}{paragraph*.8}%
+\contentsline {section}{\numberline {1.4}Estructura de la memoria}{5}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Análisis y diseño (síntesis para revisión)}{7}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Conclusiones y trabajo futuro}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Logros alcanzados}{11}{section.3.1}%
+\contentsline {paragraph}{Transparencia sobre el uso de IA.}{12}{paragraph*.9}%
+\contentsline {paragraph}{Calidad industrial en un proyecto académico.}{12}{paragraph*.10}%
+\contentsline {paragraph}{Reusabilidad del modelo.}{12}{paragraph*.11}%
+\contentsline {section}{\numberline {3.2}Limitaciones}{12}{section.3.2}%
+\contentsline {paragraph}{Cobertura de pruebas por debajo del objetivo.}{13}{paragraph*.12}%
+\contentsline {paragraph}{Ausencia de infraestructura SMTP.}{13}{paragraph*.13}%
+\contentsline {paragraph}{\textit {Scheduler} de escalado no implementado.}{13}{paragraph*.14}%
+\contentsline {paragraph}{Pruebas de usabilidad limitadas.}{13}{paragraph*.15}%
+\contentsline {paragraph}{No se ha realizado prueba de carga.}{13}{paragraph*.16}%
+\contentsline {paragraph}{Componente social sin moderación avanzada.}{13}{paragraph*.17}%
+\contentsline {section}{\numberline {3.3}Trabajo futuro}{13}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Líneas de corto plazo (\textit {hardening} y despliegue)}{14}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Líneas de medio plazo (funcionalidad)}{14}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Líneas de largo plazo (producto)}{14}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Reflexión personal}{15}{section.3.4}%

@@ -1,0 +1,66 @@
+% ==============================================================================
+\chapter{Conclusiones y trabajo futuro}
+\label{ch:conclusiones}
+% ==============================================================================
+
+\section{Logros}
+\label{sec:logros}
+
+Repasando los ocho objetivos planteados en la sección~\ref{sec:objetivos}, siete de ellos están plenamente cumplidos: la arquitectura, el modelo de datos, la API REST documentada, la interfaz PWA, los mecanismos de seguridad del Sprint~6, el análisis del estado del arte y la documentación reproducible. El objetivo~7 (validación con pirámide de pruebas y usuarios reales) queda parcialmente cumplido, ya que la pirámide de pruebas automatizadas (unitarias, integración y E2E) está operativa, pero la validación de usabilidad con usuarios reales sigue pendiente y se desarrolla como línea de trabajo futuro.
+
+
+
+\subsubsection*{Transparencia con el uso de IA}
+  El proyecto es coherente con el contexto en el que se desarrolla. Existen herramientas de asistencia y las he usado, declarándolo y dejando trazas auditables. La sección~\ref{sec:uso-ia} y el Capítulo~\ref{ch:implementacion} entran en detalle. Creo que esa actitud es la única razonable a día de hoy.
+
+\subsubsection*{Calidad cercana a producción}
+  El sistema incluye CI/CD con GitHub Actions, \textit{audit log} de seguridad, documentación API autogenerada, capacidad \textit{offline} y 2FA. Estas funcionalidades dan lugar a un resultado más profesional, aunque no eran estrictamente necesarias para cumplir el enunciado.
+
+\subsubsection*{Reusabilidad}
+  El modelo de datos, el flujo de estados y el patrón de delegación a entidades pueden trasladarse con pocos cambios a dominios cercanos: seguridad ciudadana, patrimonio, salud pública. El diseño no se queda en lo medioambiental.
+
+
+\section{Limitaciones}
+\label{sec:limitaciones}
+
+Reconocer lo que no está bien terminado es parte del trabajo:
+
+\subsubsection*{Cobertura de pruebas}
+  La cobertura de \textit{branches} (38{,}91\,\%) está claramente por debajo del 70\,\% que fijé en RNF-08. Muchas ramas de error no se prueban. Es un trabajo mecánico al que no se le ha dado tiempo para cerrar.
+
+\subsubsection*{Sin SMTP real}
+  La recuperación de contraseña por email (RF-05) y las notificaciones por email (RF-46) están programadas pero no se han probado contra un servidor real. Funcionarán al configurar las variables de entorno en producción.
+
+\subsubsection*{Escalado por \textit{timeout} no programado}
+  El RF-34 (escalado de incidencias no atendidas) está diseñado pero no hay un \textit{scheduler} corriendo. Falta añadir cron o un \textit{worker} dedicado.
+
+\subsubsection*{Pruebas de usabilidad pendientes}
+  La validación con usuarios reales sigue el protocolo descrito en la sección~\ref{sec:usabilidad}, pero su ejecución completa ha quedado fuera del alcance de esta entrega. Una evaluación sólida requeriría entre 5 y 15 participantes con perfiles diversos y se aborda como trabajo futuro inmediato.
+
+\subsubsection*{Sin prueba de carga}
+  El RNF-02 (100 usuarios simultáneos) se ha validado por dimensionado teórico, no con \textit{k6} o \textit{Artillery} contra el sistema real.
+
+\subsubsection*{Moderación social básica}
+  Los comentarios entre usuarios funcionan, pero no hay filtros de lenguaje, reputación ni \textit{shadow banning}. En un despliegue público abierto haría falta.
+
+
+\section{Trabajo futuro}
+\label{sec:trabajo-futuro}
+
+Las líneas que veo claras como continuación natural:
+
+\textbf{Corto plazo.}  Subir la cobertura por encima del 80\,\%, desplegar en \textit{cloud} con HTTPS real (Let's Encrypt) y backups automatizados, programar el \textit{scheduler} de RF-34, y pasar pruebas de carga con \textit{k6} para validar RNF-02.
+
+\textbf{Medio plazo.}  Una aplicación nativa complementaria con React Native, aprovechando la API REST existente, para mejorar las notificaciones \textit{push} y el acceso a sensores. Asignación automática de incidencias a entidades por intersección geoespacial entre ubicación y jurisdicción (el campo \texttt{jurisdiction} ya existe en el modelo). Sistema de reputación del ciudadano basado en histórico. Clasificación automática de la fotografía mediante visión por computador, que sugiera categoría y severidad al crear la incidencia.
+
+\textbf{Largo plazo.}  Convenios con ayuntamientos piloto en la provincia de Alicante para validar el producto en producción. Integración con plataformas de gestión municipal (GESCON, Gestiona). Modelo de negocio B2G \textit{freemium} desarrollado a partir del análisis del Anexo~\ref{app:modelo-negocio}. Apertura del código con licencia MIT o Apache~2.0 para fomentar replicación en otros municipios.
+
+
+\section{Reflexión}
+\label{sec:reflexion}
+
+El TFG ha permitido juntar en un único producto cosas que vimos en distintas asignaturas del Grado: bases de datos, programación web, arquitectura, ingeniería de requisitos, pruebas, seguridad, gestión de proyectos. Hasta ahora cada una vivía en su silo; aquí se han tenido que coordinar.
+
+En lo metodológico, combinar SDD con agentes de IA en un IDE como Antigravity ha sido un aprendizaje en sí mismo. Lo más probable es que sea así como va a trabajar buena parte de la industria de aquí a unos años. La conclusión que se obtiene es que la diferencia no la marca delegar, sino dirigir bien: especificar con precisión, revisar con rigor y firmar el resultado.
+
+Por último, se agradece al tutor José Luis Sánchez Romero su disponibilidad y la libertad que me dio para elegir el \textit{stack} y el alcance. Sin esa libertad, EcoAlerta no habría salido como ha salido.

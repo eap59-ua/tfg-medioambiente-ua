@@ -1,0 +1,52 @@
+% ==============================================================================
+% Capítulo 3 RESUMIDO para borrador de tutoría
+% (la versión completa con tablas detalladas está en 03-analisis-disenyo.tex)
+% ==============================================================================
+
+\chapter{Análisis y diseño (síntesis para revisión)}
+\label{ch:analisis-disenyo-resumen}
+
+Este capítulo, en su versión completa, ocupa aproximadamente 22 páginas e integra: metodología de desarrollo (SDD/SpecKit con seis sprints), análisis de actores (cinco perfiles), 46 requisitos funcionales (RF) agrupados en cinco módulos, 12 requisitos no funcionales (RNF), diagrama de casos de uso UML, arquitectura de componentes, justificación del stack tecnológico, modelo de datos con trece entidades, diagrama entidad-relación, descripción de las consultas geoespaciales con \texttt{ST\_DWithin} y un índice GIST, flujo de estados de las incidencias, diseño de la API REST con sus 35 \textit{endpoints}, y principios del diseño de la interfaz de usuario.
+
+A continuación se presenta una síntesis ordenada por sección. La versión completa con todas las tablas detalladas está disponible en el archivo \texttt{03-analisis-disenyo.tex} del repositorio.
+
+
+\section*{3.1 Metodología de desarrollo}
+
+Enfoque iterativo e incremental con seis \textit{sprints} de una semana, aplicando \textbf{Spec-Driven Development (SpecKit)}. Cada \textit{sprint} se estructura en cuatro fases: \textit{Specify}, \textit{Plan}, \textit{Implement} (asistida por agentes de IA en Google Antigravity) y \textit{Verify}. La elección se justifica por la combinación de calendario corto y uso declarado de IA: la especificación previa actúa simultáneamente como guía al agente y como base para auditar el resultado. Se han celebrado tutorías quincenales con el tutor.
+
+
+\section*{3.2 Actores del sistema}
+
+Cinco actores: \textbf{ciudadano anónimo} (consulta el mapa público sin registro), \textbf{ciudadano registrado} (reporta, vota, comenta y sigue), \textbf{administrador municipal} (valida, asigna, cambia estados, accede al \textit{dashboard}), \textbf{entidad responsable} (Ayuntamiento, SEPRONA, bomberos, etc., gestiona las incidencias asignadas) y \textbf{Sistema} (notificaciones automáticas, escalado por \textit{timeout}, \textit{audit log}).
+
+
+\section*{3.3 Requisitos}
+
+\textbf{46 requisitos funcionales} agrupados en cinco módulos:
+
+\begin{itemize}[leftmargin=1.2cm, itemsep=2pt]
+  \item \textbf{Autenticación} (RF-01 a RF-07): registro, login con JWT dual token, acceso anónimo, roles, perfil.
+  \item \textbf{Incidencias} (RF-10 a RF-19): creación con foto y GPS, categorización, severidad, fotos múltiples, historial, borradores \textit{offline}.
+  \item \textbf{Mapa interactivo} (RF-20 a RF-26): mapa, \textit{clustering}, filtros, marcadores por severidad, \textit{geocoding}, búsquedas geoespaciales.
+  \item \textbf{Administración y delegación} (RF-30 a RF-37): \textit{dashboard}, transiciones de estado, asignación a entidades, escalado, estadísticas.
+  \item \textbf{Social y notificaciones} (RF-40 a RF-46): votos, comentarios oficiales, notificaciones de cambio de estado, seguimiento, perfil social, \textit{push} y email.
+\end{itemize}
+
+\textbf{12 requisitos no funcionales} cubriendo rendimiento (latencia API < 500~ms p95, 100 usuarios simultáneos), usabilidad \textit{responsive}, portabilidad PWA, seguridad (\textit{bcrypt}, \textit{rate limit}, HTTPS), calidad (cobertura > 70\,\%, tests E2E), mantenibilidad (Docker, Swagger) y accesibilidad WCAG~2.1~AA.
+
+
+\section*{3.4 Casos de uso, arquitectura, modelo de datos y API}
+
+Se han producido cuatro diagramas formales: casos de uso UML, arquitectura de componentes, modelo entidad-relación y diagrama de estados de la incidencia. Los cuatro están disponibles como \textit{figuras} renderizadas en \path{docs/memoria/figuras/} (formato PNG) y como fuentes editables en \path{docs/diagramas/} (formato PlantUML y DBML).
+
+La arquitectura sigue el patrón \textbf{cliente-servidor de tres capas} (presentación React + Tailwind + Leaflet, lógica Node.js + Express, datos PostgreSQL + PostGIS) desplegado con Docker Compose tras un \textit{reverse proxy} nginx. Servicios externos: OpenStreetMap (\textit{tiles}) y Nominatim (\textit{geocoding}).
+
+El modelo de datos cuenta con \textbf{13 entidades} agrupadas en cuatro subsistemas: identidad y seguridad (con 2FA y \textit{audit log}), catálogos maestros (categorías, entidades responsables), núcleo de incidencias (con fotos, comentarios, historial) e interacción social (votos, seguimientos, notificaciones).
+
+La API REST expone \textbf{35 \textit{endpoints}} bajo el prefijo \texttt{/api/v1}, organizados en seis recursos (autenticación, incidencias, administración, usuarios, notificaciones, salud). La autenticación usa el esquema \texttt{Bearer} sobre JWT con \textit{access token} de 15~min y \textit{refresh token} de 7~días con rotación.
+
+
+\section*{3.5 Diseño de la interfaz de usuario}
+
+Tres principios rectores: \textit{mobile-first} (con \textit{breakpoints} de Tailwind para 320, 768 y 1024~px), \textbf{mapa como eje central} (refuerza la naturaleza cívica del producto) y accesibilidad por diseño (WCAG~2.1~AA con contraste verificado, navegación por teclado y ARIA).
