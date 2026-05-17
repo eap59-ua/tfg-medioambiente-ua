@@ -4,8 +4,8 @@ test.describe('Admin Management Flow', () => {
   test('debería permitir al administrador gestionar una incidencia', async ({ page }) => {
     // 1. Acceder y loguear como admin
     await page.goto('/login');
-    await page.getByPlaceholder(/email/i).fill('admin@ecoalerta.test');
-    await page.getByPlaceholder(/contraseña/i).fill('Admin123'); // contraseñas default supuestas
+    await page.getByPlaceholder(/email/i).fill('admin@ecoalerta.es');
+    await page.getByPlaceholder(/contraseña/i).fill('Admin123!'); // contraseñas default de los seeds
     await page.getByRole('button', { name: /entrar/i }).click();
 
     // 2. Ir a vista de Admin

@@ -22,8 +22,8 @@ test.describe('Reporte de Incidencia', () => {
     // 3. El sistema debe pedir login o permitir anónimo
     // Asumamos que pide login usando el formulario en /login
     if (page.url().includes('login')) {
-      await page.getByPlaceholder(/email/i).fill('citizen@ecoalerta.test');
-      await page.getByPlaceholder(/contraseña/i).fill('Password123');
+      await page.getByPlaceholder(/email/i).fill('citizen@test.es');
+      await page.getByPlaceholder(/contraseña/i).fill('Citizen123!');
       await page.getByRole('button', { name: /entrar|iniciar/i }).click();
       
       // Esperar a redirigir al listado o al map o a /report
