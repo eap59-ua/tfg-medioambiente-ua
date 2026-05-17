@@ -180,8 +180,8 @@ export default function IncidentDetailPage() {
 
         {/* Map */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
-          <div className="h-48">
-            <MapContainer center={position} zoom={15} className="w-full h-full" scrollWheelZoom={false}>
+          <div className="h-48 relative z-0">
+            <MapContainer center={position} zoom={15} style={{ height: '100%', width: '100%', zIndex: 0 }} scrollWheelZoom={false}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={position} />
             </MapContainer>

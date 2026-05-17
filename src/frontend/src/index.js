@@ -1,6 +1,9 @@
 import React from 'react';
+import ReactDOM from 'react-dom/client';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import './styles/index.css';
+import App from './App';
 
 // Fix para los iconos de Leaflet en React (evita 404/500 en marker-icon.png)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -9,9 +12,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
-import ReactDOM from 'react-dom/client';
-import './styles/index.css';
-import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -135,7 +135,7 @@ export default function CreateIncidentPage() {
             <label id="location-label" className="block text-sm font-medium text-gray-700 mb-1">Ubicación * <span className="text-gray-400 font-normal">— Haz click en el mapa</span></label>
             <div className={`rounded-xl overflow-hidden border-2 flex flex-col ${errors.position ? 'border-red-500' : 'border-gray-200'}`} aria-labelledby="location-label">
               <div className="h-64 basis-full w-full relative z-0">
-                <MapContainer center={[MAP_DEFAULTS.lat, MAP_DEFAULTS.lng]} zoom={MAP_DEFAULTS.zoom} className="w-full h-full z-0">
+                <MapContainer center={[MAP_DEFAULTS.lat, MAP_DEFAULTS.lng]} zoom={MAP_DEFAULTS.zoom} style={{ height: '100%', width: '100%', zIndex: 0 }}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <LocationPicker position={position} onPositionChange={setPosition} />
                 </MapContainer>
