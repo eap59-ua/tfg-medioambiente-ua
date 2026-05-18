@@ -90,3 +90,17 @@ docs/memoria/**/*.pdf
 *.gls
 *.ist
 *.lol
+
+# --- Entrega ------------------------------------------------------------------
+docs/entrega/*.aux
+docs/entrega/*.log
+docs/entrega/*.bbl
+docs/entrega/*.bcf
+docs/entrega/*.blg
+docs/entrega/*.fdb_latexmk
+docs/entrega/*.fls
+docs/entrega/*.out
+docs/entrega/*.toc
+docs/entrega/*.synctex.gz
+docs/entrega/EcoAlerta-*-BORRADOR.pdf
+docs/entrega/EcoAlerta-*-HUMANIZADA.pdf
