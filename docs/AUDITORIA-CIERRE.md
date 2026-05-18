@@ -1,6 +1,6 @@
 # Auditoría de Cierre — EcoAlerta TFG
 
-> **Fecha:** 17 mayo 2026
+> **Fecha:** 18 mayo 2026
 > **Versión de cierre:** `v1.0.0-tfg`
 > **Hash del commit final:** `8c4701fc4ca6604d4dd759c7966ad3d814990647`
 > **Autor:** Erardo Aldana Pessoa
