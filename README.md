@@ -1,7 +1,13 @@
 # EcoAlerta — Plataforma de Incidencias Medioambientales
 
-<!-- EcoAlerta — TFG Universidad de Alicante, 2025-2026 -->
+## Trabajo Fin de Grado
+- **Autor:** Erardo Aldana Pessoa (eap59@alu.ua.es)
+- **Tutor:** (Por definir / Según registro en UA)
+- **Convocatoria:** C3 2025-2026
+- **Universidad:** Universidad de Alicante (UA)
+- **Memoria:** La memoria final en PDF (versión definitiva) se entrega de forma oficial a través del portal institucional **UAProject**. Los borradores e históricos de revisión se encuentran archivados en `docs/memoria-v2/` como referencia interna.
 
+## 🚀 Descripción del Proyecto
 **EcoAlerta** es una aplicación Web Progresiva (PWA) desarrollada como Trabajo de Fin de Grado (TFG) para la Universidad de Alicante. Su objetivo principal es facilitar a la ciudadanía el reporte, seguimiento y resolución de incidencias medioambientales (como vertidos ilegales, contaminación acústica o daños a la flora y fauna) colaborando de forma directa con entidades responsables o administraciones locales.
 
 ## 🚀 Características Principales
