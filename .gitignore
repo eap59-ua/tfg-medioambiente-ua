@@ -68,3 +68,25 @@ docs/memoria/**/*.pdf
 *.tmp
 ~$*.docx
 ~$*.doc
+
+# ─── LaTeX ────────────────────────────────────────────────────────────────────
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.lof
+*.lot
+*.out
+*.run.xml
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.lol
