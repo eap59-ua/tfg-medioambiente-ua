@@ -1,5 +1,5 @@
-const CACHE_NAME = 'ecoalerta-cache-v1';
-const DYNAMIC_CACHE = 'ecoalerta-dynamic-v1';
+const CACHE_NAME = 'ecoalerta-cache-v2';
+const DYNAMIC_CACHE = 'ecoalerta-dynamic-v2';
 
 // Recursos estáticos básicos
 const STATIC_ASSETS = [
