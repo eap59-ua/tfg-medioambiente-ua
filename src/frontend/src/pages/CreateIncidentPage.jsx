@@ -8,9 +8,19 @@ import { CATEGORIES, SEVERITY_CONFIG, MAP_DEFAULTS } from '../utils/constants';
 import toast from 'react-hot-toast';
 
 function LocationPicker({ position, onPositionChange }) {
-  useMapEvents({
+  const map = useMapEvents({
     click(e) { onPositionChange([e.latlng.lat, e.latlng.lng]); },
   });
+
+  // Fix: forzar a Leaflet a recalcular el tamaño del contenedor tras montarse
+  // Esto soluciona la zona gris donde no cargan las tiles inicialmente
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [map]);
+
   return position ? <Marker position={position} /> : null;
 }
 
@@ -133,8 +143,8 @@ export default function CreateIncidentPage() {
           {/* Ubicación */}
           <div>
             <label id="location-label" className="block text-sm font-medium text-gray-700 mb-1">Ubicación * <span className="text-gray-400 font-normal">— Haz click en el mapa</span></label>
-            <div className={`rounded-xl overflow-hidden border-2 flex flex-col ${errors.position ? 'border-red-500' : 'border-gray-200'}`} aria-labelledby="location-label">
-              <div className="h-64 basis-full w-full relative z-0">
+            <div className={`rounded-xl overflow-hidden border-2 ${errors.position ? 'border-red-500' : 'border-gray-200'}`} aria-labelledby="location-label">
+              <div className="h-64 w-full relative z-0">
                 <MapContainer center={[MAP_DEFAULTS.lat, MAP_DEFAULTS.lng]} zoom={MAP_DEFAULTS.zoom} style={{ height: '100%', width: '100%', zIndex: 0 }}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <LocationPicker position={position} onPositionChange={setPosition} />

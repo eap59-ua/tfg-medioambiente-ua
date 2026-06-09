@@ -6,6 +6,10 @@ function ChangeView({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
     if (center) { map.setView(center, zoom || map.getZoom()); }
+    
+    // Fix: forzar recalcular tamaño inicial
+    const timer = setTimeout(() => map.invalidateSize(), 250);
+    return () => clearTimeout(timer);
   }, [center, zoom, map]);
   return null;
 }

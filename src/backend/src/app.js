@@ -53,10 +53,10 @@ if (!fs.existsSync(uploadsDir)) {
 }
 app.use('/uploads', express.static(uploadsDir));
 
-// Rate limiting global
+// Rate limiting global (más permisivo en desarrollo)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100,
+  max: process.env.NODE_ENV === 'development' ? 1000 : 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiadas peticiones. Inténtalo de nuevo más tarde.' },

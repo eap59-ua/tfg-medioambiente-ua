@@ -5,10 +5,7 @@ const DYNAMIC_CACHE = 'ecoalerta-dynamic-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-  '/logo192.png',
-  '/logo512.png'
+  '/manifest.json'
 ];
 
 // Instalar SW y pre-cachear estáticos
