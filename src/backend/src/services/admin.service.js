@@ -118,7 +118,7 @@ const getAdminIncidents = async (filters = {}) => {
  * Asigna una incidencia a una entidad responsable
  */
 const assignIncidentToEntity = async (incidentId, entityId, adminId) => {
-  const client = await db.connect();
+  const client = await db.getClient();
   try {
     await client.query('BEGIN');
 
@@ -217,7 +217,7 @@ const assignIncidentToEntity = async (incidentId, entityId, adminId) => {
  * Cambia el estado de una incidencia desde el panel de admin
  */
 const updateIncidentStatusAdmin = async (incidentId, newStatus, adminId, note) => {
-  const client = await db.connect();
+  const client = await db.getClient();
   try {
     await client.query('BEGIN');
 
