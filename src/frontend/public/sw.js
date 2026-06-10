@@ -1,5 +1,5 @@
-const CACHE_NAME = 'ecoalerta-cache-v2';
-const DYNAMIC_CACHE = 'ecoalerta-dynamic-v2';
+const CACHE_NAME = 'ecoalerta-cache-v3';
+const DYNAMIC_CACHE = 'ecoalerta-dynamic-v3';
 
 // Recursos estáticos básicos
 const STATIC_ASSETS = [
@@ -86,7 +86,8 @@ self.addEventListener('fetch', (event) => {
           caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, clonedResponse));
           return networkResponse;
         }).catch(() => {
-          // Si es una imagen y falla, devolver un placeholder si tuviéramos
+          // Si falla, devolvemos un response vacío para evitar el TypeError
+          return new Response('', { status: 408, statusText: 'Request timeout' });
         });
       })
     );

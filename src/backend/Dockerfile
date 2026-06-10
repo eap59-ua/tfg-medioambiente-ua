@@ -14,9 +14,9 @@ COPY . .
 EXPOSE 5000
 CMD ["npm", "run", "dev"]
 
-# ─── Producción ──────────────────────────────────────────────────────────────
+# ─── Producción (solo dependencias de prod) ──────────────────────────────────
 FROM base AS production
-RUN npm ci --only=production
+RUN npm install --omit=dev
 COPY . .
 EXPOSE 5000
 CMD ["node", "src/app.js"]

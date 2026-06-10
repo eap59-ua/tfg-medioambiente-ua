@@ -2,8 +2,8 @@
  * Constantes de la aplicación EcoAlerta
  */
 
-export const API_URL = process.env.REACT_APP_API_URL || '/api/v1';
-export const UPLOADS_URL = process.env.REACT_APP_UPLOADS_URL || '';
+export const API_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000/api/v1' : '/api/v1');
+export const UPLOADS_URL = process.env.REACT_APP_UPLOADS_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '');
 
 export const MAP_DEFAULTS = {
   lat: parseFloat(process.env.REACT_APP_MAP_DEFAULT_LAT) || 38.3452,

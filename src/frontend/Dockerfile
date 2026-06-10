@@ -16,7 +16,7 @@ CMD ["npm", "start"]
 
 # ─── Build de producción ─────────────────────────────────────────────────────
 FROM base AS build
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 
