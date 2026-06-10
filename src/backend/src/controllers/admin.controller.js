@@ -27,13 +27,16 @@ const assignIncident = async (req, res, next) => {
     const result = await adminService.assignIncidentToEntity(id, entityId, adminId);
     
     // Notifications
+    // TODO: We need to know who receives this notification. Usually entity users. Will add in incident.service integration.
+    /*
     await notificationService.createNotification({
       type: 'assignment',
       title: 'Incidencia Asignada',
       message: `La incidencia "${result.incident.title}" ha sido asignada a su entidad: ${result.entity.name}`,
       referenceType: 'incident',
       referenceId: id
-    }); // TODO: We need to know who receives this notification. Usually entity users. Will add in incident.service integration.
+    });
+    */
 
     // Email
     await emailService.sendAssignmentEmail(result.entity.email, result.incident.title, id);

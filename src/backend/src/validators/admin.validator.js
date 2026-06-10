@@ -8,18 +8,18 @@ exports.validateAdminIncidentQuery = [
 ];
 
 exports.validateAssignIncident = [
-  param('id').isUUID().withMessage('El ID de la incidencia debe ser UUID'),
-  body('entityId').isUUID().withMessage('Requerido entityId válido')
+  param('id').isString().isLength({ min: 36, max: 36 }).withMessage('El ID de la incidencia debe ser UUID'),
+  body('entityId').isString().isLength({ min: 36, max: 36 }).withMessage('Requerido entityId válido')
 ];
 
 exports.validateStatusUpdate = [
-  param('id').isUUID().withMessage('ID debe ser UUID'),
+  param('id').isString().isLength({ min: 36, max: 36 }).withMessage('ID debe ser UUID'),
   body('status').isIn(['pending', 'validated', 'assigned', 'in_progress', 'resolved', 'rejected', 'duplicate'])
     .withMessage('Estado inválido')
 ];
 
 exports.validateRoleUpdate = [
-  param('id').isUUID(),
+  param('id').isString().isLength({ min: 36, max: 36 }),
   body('role').isIn(['citizen', 'entity', 'moderator', 'admin']).withMessage('Rol inválido')
 ];
 
@@ -29,7 +29,7 @@ exports.validateEntityCreate = [
 ];
 
 exports.validateEntityUpdate = [
-  param('id').isUUID(),
+  param('id').isString().isLength({ min: 36, max: 36 }),
   body('name').optional().trim().notEmpty(),
   body('isActive').optional().isBoolean()
 ];
