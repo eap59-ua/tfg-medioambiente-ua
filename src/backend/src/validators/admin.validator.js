@@ -9,7 +9,7 @@ exports.validateAdminIncidentQuery = [
 
 exports.validateAssignIncident = [
   param('id').isUUID().withMessage('El ID de la incidencia debe ser UUID'),
-  body('entityId').isInt().withMessage('Requerido entityId válido')
+  body('entityId').isUUID().withMessage('Requerido entityId válido')
 ];
 
 exports.validateStatusUpdate = [
@@ -29,7 +29,7 @@ exports.validateEntityCreate = [
 ];
 
 exports.validateEntityUpdate = [
-  param('id').isInt(),
+  param('id').isUUID(),
   body('name').optional().trim().notEmpty(),
   body('isActive').optional().isBoolean()
 ];
