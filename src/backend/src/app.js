@@ -38,8 +38,16 @@ const PORT = process.env.APP_PORT || 5000;
 
 // ─── Middleware globales ─────────────────────────────────────────────────────
 app.use(helmet());
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+  .split(',')
+  .map(o => o.trim());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origin (curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('Bloqueado por CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
