@@ -292,7 +292,7 @@ const getUsers = async (filters = {}) => {
   let paramIndex = 1;
 
   if (role) { query += ` AND role = $${paramIndex++}`; values.push(role); }
-  if (isActive !== undefined) { query += ` AND is_active = $${paramIndex++}`; values.push(isActive === 'true'); }
+  if (isActive !== undefined && isActive !== '') { query += ` AND is_active = $${paramIndex++}`; values.push(isActive === 'true'); }
   if (search) { 
     query += ` AND (email ILIKE $${paramIndex} OR display_name ILIKE $${paramIndex})`; 
     values.push(`%${search}%`);
@@ -308,7 +308,7 @@ const getUsers = async (filters = {}) => {
   let countParamIndex = 1;
 
   if (role) { countQuery += ` AND role = $${countParamIndex++}`; countValues.push(role); }
-  if (isActive !== undefined) { countQuery += ` AND is_active = $${countParamIndex++}`; countValues.push(isActive === 'true'); }
+  if (isActive !== undefined && isActive !== '') { countQuery += ` AND is_active = $${countParamIndex++}`; countValues.push(isActive === 'true'); }
   if (search) { 
     countQuery += ` AND (email ILIKE $${countParamIndex} OR display_name ILIKE $${countParamIndex})`; 
     countValues.push(`%${search}%`);
